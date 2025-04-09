@@ -197,8 +197,9 @@ export default {
           }
           available_seats.push(available_seat_parsed)
         }
-        let rows = layout.split(',')
-        console.log(rows)
+
+        let rows = layout.split(',').filter(row => row !== "DR_IMG|.GY")
+        // console.log("Filas después de filtrar:", rows)
         let seats_rows = []
         let seats_rows_plain = []
         let seats_available = []
@@ -267,6 +268,7 @@ export default {
             seats_floor_1.push(row)
           }
 
+          // determina las columnas de asientos en los pisos del bus
           for (let sr of seats_rows) {
             let row = []
             let floor_activated = false
@@ -286,10 +288,9 @@ export default {
         }
         let grid_full = []
         for (let floor of floors) {
-          let row_size = 6
+          let row_size = 5
           let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(floor.length).fill(seat_null));
-          console.table(grid_horizontal)
-          // console.table( grid_horizontal)
+          // console.table("Dibujo asientos: ", grid_horizontal)
           let row_position = 0
           for (let row of floor) {
             let seat_position = 4
@@ -300,7 +301,7 @@ export default {
             }
             row_position++
           }
-          console.table( grid_horizontal)
+          console.table(grid_horizontal)
           grid_full.push(grid_horizontal)
         }
 

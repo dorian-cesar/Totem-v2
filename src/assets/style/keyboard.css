@@ -17,7 +17,11 @@
   user-select: none;
   box-sizing: border-box;
   overflow: hidden;
-  touch-action: manipulation
+  touch-action: manipulation;
+  position: fixed;
+  bottom: 500px;
+  left: 0;
+  z-index: 9999;
 }
 
 .hg-theme-default .hg-button span {

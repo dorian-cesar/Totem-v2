@@ -23,7 +23,7 @@
 
   body {
     background-image: url("../assets/img/background.jpg");
-    // background-color: #1863d1;
+    // background-color: #1863d1 !important;
     width: 1060px;
     height: 1910px;
     margin: 0px;

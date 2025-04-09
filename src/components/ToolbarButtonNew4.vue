@@ -4,7 +4,7 @@
       <!-- Left Button -->
       <b-col cols="6" class="container-fluid">
         <b-button
-          class="custom-button btn-lg"
+          class="custom-button btn-lg button-radius"
           :variant="(lbIsDisable) ? 'secondary' : 'primary'"
           :disabled="lbIsDisable"
           @click="$emit('nameButton','Left-Button')"
@@ -28,7 +28,7 @@
       <!-- Right Button -->
       <b-col cols="6" class="container-fluid text-right">
         <b-button
-          class="custom-button btn-lg"
+          class="custom-button btn-lg button-radius"
           :variant="(rbIsDisable) ? 'secondary' : 'info'"
           :disabled="rbIsDisable"
           @click="$emit('nameButton','Right-Button')"
@@ -57,3 +57,9 @@
     },
   }
 </script>
+
+<style scoped> 
+  .button-radius {
+    border-radius: 60px;
+  }
+</style>

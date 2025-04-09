@@ -1,5 +1,4 @@
-// Custon style
-
+// Custom style
 $font-size-base: 18;// Change general font size
 $blue: #001689;// Affect the primary button
 $info: #FF5200;// Affect the info button
@@ -10,4 +9,6 @@ $vs-state-active-bg: $blue; // Input select color active background
 @import '_vue_select.scss';
 
 @import '_custom.scss';
+@import '_fonts.scss';
+
 
