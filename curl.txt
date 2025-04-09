@@ -1,0 +1,51 @@
+curl 'https://cors.kupos-api.workers.dev/gds/api/tentative_booking/60234345.json?api_key=TSSDFPAPI30103014&region=chile' \
+  -H 'sec-ch-ua-platform: "Linux"' \
+  -H 'Referer: http://0.0.0.0:8080/' \
+  -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36' \
+  -H 'Accept: application/json, text/plain, */*' \
+  -H 'sec-ch-ua: "Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"' \
+  -H 'Content-Type: application/json;charset=UTF-8' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  --data-raw '{"servicio":60234345,"fecha":"2025-04-08","boarding_at":"","origen":1646,"destino":1652,"integrador":1,"asiento":"28","book_ticket":{"seat_details":{"seat_detail":[{"seat_number":"28","fare":"6900","title":"Mr","name":"Ivan Valenzuela","age":"33","sex":"M","is_primary":"true","id_card_type":"1","id_card_number":"17211508k","id_card_issued_by":"oneone"}]},"contact_detail":{"mobile_number":"942858102","emergency_name":"Ivan Valenzuela","email":"ivalenzuela@wit.la"}},"origin_id":1646,"destination_id":1652,"no_of_seats":1,"travel_date":"2025-04-08"}'
+
+
+api_key = TSSDFPAPI30103014
+
+body_request:
+
+  {
+    "servicio": 60234345,
+    "fecha": "2025-04-08",
+    "boarding_at": "",
+    "origen": 1646,
+    "destino": 1652,
+    "integrador": 1,
+    "asiento": "28",
+    "book_ticket": {
+        "seat_details": {
+            "seat_detail": [
+                {
+                    "seat_number": "28",
+                    "fare": "6900",
+                    "title": "Mr",
+                    "name": "Ivan Valenzuela",
+                    "age": "33",
+                    "sex": "M",
+                    "is_primary": "true",
+                    "id_card_type": "1",
+                    "id_card_number": "17211508k",
+                    "id_card_issued_by": "oneone"
+                }
+            ]
+        },
+        "contact_detail": {
+            "mobile_number": "942858102",
+            "emergency_name": "Ivan Valenzuela",
+            "email": "ivalenzuela@wit.la"
+        }
+    },
+    "origin_id": 1646,
+    "destination_id": 1652,
+    "no_of_seats": 1,
+    "travel_date": "2025-04-08"
+}

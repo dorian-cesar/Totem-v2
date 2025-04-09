@@ -1,0 +1,23 @@
+// Main
+$main-color: rgb(23, 30, 51);
+$main-opacity: 0.50;
+.transparent-main {
+  background-color: rgba($main-color, $main-opacity) !important;
+}
+
+// Custom Button
+.custom-button {
+  width: 400px !important;
+  height: 120px !important;
+}
+
+// input select
+.v-select{
+  background-color: azure;
+  font-size: $font-size-base + 4px;
+  }
+//Tamaño del fondo transparente
+.card-custon {
+  height: 1450px;
+}
+
