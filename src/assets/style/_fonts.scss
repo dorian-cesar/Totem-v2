@@ -1,51 +1,48 @@
 @font-face {
 	font-family: "DMSans-Light";
-	src: "@assets/fonts/DMSans-Light.ttf";
+	src: url("/src/assets/fonts/DMSans-Light.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
+  }
+  
 @font-face {
 	font-family: "DMSans-Regular";
-	src: "@assets/fonts/DMSans-Regular.ttf";
+	src: url("/src/assets/fonts/DMSans-Regular.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
+  }
+  
 @font-face {
-	font-family: "DMSans-Demi";
-	src: "@assets/fonts/DMSans-Medium.ttf";
+	font-family: "DMSans-Medium";
+	src: url("/src/assets/fonts/DMSans-Medium.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
+  }
+  
 @font-face {
 	font-family: "DMSans-Bold";
-	src: "@assets/fonts/DMSans-Medium.ttf";
+	src: url("/src/assets/fonts/DMSans-Bold.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
+  }
+  
 @font-face {
 	font-family: "DMSans-SemiBold";
-	src: "@assets/fonts/DMSans-SemiBold.ttf";
+	src: url("/src/assets/fonts/DMSans-SemiBold.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
+  }
+  
 @font-face {
 	font-family: "DMSans-Black";
-	src: "@assets/fonts/DMSans-Black.ttf";
+	src: url("/src/assets/fonts/DMSans-Black.ttf");
 	font-weight: normal;
 	font-style: normal;
 	font-display: swap;
-}
-
-// body {
-// 	font-family: 'DMSans-Regular', sans-serif;
-// }
+  }
+  
