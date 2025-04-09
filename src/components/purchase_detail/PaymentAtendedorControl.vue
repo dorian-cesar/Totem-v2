@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-modal
-      :id="idModalPaymentControl"
+      :id="idModalPaymentAtendedorControl"
       centered
       title="Mensaje de Pago"
       no-close-on-backdrop
@@ -12,44 +12,26 @@
       no-fade
     >
       <b-row>
-        <b-col cols="4" class="text-center pt-3 spinner-container">
-          <div v-if="!isChangeStatus" class="spinner"></div>
-          <font-awesome-icon
-            v-else
-            :icon="['fas', 'exclamation-triangle']"
-            size="5x"
-            :style="{ color: 'orange'}"
-          />
-        </b-col>
-        <!-- Monto -->
-        <b-col cols="8" class="pt-4 pl-0">
+        <b-col cols="8" class="pt-4">
           <p class="h1 font-weight-bold">Monto Total: $ {{total}}</p>
         </b-col>
         <!-- Mensaje -->
         <b-col colos="12" class="text-center font-italic">
-          <h1 v-show="!isChangeStatus" class="text-primary py-5">Realice el pago en el equipo</h1>
+          <h1 v-show="!isChangeStatus" class="text-primary py-5">Realice el pago al atendedor</h1>
           <h1 v-show="isChangeStatus" class="text-danger py-4">{{msg}}</h1>
         </b-col>
         <b-col cols="12" v-show="isChangeStatus" class="text-center">
-          <b-button
-            @click="actionButton('cerrar')"
-            :variant="isTryAgain ? 'primary' : 'secondary'"
-            class="custom-button-alert  text-center mr-3"
-            :disabled = "!isTryAgain"
-          >
-            Intente de Nuevo
-          </b-button>
           <b-button
             @click="actionButton('salir')"
             variant="danger"
             class="custom-button-alert text-center ml-3"
           >
-            Salir
+            Volver al inicio
           </b-button>
         </b-col>
         <!-- Logos -->
         <b-col cols="12" class="text-right">
-          <b-img :src="imgKlap" fluid alt="Fluid image" class="logo-klap"/>
+          <b-img :src="imgKlap" fluid alt="Fluid image"/>
         </b-col>
       </b-row>
     </b-modal>
@@ -59,7 +41,7 @@
   import imgKlap from '@/assets/img/logo-klap.png'
 
   export default {
-    name: 'PaymentControl',
+    name: 'PaymentAtendedorControl',
 
     data() {
       return {
@@ -69,7 +51,7 @@
 
     props: {
       total: {type: String, default: () => ('0')},// Monto a pagar
-      idModalPaymentControl: {type: String, default: () => 'modal-payment-control'},// Nombre de la pantalla modal
+      idModalPaymentAtendedorControl: {type: String, default: () => 'modal-payment-atendedor-control'},// Nombre de la pantalla modal
       isChangeStatus: {type: Boolean, default: () => false},// Estatus del proceso de pago
       msg: {type: String, default: () => ''},// Mensaje al cambiar el estatus
       isTryAgain:{type: Boolean, default: () => true}// Estado del botón "Intentar de Nuevo"
@@ -97,34 +79,6 @@
   .custom-button-alert {
     width: 200px !important;
     height: 80px !important;
-  }
 
-  .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    margin-top: 10px;
-  }
-
-  .spinner {
-    border: 9px solid #dfdfdf;
-    border-top: 9px solid #001689;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1.6s linear infinite;
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .logo-klap {
-    width: 150px;
-    height: auto;
-    border-radius: 10px;
-    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
   }
 </style>

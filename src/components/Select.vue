@@ -15,7 +15,7 @@
     <b-row>
       <b-col cols="12 selector-selects">
         <!-- Input select -->
-        <img center :src="icon" fluid alt="Logo"/>
+        <img center :src="icon" :class="imgClass" fluid alt="Logo"/>
         <v-select
           :options="options"
           :placeholder="placeholder"
@@ -46,6 +46,7 @@
       preSelectLabel: {type: String, default: () => ''},
       preSelectValue: {type: String, default: () => ''},
       icon: {type: String, default: () => ''},
+      imgClass: String,
     },
     mounted() {
       if (this.preSelectLabel && this.preSelectValue) {
@@ -78,4 +79,16 @@
     width: 830px;
   }
   .v-select .v-text-field.v-text-field--solo .v-input__control { max-height: 18px; }
+
+  .origin-img-class {
+    width: 60px;
+    height: auto;  /* Se ajusta automáticamente según el ancho */
+  }
+
+  .destiny-img-class {
+    width: 60px;
+    height: auto;  /* Se ajusta automáticamente según el ancho */
+  }
+
+
 </style>

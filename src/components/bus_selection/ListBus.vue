@@ -39,7 +39,7 @@
               <b-img
                 thumbnail
                 :src="imgLogo"
-                style="width: 200px; height: 50px"
+                style="width: 200px; height: 50px; object-fit: contain;"
               />
             </b-col>
 
@@ -76,8 +76,8 @@
                 :data-price-1="bus.tarifaPrimerPisoInternet"
                 :data-price-2="(bus.tarifaSegundoPisoInternet)?bus.tarifaSegundoPisoInternet:''"
               >
-                <h5>${{ bus.tarifaPrimerPisoInternet }}</h5>
-                <h5>{{ (bus.tarifaSegundoPisoInternet) ? ['$', bus.tarifaSegundoPisoInternet].join('') : '' }}</h5>
+                <h5 class="font-weight-bold">${{ bus.tarifaPrimerPisoInternet }}</h5>
+                <h5 class="font-weight-bold">{{ (bus.tarifaSegundoPisoInternet) ? ['$', bus.tarifaSegundoPisoInternet].join('') : '' }}</h5>
               </span>
             </b-col>
 
@@ -150,7 +150,7 @@
 import BusSeat from '@/components/bus_selection/BusSeat'
 import {mapActions} from 'vuex'
 import {changeFormatDate} from "../../lib/calculateDays";
-import imgLogo from '@/assets/img/logo.svg'
+import imgLogo from '@/assets/img/logo_pullman.png'
 
 export default {
   name: 'ListBus',

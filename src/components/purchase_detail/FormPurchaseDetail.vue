@@ -1,16 +1,21 @@
 <template>
   <div class="pt-3">
     <div class="transparent-main card-custon">
-      <top-header-caption caption="DETALLE DE COMPRA" class="pt-3" />
-      <personal-information v-bind="propsPersonalInformation" />
+      <top-header-caption caption="DETALLE DE COMPRA" class="pt-3"/>
+      <personal-information v-bind="propsPersonalInformation"/>
       <!-- pantalla modal -->
       <payment-control
         v-bind="propsPaymentControl"
         @nameAction="nameActionModal = $event"
       />
+      <payment-atendedor-control
+        v-bind="propsPaymentAtendedorControl"
+        @nameAction="nameActionModal = $event"
+      />
+
     </div>
     <!-- toolbar button-->
-    <tool-bar-button-new3
+    <tool-bar-button-new4
       v-bind="propsToolbarButton"
       @nameButton="eventClick"
     />
@@ -22,10 +27,12 @@
 import TopHeaderCaption from "@/components/TopHeaderCaption";
 import PersonalInformation from "@/components/purchase_detail/PersonalInformation";
 import ToolBarButtonNew3 from "@/components/ToolbarButtonNew3";
-import { mapGetters } from "vuex";
+import ToolBarButtonNew4 from "@/components/ToolbarButtonNew4";
+import {mapGetters} from "vuex";
 import webSocket from "@/mixins/websocket.js";
 import PaymentControl from "@/components/purchase_detail/PaymentControl";
 import reserveOrReleaseSeat from "@/mixins/reserveOrReleaseSeat";
+import PaymentAtendedorControl from "./PaymentAtendedorControl.vue";
 
 export default {
   name: "FormEnterRut",
@@ -68,9 +75,20 @@ export default {
         isChangeStatus: false,
         msg: "No se puede Realizar el pago!",
       },
+      propsPaymentAtendedorControl: {
+        total: "",
+        isChangeStatus: false,
+        msg: "No se puede Realizar el pago!",
+      },
       nameButton: "",
       transaccionPOS: "",
-      ticketsGenerados: "",
+      ticketsGenerados: {
+        estado: false,
+        boletos: []
+      },
+      ticketsProcessed: [],
+      reservationCode: '',
+      reservationCodes: [],
       //
       isCheckOutService: false, //<- Chequeo de isOutService completado
     };
@@ -80,7 +98,9 @@ export default {
     PersonalInformation,
     TopHeaderCaption,
     ToolBarButtonNew3,
+    ToolBarButtonNew4,
     PaymentControl,
+    PaymentAtendedorControl
   },
 
   methods: {
@@ -90,12 +110,14 @@ export default {
       let total = 0;
 
       for (let ticket of this.propsPersonalInformation.tickets) {
-        total += parseFloat(ticket.price) * 1000;
+        // total += parseFloat(ticket.price) * 1000;
+        total += parseFloat(ticket.price);
       }
 
       total = Intl.NumberFormat("es-ES").format(total);
       this.propsPersonalInformation.total = total;
       this.propsPaymentControl.total = total;
+      this.propsPaymentAtendedorControl.total = total;
       this.setTotalAmount = total;
     },
     //inicio del proceso de pago
@@ -109,6 +131,17 @@ export default {
       this.$bvModal.show("modal-payment-control"); //<- Pantalla modal de espera
       clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
       this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
+
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'pagar',
+          data: {
+            tickets: this.propsPersonalInformation.tickets,
+          },
+          name: this.$info.totemName
+        }
+      )
       this.timeClose = setTimeout(
         function () {
           this.timeChangeEstatus = true; //<- Se acabó el tiempo
@@ -119,75 +152,132 @@ export default {
       // Comprobar los errores de POS, impresora e internet (3)
       this.checkStatusConn(); // -> watch errorWebSocket (4)
     },
+    //inicio del proceso de pago
+    pagarAtendedor() {
+      console.log("- methods:pagar", this.propsPersonalInformation.tickets)
+      console.log(
+        "- methods:pagar",
+        "! Fijar el tiempo de espera con setTimeout 150*1000",
+        "-> checkStatusConn"
+      );
+      this.$bvModal.show("modal-payment-atendedor-control"); //<- Pantalla modal de espera
+      clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
+      this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
+
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'pagar-atendedor',
+          data: {
+            tickets: this.propsPersonalInformation.tickets,
+          },
+          name: this.$info.totemName
+        }
+      )
+      this.timeClose = setTimeout(
+        function () {
+          this.timeChangeEstatus = true; //<- Se acabó el tiempo
+        }.bind(this),
+        15 * 1000
+      ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
+
+      // Comprobar los errores de POS, impresora e internet (3)
+      this.checkStatusConn(); // -> watch errorWebSocket (4)
+    },
     //guardar transacción en la API de Pullman (1)
     saveTransaction: async function () {
       this.loadingGuardarTransaccion = true
       console.log('- methods:saveTransaction', 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion)
 
-      const proxy = URL_PROXY
-      const api = 'integrador-web/rest/pago/guardarTransaccion'
       const listaCarrito = []
-
+      let valuePOST = 0
+      let ballotNumberPOST = ''
       // Asignar los tickets para ser enviados en los parámetros de la API
       for (let ticket of this.propsPersonalInformation.tickets) {
+        valuePOST += parseInt(ticket.precio.replace('.', ''))
+        ballotNumberPOST = parseInt(ticket.operatorPnr)
+        this.transaccionPOS = {
+          codigo: ballotNumberPOST
+        }
         const itemCarrito = {
+          codigoTransaccion: ballotNumberPOST,
           fechaPasada: ticket.fechaServicio,
           asiento: ticket.asiento,
           clase: ticket.clase,
           servicio: ticket.servicio,
+          nombreClase: ticket.clase,
           fechaServicio: ticket.fechaServicio,
+          fechaSalida: ticket.fechaServicio,
           horaSalida: ticket.horaSalida,
-          origen: ticket.origen,
-          destino: ticket.destino,
+          ruta: ticket.station.split(',')[0] + ' - ' + ticket.trip.split('/')[1] + ` (${ticket.horaLlegada})`,
+          origen: ticket.trip.split('/')[0],
+          destino: ticket.trip.split('/')[1],
+          nombreTerminalOrigen: ticket.station.split(',')[0],
+          nombreTerminalDestino: ticket.trip.split('/')[1],
           monto: parseFloat(ticket.precio.replace('.', '')), // <- arreglar el número
           precio: parseFloat(ticket.precio.replace('.', '')), // <- arreglar el número
           empresa: ticket.empresa,
           bus: ticket.bus,
           piso: ticket.piso,
-          integrador: ticket.integrador
+          integrador: ticket.integrador,
+          total: ticket.precio
         }
         if (ticket.codeReservation != null) {
           itemCarrito.codigoReserva = ticket.codeReservation
+          itemCarrito.boleto = ticket.codeReservation
         }
+        this.reservationCode = ticket.codeReservation
+        this.reservationCodes.push(ticket.codeReservation)
         listaCarrito.push(itemCarrito)
       }
+      this.ticketsProcessed = listaCarrito
+      this.valuePOS = valuePOST
+      this.ballotNumberPOS = this.transaccionPOS.codigo
+      console.log('tickets', this.propsPersonalInformation.tickets)
+      console.log('ticketsProcessed', this.ticketsProcessed)
+      setTimeout(() => {
+        this.loadingGuardarTransaccion = false
+      }, 1000)
 
-      // Parámetros del POST a la API de Pullman
-      let param = {
-        email: 'marco.betancourt@clamber.cl', // <- email de prueba
-        rut: '1-9',
-        medioDePago: "POS",
-        puntoVenta: "POS01",
-        montoTotal: parseFloat(this.propsPersonalInformation.total.replace('.', '')), // <- arreglar el número
-        idSistema: 1,
-        listaCarrito: listaCarrito
-      }
-      console.log('+ methods:saveTransaction', 'param {}', param)
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'saveTransaction',
+          data: {
+            valuePOS: this.valuePOS,
+            ballotNumberPOS: this.ballotNumberPOS,
+            loadingGuardarTransaccion: this.loadingGuardarTransaccion,
+            ticketsProcessed: this.ticketsProcessed,
+            tickets: this.propsPersonalInformation.tickets,
+            isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
+          },
+          name: this.$info.totemName
+        }
+      )
+      console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
 
-      await this.axios
-        .post([proxy, api].join('/'), param)
-        .then(response => {
-          this.transaccionPOS = response.data
-          console.log('+ methods:saveTransaction', 'transaccionPOS {}', JSON.stringify(this.transaccionPOS))
-        })
-        .catch(error => {
-          console.log(error)
-          this.isErrorGuardarTransaccion = true
-          console.log('+ methods:saveTransaction', '! error', 'isErrorGuardarTransaccion = ' + this.this.isErrorGuardarTransaccion)
-        })
-        .finally(() => {
-          this.valuePOS = param.montoTotal
-          this.ballotNumberPOS = this.transaccionPOS.codigo
-          this.loadingGuardarTransaccion = false
-          console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion)
-        })
     },
 
     //realizar el pago en el POS
     pagarPOS() {
-      console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.transaccionPOS.codigo, "-> methods:sendNewSale")
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'pagarPOS',
+          data: {
+            valuePOS: this.valuePOS,
+            ballotNumberPOS: this.ballotNumberPOS
+          },
+          name: this.$info.totemName
+        }
+      )
+      console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
       // Método en mixins
+      // this.valuePOS = 50
       this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
+      // TODO: Eliminar en producción
+      // console.log("- methods:guardarTransaccionPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
+      // this.guardarTransaccionPOS()
     },
     // Imprimir voucher + boletos
     imprimir() {
@@ -219,38 +309,103 @@ export default {
     //guardar transacción POS
     guardarTransaccionPOS: async function () {
       this.loadingTerminarTransaccionPOS = false;
+      let total_processed = 0
 
-      const proxy = URL_PROXY;
-      const api = "integrador-web/rest/pago/terminarTransaccionPOS";
+      let ticketsGeneradosFormatted = {
+        boletos: [],
+        estado: true
+      }
+      for await (const rc of this.reservationCodes) {
+        const proxy = "https://cors.kupos-api.workers.dev"
+        const API_KEY = "TSSDFPAPI30103014"
+        let api = ''
 
-      const param = {
-        orden: this.transaccionPOS.codigo, // <- Pullman
-        codigoTransaccion: this.paymentPOS.auth_code, //<- POS
-        numeroCuota: "0",
-        numeroTarjeta: this.paymentPOS.card_number.replace(/\*/g, ""), //<- POS
-        tipoPago: this.paymentPOS.payment_type, //<- POS
-        fechaCompra: [
-          this.paymentPOS.transaction_date.slice(-4), //<- POS YYYY
-          this.paymentPOS.transaction_date.slice(2, 4), //<- POS MM
-          this.paymentPOS.transaction_date.slice(0, 2), //<- POS DD
-          this.paymentPOS.transaction_hour.slice(0, 4), //<- POS YYYY
-        ].join(""),
-        codigoRespuesta: 0,
-      };
-      console.log("guardarTransaccionPOS", "param {}", param);
-      await this.axios
-        .post([proxy, api].join("/"), param)
-        .then((response) => {
-          //console.log('ticketsGenerados', this.ticketsGenerados)////////
-          this.ticketsGenerados = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-          this.isErrorTerminarTransaccionPOS = true;
-        })
-        .finally(() => {
-          this.loadingTerminarTransaccionPOS = true;
-        });
+        api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // reservar asiento
+
+        await this.axios.post(
+          'https://s1.ntic.cl/totem-costa-handler/index.php',
+          {
+            type: 'confirmation_request',
+            call_url: api,
+            data: rc,
+            name: this.$info.totemName
+          }
+        )
+        let data_from_api = []
+        await this.axios
+          .post([proxy, api].join('/'))
+          .then(({data}) => {
+            if (typeof data === 'object') {
+              let ticket_info = data.result.ticket_details
+              let response_boleto = ticket_info.ticket_number
+              let response_codigo = ticket_info.operator_reservation_id
+              let response_servicio = ticket_info.seat_fare_details[0].seat_detail.seat_type
+              let response_ruta = ticket_info.service_number
+              let response_piso = ticket_info.seat_fare_details[0].seat_detail.floor_no !== '' ? ticket_info.seat_fare_details[0].seat_detail.floor_no : '1'
+              let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
+              let response_fecha = ticket_info.travel_date
+              let response_hora = ticket_info.boarding_point_details.dep_time
+              let response_origen = ticket_info.boarding_point_details.landmark
+              let response_destino = ticket_info.destination
+              let issued_on = new Date(ticket_info.issued_on * 1000);
+              issued_on = issued_on.toLocaleString('es-CL', {hour12: false});
+              let response_fecha_compra = issued_on
+              let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
+              let response_ticket = {
+                boleto: response_boleto.toString(),
+                codigo: response_codigo.toString(),
+                rut: '',//<- No se indica Rut en los boletos
+                servicio: response_servicio,
+                ruta: response_ruta,
+                piso: response_piso,
+                asiento: response_asiento,
+                fecha: response_fecha,
+                hora: response_hora,
+                origen: response_origen,
+                destino: response_destino,
+                fecha_compra: response_fecha_compra,
+                total: response_total.toString(),
+                tipo_cliente: 'PULLMAN PASS',
+              }
+              ticketsGeneradosFormatted.boletos.push(response_ticket)
+
+
+              this.axios.post(
+                'https://s1.ntic.cl/totem-costa-handler/index.php',
+                {
+                  type: 're_print_request',
+                  call_url: api,
+                  data: ticketsGeneradosFormatted,
+                  name: this.$info.totemName
+                }
+              )
+            }
+          })
+          .catch(error => {
+              console.error(error)
+              total_processed += 1
+
+              this.axios.post(
+                'https://s1.ntic.cl/totem-costa-handler/index.php',
+                {
+                  type: 're_print_error',
+                  call_url: api,
+                  data: ticketsGeneradosFormatted,
+                  error: JSON.stringify(error),
+                  name: this.$info.totemName
+                }
+              )
+            }
+          )
+          .finally(() => {
+              total_processed += 1
+              if (total_processed >= this.reservationCodes.length) {
+                this.ticketsGenerados = ticketsGeneradosFormatted
+                this.loadingTerminarTransaccionPOS = true;
+              }
+            }
+          )
+      }
     },
 
     //liberar asientos reservados
@@ -271,7 +426,7 @@ export default {
     goHome() {
       this.liberarAsientos();
       //this.$router.push('/')
-      this.$router.push({ name: "Home" });
+      this.$router.push({name: "Home"});
     },
     // Click Toolbar button
     eventClick: function (name) {
@@ -281,6 +436,11 @@ export default {
         //<- PAGAR
         console.log("+ methods:eventClick", "-> methods:pagar");
         this.pagar(); // <- Inicio el proceso de pago (2)
+      } else if ("Center-Button" === name) {
+        //<- PAGAR
+        console.log("+ methods:eventClick", "-> methods:pagar");
+        this.pagarAtendedor(); // <- Inicio el proceso de pago (2)
+
       } else {
         //<- ANULAR
         console.log("+ methods:eventClick", "-> goHome");
@@ -328,11 +488,12 @@ export default {
       if (val) {
         // Mostrar mensajes de error en la pantalla modal
         this.propsPaymentControl.isChangeStatus = true;
+        this.propsPaymentAtendedorControl.isChangeStatus = true;
         console.log(
           " + watch:isErrorGuardarTransaccion",
           "! mostrar mensaje error",
           "propsPaymentControl.isChangeStatus = " +
-            this.propsPaymentControl.isChangeStatus
+          this.propsPaymentControl.isChangeStatus
         );
       }
     },
@@ -345,11 +506,12 @@ export default {
       if (val) {
         // Mostrar mensajes de error en la pantalla modal
         this.propsPaymentControl.isChangeStatus = true;
+        this.propsPaymentAtendedorControl.isChangeStatus = true;
         console.log(
           "+ watch:isErrorGuardarTransaccion",
           "! mostrar mensaje error",
           "propsPaymentControl.isChangeStatus = " +
-            this.propsPaymentControl.isChangeStatus
+          this.propsPaymentControl.isChangeStatus
         );
       }
     },
@@ -369,6 +531,7 @@ export default {
         //Valores pantalla Modal
         this.$bvModal.hide("modal-payment-control");
         this.propsPaymentControl.isChangeStatus = false;
+        this.propsPaymentAtendedorControl.isChangeStatus = false;
         //Valores guardarTransaccion
         this.isErrorGuardarTransaccion = false;
         this.loadingGuardarTransaccion = true;
@@ -399,16 +562,19 @@ export default {
         if (3 > this.countModal) {
           // Mensaje de la pantalla modal
           this.propsPaymentControl.msg = "Se excedió el tiempo de espera";
+          this.propsPaymentAtendedorControl.msg = "Se redirigirá al Inicio";
         } else {
           //<- Vuelva a intentar
           // Mensaje de la pantalla modal
           this.propsPaymentControl.msg = "Superó el número máximo de intentos";
           // Estado del botón "Intente de Nuevo"
           this.propsPaymentControl.isTryAgain = false;
+          this.propsPaymentAtendedorControl.isTryAgain = false;
         }
 
         // Props para que cambie el mensaje de la pantalla modals
         this.propsPaymentControl.isChangeStatus = true;
+        this.propsPaymentAtendedorControl.isChangeStatus = true;
 
         // Borrar variable de tiempo de espera
         clearTimeout(this.timeClose);
@@ -433,7 +599,9 @@ export default {
         "isErrorGuardarTransaccion=" + this.isErrorGuardarTransaccion
       );
       // terminó de ejecutarse guardarTransaccion y está sin error
+      // TODO: Volver a activar
       if (!val && !this.isErrorGuardarTransaccion) {
+
         console.log("+ watch:loadingGuardarTransaccion", "-> methods:pagarPOS");
         this.pagarPOS(); //<- Realizar el pago en el POS
       }
@@ -446,11 +614,12 @@ export default {
         if (this.isErrorPOS) {
           //<- hay error
           this.propsPaymentControl.isChangeStatus = true;
+          this.propsPaymentAtendedorControl.isChangeStatus = true;
           console.log(
             "+ watch:endTransactionPOS",
             "isErrorPOS =" + this.isErrorPOS,
             "propsPaymentControl.isChangeStatus = " +
-              this.propsPaymentControl.isChangeStatus
+            this.propsPaymentControl.isChangeStatus
           );
         } else {
           //<- No hay error

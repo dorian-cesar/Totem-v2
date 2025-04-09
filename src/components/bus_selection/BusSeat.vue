@@ -151,6 +151,10 @@ export default {
             'content-type': 'application/json'
           }
         })
+
+        if (!response.data || !response.data.result || !response.data.result.bus_layout) {
+          throw new Error('La respuesta de la API no contiene los datos esperados.');
+        }
         // búsqueda de planilla
 //        const requestOne = this.axios.post([proxy, api1].join("/"), {
 //          idServicio: this.idServicio,
@@ -194,6 +198,7 @@ export default {
           available_seats.push(available_seat_parsed)
         }
         let rows = layout.split(',')
+        console.log(rows)
         let seats_rows = []
         let seats_rows_plain = []
         let seats_available = []
@@ -236,6 +241,8 @@ export default {
           seats_rows.push(seats)
           seats_rows_plain.push(seats_plain)
         }
+
+        // logica para determinar los pisos del bus
         let floor_available = response.data.result.bus_layout.floor
         let seats_floor_1 = []
         let seats_floor_2 = []
@@ -309,7 +316,8 @@ export default {
         // this.axios.post('http://3.80.65.145/logtotem', { frame: { url:[proxy, api2].join('/'), response: responseTwo.data }, name: this.$info.totemName})
 
       } catch (error) {
-        console.error(error);
+        console.error("Error al obtener los datos del servicio del bus:", error);
+        this.loading = false;
       }
     },
   },

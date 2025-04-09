@@ -47,6 +47,7 @@ export default {
       reset: false,
       preSelectLabel: PRESELECT_LABEL,
       preSelectValue: PRESELECT_VALUE,
+      imgClass: 'origin-img-class',
     },
     // Props arrival city
     propsArrivalCity: {
@@ -56,6 +57,7 @@ export default {
       placeholder: "Seleccione el destino",
       selected: "",
       reset: false,
+      imgClass: 'destiny-img-class',
     },
   }),
   components: {selectInput: Select},

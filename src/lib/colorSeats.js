@@ -32,5 +32,5 @@ let changeColor = function (name) {
 export {
   activeButton,
   changeColor,
-  changeColorTT
+  // changeColorTT
 }
