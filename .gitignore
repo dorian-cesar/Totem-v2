@@ -8,6 +8,8 @@ yarn-error.log*
 selenium-debug.log
 package-lock.json
 yarn.lock
+curl.txt
+view-json.json
 # Editor directories and files
 .idea
 .vscode

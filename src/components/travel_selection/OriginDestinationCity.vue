@@ -115,7 +115,7 @@ export default {
 
         const response = await this.axios.get([proxy, api].join("/"), {
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           }
         })
         let results = response.data.result;
@@ -144,7 +144,7 @@ export default {
 
         const response = await this.axios.get([proxy, api].join("/"), {
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           }
         })
         let results = response.data.result;

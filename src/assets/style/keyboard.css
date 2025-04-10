@@ -10,7 +10,7 @@
  *
  */
 .hg-theme-default {
-  width: 100%;
+  width: 95%;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -20,7 +20,8 @@
   touch-action: manipulation;
   position: fixed;
   bottom: 500px;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
 }
 

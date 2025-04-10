@@ -33,6 +33,7 @@ import webSocket from "@/mixins/websocket.js";
 import PaymentControl from "@/components/purchase_detail/PaymentControl";
 import reserveOrReleaseSeat from "@/mixins/reserveOrReleaseSeat";
 import PaymentAtendedorControl from "./PaymentAtendedorControl.vue";
+import info from "../../../info.json"; 
 
 export default {
   name: "FormEnterRut",
@@ -91,6 +92,7 @@ export default {
       reservationCodes: [],
       //
       isCheckOutService: false, //<- Chequeo de isOutService completado
+      info,
     };
   },
 
@@ -139,7 +141,7 @@ export default {
           data: {
             tickets: this.propsPersonalInformation.tickets,
           },
-          name: this.$info.totemName
+          name: this.info.totemName
         }
       )
       this.timeClose = setTimeout(
@@ -171,7 +173,7 @@ export default {
           data: {
             tickets: this.propsPersonalInformation.tickets,
           },
-          name: this.$info.totemName
+          name: this.info.totemName
         }
       )
       this.timeClose = setTimeout(
@@ -251,7 +253,7 @@ export default {
             tickets: this.propsPersonalInformation.tickets,
             isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
           },
-          name: this.$info.totemName
+          name: this.info.totemName
         }
       )
       console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
@@ -268,7 +270,7 @@ export default {
             valuePOS: this.valuePOS,
             ballotNumberPOS: this.ballotNumberPOS
           },
-          name: this.$info.totemName
+          name: this.info.totemName
         }
       )
       console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
@@ -328,7 +330,7 @@ export default {
             type: 'confirmation_request',
             call_url: api,
             data: rc,
-            name: this.$info.totemName
+            name: this.info.totemName
           }
         )
         let data_from_api = []
@@ -376,7 +378,7 @@ export default {
                   type: 're_print_request',
                   call_url: api,
                   data: ticketsGeneradosFormatted,
-                  name: this.$info.totemName
+                  name: this.info.totemName
                 }
               )
             }
@@ -392,7 +394,7 @@ export default {
                   call_url: api,
                   data: ticketsGeneradosFormatted,
                   error: JSON.stringify(error),
-                  name: this.$info.totemName
+                  name: this.info.totemName
                 }
               )
             }

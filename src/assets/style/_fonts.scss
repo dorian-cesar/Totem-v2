@@ -1,48 +1,46 @@
 @font-face {
-	font-family: "DMSans-Light";
-	src: url("/src/assets/fonts/DMSans-Light.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
+    font-family: 'DMSans';
+    src: url('/assets/fonts/DMSans-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
   }
-  
-@font-face {
-	font-family: "DMSans-Regular";
-	src: url("/src/assets/fonts/DMSans-Regular.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
-  }
-  
-@font-face {
-	font-family: "DMSans-Medium";
-	src: url("/src/assets/fonts/DMSans-Medium.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
-  }
-  
-@font-face {
-	font-family: "DMSans-Bold";
-	src: url("/src/assets/fonts/DMSans-Bold.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
-  }
-  
-@font-face {
-	font-family: "DMSans-SemiBold";
-	src: url("/src/assets/fonts/DMSans-SemiBold.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
-  }
-  
-@font-face {
-	font-family: "DMSans-Black";
-	src: url("/src/assets/fonts/DMSans-Black.ttf");
-	font-weight: normal;
-	font-style: normal;
-	font-display: swap;
-  }
-  
+
+// @font-face {
+//     font-family: 'dm_sansbold';
+//     src: url('src/assets/fonts/dmsans-bold-webfont.woff2') format('woff2'),
+//          url('src/assets/fonts/dmsans-bold-webfont.woff') format('woff');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'dm_sansbold_italic';
+//     src: url('src/assets/fonts/dmsans-bolditalic-webfont.woff2') format('woff2'),
+//          url('src/assets/fonts/dmsans-bolditalic-webfont.woff') format('woff');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'dm_sansitalic';
+//     src: url('src/assets/fonts/dmsans-italic-webfont.woff2') format('woff2'),
+//          url('src/assets/fonts/dmsans-italic-webfont.woff') format('woff');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'dm_sansmedium';
+//     src: url('src/assets/fonts/dmsans-medium-webfont.woff2') format('woff2'),
+//          url('src/assets/fonts/dmsans-medium-webfont.woff') format('woff');
+//     font-weight: normal;
+//     font-style: normal;
+// }
+
+// @font-face {
+//     font-family: 'dm_sansmedium_italic';
+//     src: url('src/assets/fonts/dmsans-mediumitalic-webfont.woff2') format('woff2'),
+//          url('src/assets/fonts/dmsans-mediumitalic-webfont.woff') format('woff');
+//     font-weight: normal;
+//     font-style: normal;
+// }

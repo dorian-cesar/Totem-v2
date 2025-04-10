@@ -1,6 +1,6 @@
 {
   "name": "totem-pullman-costa",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "App para totem de reserva de boletos destinada a Pullman Costa Central",
   "private": true,
   "license": "UNLICENSED",
@@ -14,6 +14,10 @@
       "name": "Edixon Piña",
       "email": "edixonalbertto@gmail.com",
       "url": "https://edixonalberto.com"
+    },
+    {
+      "name": "Diego Wigodski",
+      "email": "dwigodski@gmail.com"
     }
   ],
   "scripts": {

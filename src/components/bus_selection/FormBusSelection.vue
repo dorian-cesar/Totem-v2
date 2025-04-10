@@ -188,7 +188,7 @@ export default {
             terminalOrigenHTML: boarding_terminalsHTML,
             terminaLlegada: result[23].split('||')[1],
             fechaServicio: result[35],
-            boarding_at: result[22].split('||')[1],
+            boarding_at: result[22].split('|')[0],
             horaSalida: result[9],
             horaLlegada: result[10],
             asientosDisponibles: result[12],
