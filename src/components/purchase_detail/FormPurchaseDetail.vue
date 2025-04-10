@@ -1,6 +1,6 @@
 <template>
   <div class="pt-3">
-    <div class="transparent-main card-custon">
+    <div class="transparent-main card-custom">
       <top-header-caption caption="DETALLE DE COMPRA" class="pt-3"/>
       <personal-information v-bind="propsPersonalInformation"/>
       <!-- pantalla modal -->

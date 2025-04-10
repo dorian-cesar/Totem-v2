@@ -22,8 +22,8 @@
   /*#app*/
 
   body {
-    background-image: url("../assets/img/background.jpg");
-    // background-color: #1863d1 !important;
+    // background-image: url("../assets/img/background.jpg");
+    background: #013ba7 !important;
     width: 1060px;
     height: 1910px;
     margin: 0px;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="transparent-main card-custon">
+    <div class="transparent-main card-custom">
       <!-- Título de la pantalla-->
       <top-header-caption :caption="getTitulo" class="pt-3"/>
 

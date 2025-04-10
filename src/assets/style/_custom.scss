@@ -20,9 +20,11 @@ $main-opacity: 0.50;
   background-color: azure;
   font-size: $font-size-base + 4px;
   }
+
 //Tamaño del fondo transparente
-.card-custon {
+.card-custom {
   height: 1450px;
+  border-radius: 10px;
 }
 
 

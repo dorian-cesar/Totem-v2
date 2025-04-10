@@ -82,13 +82,11 @@
 
   .origin-img-class {
     width: 60px;
-    height: auto;  /* Se ajusta automáticamente según el ancho */
+    height: auto;
   }
 
   .destiny-img-class {
     width: 60px;
-    height: auto;  /* Se ajusta automáticamente según el ancho */
+    height: auto;
   }
-
-
 </style>

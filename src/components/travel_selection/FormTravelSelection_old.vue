@@ -1,6 +1,6 @@
 <template>
   <div class="pt-3">
-    <b-card class="transparent-main card-custon">
+    <b-card class="transparent-main card-custom">
       <blockquote class="card-blockquote">
         <!-- Título de la pantalla-->
         <top-header-caption v-bind="propsHeaderCaption"/>
