@@ -52,14 +52,14 @@
   }
 
   .calendar-custom-left {
-    background: whitesmoke !important;
+    background: azure !important;
     width: 700px !important;
     height: 500px;
     font-size: 42px;
   }
 
   .calendar-custom-right {
-    background: whitesmoke !important;
+    background: azure !important;
     width: 700px !important;
     height: 500px;
     font-size: 42px;

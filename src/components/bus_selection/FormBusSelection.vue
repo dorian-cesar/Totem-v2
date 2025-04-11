@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="transparent-main card-custon">
+    <div class="transparent-main card-custom">
       <!-- Título de la pantalla-->
       <top-header-caption :caption="getTitulo" class="pt-3"/>
 
@@ -65,7 +65,6 @@ export default {
     propsListBusDestination: {
       buttonType: 'destination',
       schedules: [],
-
     },
     // Props caption of bus list groups
     propsListCaptionOrigin: {
@@ -258,7 +257,7 @@ export default {
       this.propsListBusDestination.schedules = [];
       for (let result of results) {
         if (result[3] === 'Pullman Costa') {
-          // Procesamiento igual que el de ida (puedes extraerlo a una función común para evitar duplicación)
+          // Procesamiento igual que el de ida
           let boarding = result[22].split(',')
           let boarding_terminalsText = []
           let boarding_terminalsHTML = []
