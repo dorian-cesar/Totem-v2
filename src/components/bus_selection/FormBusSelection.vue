@@ -129,7 +129,7 @@ export default {
       // Reset total list
       this.propsListCaptionOrigin.totalList = ''
 
-      const proxy = "http://gds.ticketsimply.us"
+      const proxy = "https://gds.ticketsimply.us"
       const API_KEY = "TSSDFPAPI30103014"
       const date = this.changeFormatDate2(this.getDepartureDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeDepartureCity()}/${this.getCodeArrivalCity()}/${date}.json?api_key=${API_KEY}`
@@ -231,11 +231,10 @@ export default {
     },
 
     // Get return bus list
-    //TODO create restriction for departure time
     getListBusReturn: async function () {
       this.propsListCaptionDestination.totalList = ''
 
-      const proxy = "http://gds.ticketsimply.us"
+      const proxy = "https://gds.ticketsimply.us"
       const API_KEY = "TSSDFPAPI30103014"
       const date = this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeArrivalCity()}/${this.getCodeDepartureCity()}/${date}.json?api_key=${API_KEY}`

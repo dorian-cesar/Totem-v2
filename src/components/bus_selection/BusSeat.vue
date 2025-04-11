@@ -139,7 +139,7 @@ export default {
     searchBusService: async function () {
       try {
 
-        const proxy = "http://gds.ticketsimply.us"
+        const proxy = "https://gds.ticketsimply.us"
         const API_KEY = "TSSDFPAPI30103014"
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
