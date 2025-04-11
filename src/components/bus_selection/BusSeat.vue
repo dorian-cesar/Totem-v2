@@ -120,7 +120,6 @@ export default {
           }
         }
       }
-
       return val;
     },
 
@@ -243,7 +242,7 @@ export default {
           seats_rows_plain.push(seats_plain)
         }
 
-        // logica para determinar los pisos del bus
+        // logica para determinar los pisos del bus y cuantos asientos tiene
         let floor_available = response.data.result.bus_layout.floor
         let seats_floor_1 = []
         let seats_floor_2 = []
@@ -268,7 +267,6 @@ export default {
             seats_floor_1.push(row)
           }
 
-          // determina las columnas de asientos en los pisos del bus
           for (let sr of seats_rows) {
             let row = []
             let floor_activated = false
@@ -283,27 +281,40 @@ export default {
             seats_floor_2.push(row)
           }
           floors = [seats_floor_1, seats_floor_2]
+          console.log(floors)
         } else {
           floors = [seats_rows]
+          console.log(floors)
         }
+        // determina las columnas
         let grid_full = []
+
         for (let floor of floors) {
+          // Filtra los arrays vacíos en cada piso
+          let filtered_floor = floor.filter(row => row.length > 0)
+
           let row_size = 5
-          let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(floor.length).fill(seat_null));
-          // console.table("Dibujo asientos: ", grid_horizontal)
+          let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null));
+
           let row_position = 0
-          for (let row of floor) {
+          for (let row of filtered_floor) {
             let seat_position = 4
             for (let seat of row) {
-              // console.log(row_position, seat_position, seat.num)
               grid_horizontal[seat_position][row_position] = seat
               seat_position--
             }
             row_position++
           }
-          console.table(grid_horizontal)
+
+          // Eliminar el índice 0 si todos los asientos son 'seat_null'
+          if (grid_horizontal[0].every(seat => seat === seat_null)) {
+            grid_horizontal.shift(); // Elimina el primer índice (índice 0)
+          }
+
           grid_full.push(grid_horizontal)
         }
+
+        console.log(grid_full);
 
         this.propsDinamicBus.drawSeats = [...grid_full]
         this.propsDinamicBus.availableSeats = [...available_seats]
@@ -331,8 +342,9 @@ export default {
     loading: function (val) {
       if (!val) {
         // scroll Top after show bus seat
-        this.$scrollTo(["#list", this.name].join("-"), 0, {
+        this.$scrollTo(["#list", this.name].join("-"), 500, {
           container: ["#listado", this.type].join("-"),
+          easing: 'ease-in-out',
         });
       }
     },
