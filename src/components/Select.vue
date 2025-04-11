@@ -83,10 +83,12 @@
   .origin-img-class {
     width: 60px;
     height: auto;
+    padding-bottom: 5px;
   }
 
   .destiny-img-class {
     width: 60px;
     height: auto;
+    padding-bottom: 5px;
   }
 </style>

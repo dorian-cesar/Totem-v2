@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="transparent-main card-custom">
+    <div class="transparent-main card-custon">
       <!-- Título de la pantalla-->
       <top-header-caption :caption="getTitulo" class="pt-3"/>
 
@@ -146,7 +146,6 @@ export default {
           'content-type': 'application/json'
         }
       })
-      
       // add 10 minutes from the current time
       let dayNow = new Date()
       dayNow.setHours(dayNow.getHours())
@@ -161,7 +160,21 @@ export default {
       )
 
       // filter the list of buses only to show those with a departure time of more than 30 minutes from the current time
+
       let results = response.data.result;
+
+      // console.log(results[0])
+      // console.log(results[1])
+      results.shift();
+//         this.propsListBusDeparture.schedules = results.filter((e) => {
+//           const
+//             [date, month, year ] = e[35].split('-'),
+//             [hour, minutes] = e[9].horaSalida.split(':')
+
+//           const departureTime = new Date(year,month-1,date, hour , minutes)
+
+//           if(departureTime >= validTime){ return  e }
+//         })
 
       this.propsListBusDeparture.schedules = []
       for (let result of results) {
@@ -178,7 +191,6 @@ export default {
           }
           boarding_terminalsText = boarding_terminalsText.join(' / ')
           boarding_terminalsHTML = boarding_terminalsHTML.join('')
-
           const r = {
             idServicio: result[0],
             operador: result[3],
@@ -211,50 +223,111 @@ export default {
       }
       this.propsListCaptionOrigin.totalList = this.propsListBusDeparture.schedules.length.toString()
 
-      console.log('List of buses', this.propsListBusDeparture.schedules)
-
       //Guardar log
       // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), request: body }, name: this.$info.totemName})
       // clonar objeto
       // const dataClone =  Oblect.asign({},response.data.map(e=>{e.logo = '';return e}))
       // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), response: dataClone}, name: this.$info.totemName})
+    },
+
+    // Get return bus list
+    //TODO create restriction for departure time
+    getListBusReturn: async function () {
+      this.propsListCaptionDestination.totalList = ''
+
+      const proxy = "http://gds.ticketsimply.us"
+      const API_KEY = "TSSDFPAPI30103014"
+      const date = this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd')
+      const api = `/gds/api/ui_schedules/${this.getCodeArrivalCity()}/${this.getCodeDepartureCity()}/${date}.json?api_key=${API_KEY}`
+      const body = {
+        origen: this.getCodeDepartureCity(),
+        destino: this.getCodeArrivalCity(),
+        fecha: this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd'),
+        hora: "0000",
+        idSistema: ID_SYSTEM,
+      }
+
+      const response = await this.axios.get([proxy, api].join("/"), {
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+
+      let results = response.data.result;
+      results.shift();
+
+      this.propsListBusDestination.schedules = [];
+      for (let result of results) {
+        if (result[3] === 'Pullman Costa') {
+          // Procesamiento igual que el de ida (puedes extraerlo a una función común para evitar duplicación)
+          let boarding = result[22].split(',')
+          let boarding_terminalsText = []
+          let boarding_terminalsHTML = []
+          for (let t = 0; t < boarding.length; t++) {
+            let stage = boarding[t].split('||')
+            let stage_terminal_hour = stage[0].split('|')[1]
+            let stage_terminal_name = stage[1]
+            boarding_terminalsText.push(`${stage_terminal_name} (${stage_terminal_hour})`)
+            boarding_terminalsHTML.push(`<strong>${stage_terminal_name}</strong><p>(${stage_terminal_hour})</p>`)
+          }
+
+          const r = {
+            idServicio: result[0],
+            operador: result[3],
+            idTerminalOrigen: result[4],
+            idTerminalDestino: result[5],
+            terminalOrigen: boarding_terminalsText.join(' / '),
+            terminalOrigenHTML: boarding_terminalsHTML.join(''),
+            terminaLlegada: result[23].split('||')[1],
+            fechaServicio: result[35],
+            boarding_at: result[22].split('|')[0],
+            horaSalida: result[9],
+            horaLlegada: result[10],
+            asientosDisponibles: result[12],
+            asientosTotales: result[13],
+            asientosReservados: result[13] - result[12],
+            servicioPrimerPiso: result[15].split(':')[0],
+            servicioSegundoPiso: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
+            tarifaPrimerPisoInternet: result[15].split(':')[1].split('.')[0],
+            tarifaSegundoPisoInternet: 0,
+            busPiso1: result[15].split(':')[1].split('.')[0],
+            busPiso2: result[8].includes('2+1') ? result[15].split(':')[1] : 0,
+            integrador: 1,
+            empresa: result[3],
+            idClaseBusPisoUno: result[15].split(':')[0],
+            idClaseBusPisoDos: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
+            ruta: result[2],
+          }
+
+          this.propsListBusDestination.schedules.push(r)
+        }
+      }
+
+      this.propsListCaptionDestination.totalList = this.propsListBusDestination.schedules.length.toString()
+      //Guardar log
+      // this.axios.post('http://3.80.65.145/logtotem', { frame:{ url:[proxy, api].join('/'), request: param }, name: this.$info.totemName})
+      // this.axios.post('http://3.80.65.145/logtotem', { frame:{ url:[proxy, api].join('/'), response: response.data }, name: this.$info.totemName})
     }
   },
 
   mounted() {
-    // Reset bus selection
-    this.resetTravelBus()
-    // Assign the departure values from the store in the TravelSelection module
+    this.resetTravelBus();
+
     this.propsListCaptionOrigin.nameOrigin = this.getNameDepartureCity()
     this.propsListCaptionOrigin.nameDestination = this.getNameArrivalCity()
-    this.propsListCaptionOrigin.travelDate =
-      this.changeFormatDate(
-        this.getDepartureDate(),
-        'dayMonth',
-        false
-      )
+    this.propsListCaptionOrigin.travelDate = this.changeFormatDate(this.getDepartureDate(), 'dayMonth', false)
 
-    // Assign the return values from the store in the TravelSelection module
     this.propsListCaptionDestination.nameOrigin = this.getNameArrivalCity()
     this.propsListCaptionDestination.nameDestination = this.getNameDepartureCity()
-    this.propsListCaptionDestination.travelDate =
-      this.changeFormatDate(
-        this.getReturnDate(),
-        'dayMonth',
-        false
-      )
+    this.propsListCaptionDestination.travelDate = this.changeFormatDate(this.getReturnDate(), 'dayMonth', false)
 
-    // Get bus list departure and return
-    this.getListBusOrigin()
+    this.isRoundTrip = this.getRoundTrip();
 
-    if (this.getRoundTrip()) {
-      this.getListBusReturn()
+    this.getListBusOrigin();
+
+    if (this.isRoundTrip) {
+      this.getListBusReturn();
     }
-
-    // Round trip status
-    this.show = this.getRoundTrip()
-    this.isRoundTrip = this.getRoundTrip()
-
   },
   computed: {
     isDisable() {
