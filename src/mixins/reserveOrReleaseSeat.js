@@ -19,7 +19,7 @@ export default {
       const seat_num = param.asiento
       
       this.isLoadingReservation = true
-      const proxy = "https://cors-anywhere.herokuapp.com/https://gds.ticketsimply.us/";
+      const proxy = "https://gds.ticketsimply.us/";
       const API_KEY = "TSSDFPAPI30103014"
       let api = ''
 
