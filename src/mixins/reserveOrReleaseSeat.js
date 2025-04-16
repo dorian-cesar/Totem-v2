@@ -15,8 +15,8 @@ export default {
     // cambiar el estatus del flag loading
     async seatReservation(option, param, service) {
 
-      const ticket_num = param.codigoReserva
-      const seat_num = param.asiento
+      // const ticket_num = param.codigoReserva
+      // const seat_num = param.asiento
       
       this.isLoadingReservation = true
       const proxy = "https://newstg3-gdsbus.kupos.cl/";
@@ -24,7 +24,7 @@ export default {
       let api = ''
 
       if ('add' === option) api = `gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
-      else if (option === 'delete') api = `gds/api/cancel_booking.json?ticket_number=${ticket_num}&seat_numbers=${seat_num}` // liberar asiento
+      else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'// liberar asiento
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
       const formatParams = {
         book_ticket: param.book_ticket,
