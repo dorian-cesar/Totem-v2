@@ -318,8 +318,8 @@ export default {
         estado: true
       }
       for await (const rc of this.reservationCodes) {
-        const proxy = "https://cors.kupos-api.workers.dev"
-        const API_KEY = "TSSDFPAPI30103014"
+        const proxy = "https://newstg3-gdsbus.kupos.cl"
+        const API_KEY = "TSXFQYAPI25766888"
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // reservar asiento

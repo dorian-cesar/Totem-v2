@@ -19,8 +19,8 @@ export default {
       const seat_num = param.asiento
       
       this.isLoadingReservation = true
-      const proxy = "https://cors-anywhere.herokuapp.com/https://gds.ticketsimply.us/";
-      const API_KEY = "TSSDFPAPI30103014"
+      const proxy = "https://newstg3-gdsbus.kupos.cl/";
+      const API_KEY = "TSXFQYAPI25766888"
       let api = ''
 
       if ('add' === option) api = `gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
