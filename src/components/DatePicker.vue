@@ -56,7 +56,7 @@
     width: 700px !important;
     height: 500px;
     font-size: 42px;
-    border-radius: 20px;
+    border-radius: 12px;
   }
 
   .calendar-custom-right {
@@ -66,6 +66,6 @@
     font-size: 42px;
     position: absolute;
     right: 0px;
-    border-radius: 20px;
+    border-radius: 12px;
   }
 </style>
