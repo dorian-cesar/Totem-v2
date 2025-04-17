@@ -19,12 +19,13 @@ export default {
       // const seat_num = param.asiento
       
       this.isLoadingReservation = true
-      const proxy = "https://newstg3-gdsbus.kupos.cl/";
-      const API_KEY = "TSXFQYAPI25766888"
+      const proxy = "https://cors-anywhere.herokuapp.com/https://gds.ticketsimply.us";
+      const API_KEY = "TSSDFPAPI30103014"
       let api = ''
 
-      if ('add' === option) api = `gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
-      else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'// liberar asiento
+      if ('add' === option) api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
+      // else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'
+
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
       const formatParams = {
         book_ticket: param.book_ticket,
@@ -97,7 +98,9 @@ export default {
 
             this.statusReservation = false
             this.codeReservation = ''
-            console.log('no result', data)
+            // console.log('no result', data)
+            console.log('no result')
+
           }
         )
         .finally(() => this.isLoadingReservation = false)

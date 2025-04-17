@@ -138,8 +138,8 @@ export default {
     searchBusService: async function () {
       try {
 
-        const proxy = "https://newstg3-gdsbus.kupos.cl"
-        const API_KEY = "TSXFQYAPI25766888"
+        const proxy = "https://gds.ticketsimply.us"
+        const API_KEY = "TSSDFPAPI30103014"
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
         // const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
