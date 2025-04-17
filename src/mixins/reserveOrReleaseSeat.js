@@ -19,8 +19,8 @@ export default {
       // const seat_num = param.asiento
       
       this.isLoadingReservation = true
-      const proxy = "https://cors-anywhere.herokuapp.com/https://gds.ticketsimply.us";
-      const API_KEY = "TSSDFPAPI30103014"
+      const proxy = "https://newstg3-gdsbus.kupos.cl";
+      const API_KEY = "TSXFQYAPI25766888"
       let api = ''
 
       if ('add' === option) api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
@@ -34,11 +34,11 @@ export default {
         boarding_at: param.boarding_at,
         no_of_seats: param.no_of_seats,
         travel_date: param.travel_date,
-        customer_company_gst: {
-          name: "Pullman",
-          gst_id: "T123DT",
-          address: "TEST"
-        }
+        // customer_company_gst: {
+        //   name: "Pullman",
+        //   gst_id: "T123DT",
+        //   address: "TEST"
+        // }
       };
       // console.log(JSON.stringify(formatParams, null, 2));
       await this.axios
