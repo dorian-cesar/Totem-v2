@@ -12,25 +12,25 @@
       no-fade
     >
       <b-row>
-        <b-col cols="4" class="text-center pt-3 spinner-container">
+        <b-col cols="3" class="text-center pt-3 spinner-container">
           <div v-if="!isChangeStatus" class="spinner"></div>
           <font-awesome-icon
             v-else
             :icon="['fas', 'exclamation-triangle']"
-            size="5x"
+            size="4x"
             :style="{ color: 'orange'}"
           />
         </b-col>
         <!-- Monto -->
-        <b-col cols="8" class="pt-4 pl-0">
+        <b-col cols="9" class="pt-4 pl-0">
           <p class="h1 font-weight-bold">Monto Total: $ {{total}}</p>
         </b-col>
         <!-- Mensaje -->
         <b-col colos="12" class="text-center font-italic">
           <h1 v-show="!isChangeStatus" class="text-primary py-5">Realice el pago en el equipo</h1>
-          <h1 v-show="isChangeStatus" class="text-danger py-4">{{msg}}</h1>
+          <h1 v-show="isChangeStatus" class="text-danger py-1 pb-5">{{msg}}</h1>
         </b-col>
-        <b-col cols="12" v-show="isChangeStatus" class="text-center">
+        <b-col cols="12" v-show="isChangeStatus" class="text-center mb-3">
           <b-button
             @click="actionButton('cerrar')"
             :variant="isTryAgain ? 'primary' : 'secondary'"
@@ -95,8 +95,8 @@
 </script>
 <style scoped>
   .custom-button-alert {
-    width: 200px !important;
-    height: 80px !important;
+    width: 180px !important;
+    height: 60px !important;
   }
 
   .spinner-container {
