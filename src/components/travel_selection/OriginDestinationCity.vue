@@ -106,13 +106,13 @@ export default {
       return unique;
     },
 
-    // Get departure cities
     getListDepartureCities: async function () {
       try {
-        const proxy = "https://gds.ticketsimply.us"
-        const API_KEY = "TSSDFPAPI30103014"
-        // const proxy = "https://newstg3-gdsbus.kupos.cl"
-        // const API_KEY = "TSXFQYAPI25766888"
+        // api antigua
+        // const proxy = "https://gds.ticketsimply.us"
+        // const API_KEY = "TSSDFPAPI30103014"
+        const proxy = "https://newstg3-gdsbus.kupos.cl"
+        const API_KEY = "TSXFQYAPI25766888"
         const api = `/gds/api/cities.json?api_key=${API_KEY}`
 
         const response = await this.axios.get([proxy, api].join("/"), {
@@ -139,10 +139,11 @@ export default {
     // Get arrival cities
     getListArrivalCities: async function () {
       try {
-        const proxy = "https://gds.ticketsimply.us"
-        const API_KEY = "TSSDFPAPI30103014"
-        // const proxy = "https://newstg3-gdsbus.kupos.cl"
-        // const API_KEY = "TSXFQYAPI25766888"
+        // api antigua
+        // const proxy = "https://gds.ticketsimply.us"
+        // const API_KEY = "TSSDFPAPI30103014"
+        const proxy = "https://newstg3-gdsbus.kupos.cl"
+        const API_KEY = "TSXFQYAPI25766888"
         const api = `/gds/api/cities.json?api_key=${API_KEY}`
         const body = this.propsDepartureCity.selected.value
 

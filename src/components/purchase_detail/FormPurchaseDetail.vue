@@ -1,7 +1,7 @@
 <template>
   <div class="pt-3">
     <div class="transparent-main card-custom">
-      <top-header-caption caption="DETALLE DE COMPRA" class="pt-3"/>
+      <top-header-caption caption="DETALLE DE COMPRA" class="pt-4"/>
       <personal-information v-bind="propsPersonalInformation"/>
       <!-- pantalla modal -->
       <payment-control
@@ -74,12 +74,12 @@ export default {
       propsPaymentControl: {
         total: "",
         isChangeStatus: false,
-        msg: "No se puede Realizar el pago!",
+        msg: "No se puede realizar el pago!",
       },
       propsPaymentAtendedorControl: {
         total: "",
         isChangeStatus: false,
-        msg: "No se puede Realizar el pago!",
+        msg: "No se puede realizar el pago!",
       },
       nameButton: "",
       transaccionPOS: "",
@@ -322,7 +322,7 @@ export default {
         const API_KEY = "TSXFQYAPI25766888"
         let api = ''
 
-        api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // reservar asiento
+        api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
 
         await this.axios.post(
           'https://s1.ntic.cl/totem-costa-handler/index.php',

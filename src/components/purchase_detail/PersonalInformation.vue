@@ -60,8 +60,8 @@
     </div>
     <!-- Foot total -->
     <div class="bg-light text-right pr-3 py-2 foot-style font-weight-bold" style="height: 110px">
-      <h3>TOTAL A CANCELAR:
-      <b-badge pill variant="dark" class="p-3 "><h1>${{total}}</h1></b-badge>
+      <h3 class="mb-0 mt-1">TOTAL A CANCELAR:
+      <b-badge pill variant="dark" class="p-3" style="border-radius: 35px;"><h1 class="mb-0">${{total}}</h1></b-badge>
       </h3>
     </div>
   </div>
@@ -79,7 +79,6 @@
 </script>
 
 <style scoped>
-
   .foot-style {
     height: 70px;
     font-size: 24px;

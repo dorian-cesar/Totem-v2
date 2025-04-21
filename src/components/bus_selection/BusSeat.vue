@@ -281,10 +281,10 @@ export default {
             seats_floor_2.push(row)
           }
           floors = [seats_floor_1, seats_floor_2]
-          console.log(floors)
+          // console.log(floors)
         } else {
           floors = [seats_rows]
-          console.log(floors)
+          // console.log(floors)
         }
         // determina las columnas
         let grid_full = []
@@ -314,7 +314,7 @@ export default {
           grid_full.push(grid_horizontal)
         }
 
-        console.log(grid_full);
+        // console.log(grid_full);
 
         this.propsDinamicBus.drawSeats = [...grid_full]
         this.propsDinamicBus.availableSeats = [...available_seats]

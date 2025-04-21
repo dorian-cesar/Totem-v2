@@ -48,22 +48,22 @@
           </b-button>
         </b-col>
         <!-- Logos -->
-        <b-col cols="12" class="text-right">
-          <b-img :src="imgKlap" fluid alt="Fluid image" class="logo-klap"/>
+        <b-col cols="12" class="text-right mb-3 pr-4">
+          <b-img :src="imgTransbank" fluid alt="Fluid image" class="logo-transbank"/>
         </b-col>
       </b-row>
     </b-modal>
   </div>
 </template>
 <script>
-  import imgKlap from '@/assets/img/logo-klap.png'
+  import imgTransbank from '@/assets/img/logo-transbank-nuevo.png'
 
   export default {
     name: 'PaymentControl',
 
     data() {
       return {
-        imgKlap,
+        imgTransbank,
       }
     },
 
@@ -121,10 +121,8 @@
     100% { transform: rotate(360deg); }
   }
 
-  .logo-klap {
-    width: 150px;
+  .logo-transbank {
+    width: 200px;
     height: auto;
-    border-radius: 10px;
-    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
   }
 </style>

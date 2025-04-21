@@ -31,21 +31,21 @@
         </b-col>
         <!-- Logos -->
         <b-col cols="12" class="text-right">
-          <b-img :src="imgKlap" fluid alt="Fluid image"/>
+          <b-img :src="imgTransbank" fluid alt="Fluid image"/>
         </b-col>
       </b-row>
     </b-modal>
   </div>
 </template>
 <script>
-  import imgKlap from '@/assets/img/logo-klap.png'
+  import imgTransbank from '@/assets/img/logo-transbank-nuevo.png'
 
   export default {
     name: 'PaymentAtendedorControl',
 
     data() {
       return {
-        imgKlap,
+        imgTransbank,
       }
     },
 

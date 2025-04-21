@@ -190,7 +190,7 @@ export default {
       return status
     },
     // cambiar los valores de num y estatus para dibujar los asientos del bus
-    getValues(item) {//arreglo de valores que trae la API
+    getValues(item) { //arreglo de valores que trae la API
       //const num = this.fixNumOfSeatForFloor(item.num, item.floor)
       const status = this.getStatusToSeat(item.num, item.floor)
       return {
@@ -199,6 +199,7 @@ export default {
         numfloor: (item.floor === 0) ? '1' : '2'
       }
     },
+
     // Determinar si el segundo piso tiene números correlativos al primero
 //    isCorrelativo() {
 //      const ultimoPiso1 = this.availableSeats.filter(o => o.floor === 0).length
@@ -229,15 +230,15 @@ export default {
 
     // Mensaje de error
     async showMsgBoxError() {
-      // await this.$bvModal.msgBoxOk('Se presentó un error al reservar el asiento, debe elegir otro.', {
-      //   title: 'Información',
-      //   size: 'sm',
-      //   buttonSize: 'lg',
-      //   okVariant: 'success',
-      //   headerClass: 'p-2 ml-2 mr-2 border-bottom-0',
-      //   footerClass: 'p-2 ml-2 mr-2 border-top-0',
-      //   centered: true
-      // })
+      await this.$bvModal.msgBoxOk('Se presentó un error al reservar el asiento, debe elegir otro.', {
+        title: 'Información',
+        size: 'sm',
+        buttonSize: 'lg',
+        okVariant: 'success',
+        headerClass: 'p-2 ml-2 mr-2 border-bottom-0',
+        footerClass: 'p-2 ml-2 mr-2 border-top-0',
+        centered: true
+      })
 
       this.seatComponent.initialColor('busy') // cambio de color
       this.seatComponent.statusSeat = 'busy' // agregar el status
@@ -284,6 +285,7 @@ export default {
         this.param.travel_date = this.param.fecha
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
+        console.log('DinamicBus: add', this.param)
       } else if (state === 'delete'
       ) {
         this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
@@ -293,6 +295,7 @@ export default {
         const {codeReservation} = this.getTravelBus().find(travel => travel.asiento === num)
         this.param.codigoReserva = codeReservation
         await this.seatReservation('delete', this.param)
+        console.log('DinamicBus: delete', this.param)
         this.isReservation = false // liberar asiento
       }
     },
@@ -333,11 +336,8 @@ export default {
 
     statusReservation(value) {
       console.log('DinamicBus: statusReservation ', value)
-      if (!value) 
+      if (!value)
       this.showMsgBoxError()
-      // this.seatComponent.initialColor('busy') // cambio de color
-      // this.seatComponent.statusSeat = 'busy' // agregar el status
-      // this.propsPassengerCounter.numBusy += 1 // sumarlo al contador de pasajeros
     }
   }
 }

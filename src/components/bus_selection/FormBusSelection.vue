@@ -2,7 +2,7 @@
   <div>
     <div class="transparent-main card-custom">
       <!-- Título de la pantalla-->
-      <top-header-caption :caption="getTitulo" class="pt-3"/>
+      <top-header-caption :caption="getTitulo" class="pt-4"/>
 
       <div v-show="mostrarIdas">
         <!--- List Caption Origin -->
@@ -161,7 +161,7 @@ export default {
       // filter the list of buses only to show those with a departure time of more than 30 minutes from the current time
 
       let results = response.data.result;
-      console.log(results)
+      // console.log(results)
 
       // console.log(results[0])
       // console.log(results[1])

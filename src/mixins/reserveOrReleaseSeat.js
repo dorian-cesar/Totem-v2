@@ -14,8 +14,6 @@ export default {
   methods: {
     // cambiar el estatus del flag loading
     async seatReservation(option, param, service) {
-      // const ticket_num = param.codigoReserva
-      // const seat_num = param.asiento
 
       this.isLoadingReservation = true
       const proxy = 'https://newstg3-gdsbus.kupos.cl'
@@ -25,9 +23,7 @@ export default {
       if ('add' === option)
         api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
       else if (option === 'delete') {
-        // this.statusReservation = false
         this.isLoadingReservation = false
-        this.codeReservation = ''
         return Promise.resolve()
       } // liberar asiento
       // else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'
@@ -100,7 +96,6 @@ export default {
         })
         .catch((error) => {
           console.error(error)
-
           this.statusReservation = false
           this.codeReservation = ''
           // console.log('no result', data)
