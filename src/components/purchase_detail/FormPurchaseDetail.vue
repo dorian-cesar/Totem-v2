@@ -2,6 +2,7 @@
   <div class="pt-3">
     <div class="transparent-main card-custom">
       <top-header-caption caption="DETALLE DE COMPRA" class="pt-4"/>
+      <h3 class="text-center mb-4" style="color: white;">Revise sus pasajes</h3>
       <personal-information v-bind="propsPersonalInformation"/>
       <!-- pantalla modal -->
       <payment-control
