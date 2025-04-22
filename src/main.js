@@ -12,8 +12,6 @@ import './plugins/VueFontawesome'
 import './plugins/vueScrollTo'
 import './plugins/IdleVue'
 
-import './assets/style/_fonts.scss';
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

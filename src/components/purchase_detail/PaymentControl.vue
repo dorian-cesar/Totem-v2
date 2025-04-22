@@ -28,7 +28,7 @@
         <!-- Mensaje -->
         <b-col colos="12" class="text-center font-italic">
           <h1 v-show="!isChangeStatus" class="text-primary py-5">Realice el pago en el equipo</h1>
-          <h1 v-show="isChangeStatus" class="text-danger py-1 pb-5">{{msg}}</h1>
+          <h1 v-show="isChangeStatus" class="text-danger py-1 pb-5 pt-4">{{msg}}</h1>
         </b-col>
         <b-col cols="12" v-show="isChangeStatus" class="text-center mb-3">
           <b-button

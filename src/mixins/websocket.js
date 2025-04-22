@@ -7,7 +7,7 @@ export default {
       messagePOS: '',//<- Mensaje del POS
       paymentPOS: '',//<- Monto de la venta
       isErrorPOS: false,
-      endTransactionPOS: false, //<- Fin de la transacción del POS
+      // endTransactionPOS: false, //<- Fin de la transacción del POS
       messagePrinter: '',
       messageType: '',
       //isConnPOSX: false,
@@ -100,10 +100,10 @@ export default {
     //   this.$cable.unsubscribe({channel: 'Printer'}, 'Printer')
     // },
     //cancelar suscripción a channel Transbank
-    websocketDesconectar() {
-      console.log('- methods:websocketDesconectar', '-> cable:unsubscribe:channel:Transbank')
-      this.$cable.unsubscribe({channel: 'Transbank'}, 'Transbank')
-    },
+    // websocketDesconectar() {
+    //   console.log('- methods:websocketDesconectar', '-> cable:unsubscribe:channel:Transbank')
+    //   this.$cable.unsubscribe({channel: 'Transbank'}, 'Transbank')
+    // },
     //Realizar el pago en el POS
     sendNewSale(value, ballotNumber) {
       console.log('- methods:sendNewSale', '-> methods:initVar', '->  cable:perform:channel:Transbank:action:send_new_sale')
@@ -226,30 +226,30 @@ export default {
     },
   },
 
-  channels: {
-    //channel Transbank
-    Transbank: {
-      connected() {
-        this.isConnPOS = true
-        console.log('- channels:Transbank:connected', 'isConnPOS=' + this.isConnPOS)
-      },
-      rejected() {
-        console.log('- channels:rejected')
-      },
-      received(dataTransbank) {
-        this.messageWebSocket = dataTransbank //<- Mensaje del channel Transbank
-        console.log('- channels:Transbank:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-      },
-      disconnected() {
-        this.isConnPOS = false
-        //this.isConnPOSX = false
-        console.log('- channels:Transbank:disconnected', 'this.isConnPOS=' + this.isConnPOS)
-      },
-      stopped() {
-        this.isConnPOS = false
-        console.log('- channels:Transbank:stopped', 'this.isConnPOS=' + this.isConnPOS)
-      }
-    },
+  // channels: {
+  //   //channel Transbank
+  //   Transbank: {
+  //     connected() {
+  //       this.isConnPOS = true
+  //       console.log('- channels:Transbank:connected', 'isConnPOS=' + this.isConnPOS)
+  //     },
+  //     rejected() {
+  //       console.log('- channels:rejected')
+  //     },
+  //     received(dataTransbank) {
+  //       this.messageWebSocket = dataTransbank //<- Mensaje del channel Transbank
+  //       console.log('- channels:Transbank:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+  //     },
+  //     disconnected() {
+  //       this.isConnPOS = false
+  //       //this.isConnPOSX = false
+  //       console.log('- channels:Transbank:disconnected', 'this.isConnPOS=' + this.isConnPOS)
+  //     },
+  //     stopped() {
+  //       this.isConnPOS = false
+  //       console.log('- channels:Transbank:stopped', 'this.isConnPOS=' + this.isConnPOS)
+  //     }
+  //   },
 
     // //channel Printer
     // Printer: {
@@ -272,103 +272,103 @@ export default {
     //     console.log('- channel:Printer:stopped')
     //   }
     // }
-  },
+  // },
 
-  mounted() {
-    console.log('- mounted', '-> methods:websocketConectar','-> methods:imprimirConectar')
-    // this.websocketConectar()
-    // this.imprimirConectar()
-    //this.isConnWebSocket = !this.$cable._cable.connection.disconnected//<- Verifica si está conectado
-  },
+  // mounted() {
+  //   console.log('- mounted', '-> methods:websocketConectar','-> methods:imprimirConectar')
+  //   this.websocketConectar()
+  //   this.imprimirConectar()
+  //   this.isConnWebSocket = !this.$cable._cable.connection.disconnected //<- Verifica si está conectado
+  // },
 
   // watch: {
-  //   //Estado de la conexión channel Transbank
-  //   // isConn: function (val) {
-  //   isConnPOS: function (val) {
-  //     console.log('- watch:isConnPOS', 'isConnPOS=' + val)
-  //     if (!val) {
-  //       console.log('+ watch:isConnPOS', '! POS No Conectado')
-  //       this.websocketConectar()//<- Conectar el POS al Socket
-  //       console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
-  //     } else {
-  //       console.log('+ watch:isConnPOS', '! POS Conectado')
-  //     }
-  //   },
-  //   // Estado de la conexión channel impresora
-  //   isConnPrinter: function (val) {
-  //     console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
-  //     if (!val) {
-  //       console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
-  //       this.websocketConectar()
-  //       console.log('+ watch:isConnPrinter', '-> websocketConectar')
-  //     } else {
-  //       console.log('+ watch:isConnPrinter', '! Impresora Conectada')
-  //     }
-  //   },
-  //   // Monitoreo de los mensajes del websocket
-  //   messageWebSocket: function () {
-  //     console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-  //     if (this.messageWebSocket.type !== undefined) {
-  //       // Verificar el tipo de error
-  //       if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
-  //         // verificar si hay error
-  //         this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
-  //         if (!this.errorConnWebSocket) {//<-Pasa si no hay error
-  //           // verificar el tipo de error
-  //           switch (this.messageWebSocket.type) {
-  //             case 'status_printer': {
-  //               console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
-  //               // Verificar si el cable del POS está conectado
-  //               this.estatusCablePOS()
-  //               break
-  //             }
-  //             case 'status_cable_POS': {
-  //               console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
-  //               // Verificar si está conectado el POS
-  //               this.estatusConnPOS()
-  //               break
-  //             }
-  //             case 'status_conn_POS': {
-  //               console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
-  //               // Verificar si hay internet
-  //               this.estatusInternet()
-  //               break
-  //             }
-  //             case 'status_internet': {
-  //               // Comprobamos que no esté en la pantalla de outService
-  //               (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
-  //               console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
-  //               break
-  //             }
-  //           }
-  //         } else {
-  //           console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
-  //           this.isOutService = true //<- Sacar de servicio el totem
-  //         }
-  //       } else { //<- no hay errores de isOutService
-  //         switch (this.messageWebSocket.type) {
-  //           case 'sale_status': {
-  //             console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
-  //             break
-  //           }
-  //           case 'sale': {
-  //             if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
-  //               // Guardando los datos del pago
-  //               this.paymentPOS = this.messageWebSocket.content.payment
-  //               console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
-  //             } else {
-  //               // Error al procesar el pago
-  //               this.isErrorPOS = true
-  //               console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
-  //             }
-  //             this.endTransactionPOS = true
-  //             console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
-  //             break
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
+    //Estado de la conexión channel Transbank
+    // isConn: function (val) {
+    // isConnPOS: function (val) {
+    //   console.log('- watch:isConnPOS', 'isConnPOS=' + val)
+    //   if (!val) {
+    //     console.log('+ watch:isConnPOS', '! POS No Conectado')
+    //     this.websocketConectar()//<- Conectar el POS al Socket
+    //     console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
+    //   } else {
+    //     console.log('+ watch:isConnPOS', '! POS Conectado')
+    //   }
+    // },
+    // Estado de la conexión channel impresora
+    // isConnPrinter: function (val) {
+    //   console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
+    //   if (!val) {
+    //     console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
+    //     this.websocketConectar()
+    //     console.log('+ watch:isConnPrinter', '-> websocketConectar')
+    //   } else {
+    //     console.log('+ watch:isConnPrinter', '! Impresora Conectada')
+    //   }
+    // },
+    // Monitoreo de los mensajes del websocket
+    // messageWebSocket: function () {
+    //   console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+    //   if (this.messageWebSocket.type !== undefined) {
+    //     // Verificar el tipo de error
+    //     if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
+    //       // verificar si hay error
+    //       this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
+    //       if (!this.errorConnWebSocket) {//<-Pasa si no hay error
+    //         // verificar el tipo de error
+    //         switch (this.messageWebSocket.type) {
+    //           case 'status_printer': {
+    //             console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
+    //             // Verificar si el cable del POS está conectado
+    //             this.estatusCablePOS()
+    //             break
+    //           }
+    //           case 'status_cable_POS': {
+    //             console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
+    //             // Verificar si está conectado el POS
+    //             this.estatusConnPOS()
+    //             break
+    //           }
+    //           case 'status_conn_POS': {
+    //             console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
+    //             // Verificar si hay internet
+    //             this.estatusInternet()
+    //             break
+    //           }
+    //           case 'status_internet': {
+    //             // Comprobamos que no esté en la pantalla de outService
+    //             (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
+    //             console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
+    //             break
+    //           }
+    //         }
+    //       } else {
+    //         console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
+    //         this.isOutService = true //<- Sacar de servicio el totem
+    //       }
+    //     } else { //<- no hay errores de isOutService
+    //       switch (this.messageWebSocket.type) {
+    //         case 'sale_status': {
+    //           console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
+    //           break
+    //         }
+    //         case 'sale': {
+    //           if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
+    //             // Guardando los datos del pago
+    //             this.paymentPOS = this.messageWebSocket.content.payment
+    //             console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
+    //           } else {
+    //             // Error al procesar el pago
+    //             this.isErrorPOS = true
+    //             console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
+    //           }
+    //           this.endTransactionPOS = true
+    //           console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
+    //           break
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   // },
 
 }

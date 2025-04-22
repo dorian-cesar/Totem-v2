@@ -36,9 +36,9 @@ export default {
     return {
       countModal: 1,
       //
-      isErrorGuardarTransaccion: false,
+      // isErrorGuardarTransaccion: false,
       //isErrorPagarPOS:false,
-      isErrorTerminarTransaccionPOS: false,
+      // isErrorTerminarTransaccionPOS: false,
       //
       timeChangeEstatus: false, // <- Prueba
       timeClose: null, // <- tiempo de espera para cerrar la pantalla de pago e ir a HOME
@@ -136,34 +136,81 @@ export default {
           name: this.info.totemName
         }
       )
-      console.log(this.valuePOS, this.ballotNumberPOS)
-      console.log(this.propsPersonalInformation.total)
-      console.log(this.propsPersonalInformation.tickets[0].codeReservation.slice(-10))
+
       this.axios.post(
         'http://192.168.88.254:3000/api/payment',
         {
-          amount: this.propsPersonalInformation.total,
+          amount: this.propsPersonalInformation.total.replace('.', ''),
           ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
-          // ticketNumber: "B123456789" // prueba numero de boleta transbank
         },
-        {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-          }
-        }
       )
-      this.timeClose = setTimeout(
-        function () {
-          this.timeChangeEstatus = true; //<- Se acabó el tiempo
-        }.bind(this),
-        150 * 1000
-      ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
-
-      // Comprobar los errores de POS, impresora e internet (3)
-      // this.checkStatusConn(); // -> watch errorWebSocket (4)
+        .then(response => {
+          console.log('Pago procesado:', response.data);
+          console.log("successful: ", response.data.data.successful)
+          if (response.data.data.successful === true) {
+            this.isErrorPOS = false;
+            this.endTransactionPOS(true)
+          } else {
+            this.isErrorPOS = true;
+            this.isErrorTerminarTransaccionPOS(true)
+          }
+        })
+        .catch(error => {
+          console.error('Error en el pago:', (error.response && error.response.data) || error.message);
+          this.isErrorTerminarTransaccionPOS(true)
+        });
+      // Temporizador para cerrar operación si no se recibe respuesta en 150 segundos
+      this.timeClose = setTimeout(() => {
+        this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
+      }, 150 * 1000); // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
     },
+
+    //fin de transacción del POS
+    endTransactionPOS: function (val) {
+      console.log("- watch:endTransactionPOS", "endTransactionPOS = " + val);
+      if (val) {
+        // Verifico si hay error en la transacción de pago
+        if (this.isErrorPOS) {
+          //<- hay error
+          this.propsPaymentControl.isChangeStatus = true;
+          this.propsPaymentAtendedorControl.isChangeStatus = true;
+          console.log(
+            "+ watch:endTransactionPOS",
+            "isErrorPOS =" + this.isErrorPOS,
+            "propsPaymentControl.isChangeStatus = " +
+            this.propsPaymentControl.isChangeStatus
+          );
+        } else {
+          //<- No hay error
+          console.log(
+            "+ watch:endTransactionPOS",
+            "isErrorPOS =" + this.isErrorPOS,
+            "-> guardarTransaccionPOS"
+          );
+          this.guardarTransaccionPOS();
+        }
+      }
+    },
+
+    //error en TerminarTransaccionPOS API Pullman (2)
+    isErrorTerminarTransaccionPOS: function (val) {
+      console.log(
+        "- watch:isErrorTerminarTransaccionPOS",
+        "isErrorTerminarTransaccionPOS = " + val
+      );
+      if (val) {
+        // Mostrar mensajes de error en la pantalla modal
+        this.propsPaymentControl.isChangeStatus = true;
+        this.propsPaymentAtendedorControl.isChangeStatus = true;
+        console.log(
+          "+ watch:isErrorGuardarTransaccion",
+          "! mostrar mensaje error",
+          "propsPaymentControl.isChangeStatus = " +
+          this.propsPaymentControl.isChangeStatus
+        );
+      }
+    },
+
     //inicio del proceso de pago
     pagarAtendedor() {
       console.log("- methods:pagar", this.propsPersonalInformation.tickets)
@@ -501,42 +548,42 @@ export default {
         this.$router.push("/outofservice");
       }
     },
-    //verificar error en GuardarTransaccion API Pullman (1)
-    isErrorGuardarTransaccion: function (val) {
-      console.log(
-        "- watch:isErrorGuardarTransaccion",
-        "isErrorGuardarTransaccion = " + val
-      );
-      if (val) {
-        // Mostrar mensajes de error en la pantalla modal
-        this.propsPaymentControl.isChangeStatus = true;
-        this.propsPaymentAtendedorControl.isChangeStatus = true;
-        console.log(
-          " + watch:isErrorGuardarTransaccion",
-          "! mostrar mensaje error",
-          "propsPaymentControl.isChangeStatus = " +
-          this.propsPaymentControl.isChangeStatus
-        );
-      }
-    },
-    //error en TerminarTransaccionPOS API Pullman (2)
-    isErrorTerminarTransaccionPOS: function (val) {
-      console.log(
-        "- watch:isErrorTerminarTransaccionPOS",
-        "isErrorTerminarTransaccionPOS = " + val
-      );
-      if (val) {
-        // Mostrar mensajes de error en la pantalla modal
-        this.propsPaymentControl.isChangeStatus = true;
-        this.propsPaymentAtendedorControl.isChangeStatus = true;
-        console.log(
-          "+ watch:isErrorGuardarTransaccion",
-          "! mostrar mensaje error",
-          "propsPaymentControl.isChangeStatus = " +
-          this.propsPaymentControl.isChangeStatus
-        );
-      }
-    },
+    // //verificar error en GuardarTransaccion API Pullman (1)
+    // isErrorGuardarTransaccion: function (val) {
+    //   console.log(
+    //     "- watch:isErrorGuardarTransaccion",
+    //     "isErrorGuardarTransaccion = " + val
+    //   );
+    //   if (val) {
+    //     // Mostrar mensajes de error en la pantalla modal
+    //     this.propsPaymentControl.isChangeStatus = true;
+    //     this.propsPaymentAtendedorControl.isChangeStatus = true;
+    //     console.log(
+    //       " + watch:isErrorGuardarTransaccion",
+    //       "! mostrar mensaje error",
+    //       "propsPaymentControl.isChangeStatus = " +
+    //       this.propsPaymentControl.isChangeStatus
+    //     );
+    //   }
+    // },
+    // //error en TerminarTransaccionPOS API Pullman (2)
+    // isErrorTerminarTransaccionPOS: function (val) {
+    //   console.log(
+    //     "- watch:isErrorTerminarTransaccionPOS",
+    //     "isErrorTerminarTransaccionPOS = " + val
+    //   );
+    //   if (val) {
+    //     // Mostrar mensajes de error en la pantalla modal
+    //     this.propsPaymentControl.isChangeStatus = true;
+    //     this.propsPaymentAtendedorControl.isChangeStatus = true;
+    //     console.log(
+    //       "+ watch:isErrorGuardarTransaccion",
+    //       "! mostrar mensaje error",
+    //       "propsPaymentControl.isChangeStatus = " +
+    //       this.propsPaymentControl.isChangeStatus
+    //     );
+    //   }
+    // },
     //ocurre cuando se presiona un botón el la pantalla modal
     nameActionModal: function () {
       console.log("- watch:nameActionModal", "-> clearTimeout");
@@ -628,32 +675,32 @@ export default {
         this.pagarPOS(); //<- Realizar el pago en el POS
       }
     },
-    //fin de transacción del POS
-    endTransactionPOS: function (val) {
-      console.log("- watch:endTransactionPOS", "endTransactionPOS = " + val);
-      if (val) {
-        // Verifico si hay error en la transacción de pago
-        if (this.isErrorPOS) {
-          //<- hay error
-          this.propsPaymentControl.isChangeStatus = true;
-          this.propsPaymentAtendedorControl.isChangeStatus = true;
-          console.log(
-            "+ watch:endTransactionPOS",
-            "isErrorPOS =" + this.isErrorPOS,
-            "propsPaymentControl.isChangeStatus = " +
-            this.propsPaymentControl.isChangeStatus
-          );
-        } else {
-          //<- No hay error
-          console.log(
-            "+ watch:endTransactionPOS",
-            "isErrorPOS =" + this.isErrorPOS,
-            "-> guardarTransaccionPOS"
-          );
-          this.guardarTransaccionPOS();
-        }
-      }
-    },
+    // //fin de transacción del POS
+    // endTransactionPOS: function (val) {
+    //   console.log("- watch:endTransactionPOS", "endTransactionPOS = " + val);
+    //   if (val) {
+    //     // Verifico si hay error en la transacción de pago
+    //     if (this.isErrorPOS) {
+    //       //<- hay error
+    //       this.propsPaymentControl.isChangeStatus = true;
+    //       this.propsPaymentAtendedorControl.isChangeStatus = true;
+    //       console.log(
+    //         "+ watch:endTransactionPOS",
+    //         "isErrorPOS =" + this.isErrorPOS,
+    //         "propsPaymentControl.isChangeStatus = " +
+    //         this.propsPaymentControl.isChangeStatus
+    //       );
+    //     } else {
+    //       //<- No hay error
+    //       console.log(
+    //         "+ watch:endTransactionPOS",
+    //         "isErrorPOS =" + this.isErrorPOS,
+    //         "-> guardarTransaccionPOS"
+    //       );
+    //       this.guardarTransaccionPOS();
+    //     }
+    //   }
+    // },
     //terminó la generación de boletos
     loadingTerminarTransaccionPOS: function (val) {
       console.log(
