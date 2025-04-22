@@ -1,25 +1,16 @@
 <template>
   <div class="pt-3">
     <div class="transparent-main card-custom">
-      <top-header-caption caption="DETALLE DE COMPRA" class="pt-4"/>
+      <top-header-caption caption="DETALLE DE COMPRA" class="pt-4" />
       <h3 class="text-center mb-4" style="color: white;">Revise sus pasajes</h3>
-      <personal-information v-bind="propsPersonalInformation"/>
+      <personal-information v-bind="propsPersonalInformation" />
       <!-- pantalla modal -->
-      <payment-control
-        v-bind="propsPaymentControl"
-        @nameAction="nameActionModal = $event"
-      />
-      <payment-atendedor-control
-        v-bind="propsPaymentAtendedorControl"
-        @nameAction="nameActionModal = $event"
-      />
+      <payment-control v-bind="propsPaymentControl" @nameAction="nameActionModal = $event" />
+      <payment-atendedor-control v-bind="propsPaymentAtendedorControl" @nameAction="nameActionModal = $event" />
 
     </div>
     <!-- toolbar button-->
-    <tool-bar-button-new4
-      v-bind="propsToolbarButton"
-      @nameButton="eventClick"
-    />
+    <tool-bar-button-new4 v-bind="propsToolbarButton" @nameButton="eventClick" />
   </div>
 </template>
 
@@ -29,12 +20,12 @@ import TopHeaderCaption from "@/components/TopHeaderCaption";
 import PersonalInformation from "@/components/purchase_detail/PersonalInformation";
 import ToolBarButtonNew3 from "@/components/ToolbarButtonNew3";
 import ToolBarButtonNew4 from "@/components/ToolbarButtonNew4";
-import {mapGetters} from "vuex";
+import { mapGetters } from "vuex";
 import webSocket from "@/mixins/websocket.js";
 import PaymentControl from "@/components/purchase_detail/PaymentControl";
 import reserveOrReleaseSeat from "@/mixins/reserveOrReleaseSeat";
 import PaymentAtendedorControl from "./PaymentAtendedorControl.vue";
-import info from "../../../info.json"; 
+import info from "../../../info.json";
 
 export default {
   name: "FormEnterRut",
@@ -145,6 +136,24 @@ export default {
           name: this.info.totemName
         }
       )
+      console.log(this.valuePOS, this.ballotNumberPOS)
+      console.log(this.propsPersonalInformation.total)
+      console.log(this.propsPersonalInformation.tickets[0].codeReservation)
+      this.axios.post(
+        'http://192.168.88.254:3000/api/payment',
+        {
+          amount: this.propsPersonalInformation.total,
+          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(0, 10)
+          // ticketNumber: "B123456789" // prueba numero de boleta transbank
+        },
+        {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          }
+        }
+      )
       this.timeClose = setTimeout(
         function () {
           this.timeChangeEstatus = true; //<- Se acabó el tiempo
@@ -153,7 +162,7 @@ export default {
       ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
 
       // Comprobar los errores de POS, impresora e internet (3)
-      this.checkStatusConn(); // -> watch errorWebSocket (4)
+      // this.checkStatusConn(); // -> watch errorWebSocket (4)
     },
     //inicio del proceso de pago
     pagarAtendedor() {
@@ -277,7 +286,17 @@ export default {
       console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
       // Método en mixins
       // this.valuePOS = 50
-      this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
+      // this.axios.post(
+      //   'http://192.168.88.254/api/payment',
+      //   {
+      //     "amount": this.valuePOS,  // Monto en pesos (ej. $10.000)
+      //     "ticketNumber": this.ballotNumberPOS,  // Número de boleta/ticket
+      //     // "printVoucher": true,  // Si deseas imprimir voucher
+      //     // "sendMessages": true  // Si deseas recibir mensajes intermedios
+      //   }
+      // )
+      // this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
+
       // TODO: Eliminar en producción
       // console.log("- methods:guardarTransaccionPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
       // this.guardarTransaccionPOS()
@@ -337,7 +356,7 @@ export default {
         let data_from_api = []
         await this.axios
           .post([proxy, api].join('/'))
-          .then(({data}) => {
+          .then(({ data }) => {
             if (typeof data === 'object') {
               let ticket_info = data.result.ticket_details
               let response_boleto = ticket_info.ticket_number
@@ -351,7 +370,7 @@ export default {
               let response_origen = ticket_info.boarding_point_details.landmark
               let response_destino = ticket_info.destination
               let issued_on = new Date(ticket_info.issued_on * 1000);
-              issued_on = issued_on.toLocaleString('es-CL', {hour12: false});
+              issued_on = issued_on.toLocaleString('es-CL', { hour12: false });
               let response_fecha_compra = issued_on
               let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
               let response_ticket = {
@@ -385,28 +404,28 @@ export default {
             }
           })
           .catch(error => {
-              console.error(error)
-              total_processed += 1
+            console.error(error)
+            total_processed += 1
 
-              this.axios.post(
-                'https://s1.ntic.cl/totem-costa-handler/index.php',
-                {
-                  type: 're_print_error',
-                  call_url: api,
-                  data: ticketsGeneradosFormatted,
-                  error: JSON.stringify(error),
-                  name: this.info.totemName
-                }
-              )
-            }
+            this.axios.post(
+              'https://s1.ntic.cl/totem-costa-handler/index.php',
+              {
+                type: 're_print_error',
+                call_url: api,
+                data: ticketsGeneradosFormatted,
+                error: JSON.stringify(error),
+                name: this.info.totemName
+              }
+            )
+          }
           )
           .finally(() => {
-              total_processed += 1
-              if (total_processed >= this.reservationCodes.length) {
-                this.ticketsGenerados = ticketsGeneradosFormatted
-                this.loadingTerminarTransaccionPOS = true;
-              }
+            total_processed += 1
+            if (total_processed >= this.reservationCodes.length) {
+              this.ticketsGenerados = ticketsGeneradosFormatted
+              this.loadingTerminarTransaccionPOS = true;
             }
+          }
           )
       }
     },
@@ -429,7 +448,7 @@ export default {
     goHome() {
       this.liberarAsientos();
       //this.$router.push('/')
-      this.$router.push({name: "Home"});
+      this.$router.push({ name: "Home" });
     },
     // Click Toolbar button
     eventClick: function (name) {

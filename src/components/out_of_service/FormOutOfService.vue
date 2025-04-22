@@ -48,9 +48,9 @@
       clearInterval(this.interval)
 
       // Comenzar intervalos de 10 seg
-      this.interval = setInterval(() => {
-       this.checkStatusConn()//<- Ejecutar método en mixin
-      }, 10000)
+      // this.interval = setInterval(() => {
+      //  this.checkStatusConn()//<- Ejecutar método en mixin
+      // }, 10000)
 
     },
 

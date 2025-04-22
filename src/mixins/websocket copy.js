@@ -40,22 +40,22 @@ export default {
       //this.isconnPOSX = false
       //this.isConnPrinter = false
     },
-    // //Suscribirse al channel Printer
-    // imprimirConectar() {
-    //   console.log('- methods:imprimirConectar', 'isConnPrinter = ' + this.isConnPrinter)
-    //   if (this.isConnPrinter != true) {
-    //     console.log('+ methods:imprimirConectar', '-> cable:subscribe:channel:Printer')
-    //     this.$cable.subscribe({channel: 'Printer', room: 'printer'}, 'Printer')
-    //   }
-    // },
+    //Suscribirse al channel Printer
+    imprimirConectar() {
+      console.log('- methods:imprimirConectar', 'isConnPrinter = ' + this.isConnPrinter)
+      if (this.isConnPrinter != true) {
+        console.log('+ methods:imprimirConectar', '-> cable:subscribe:channel:Printer')
+        this.$cable.subscribe({channel: 'Printer', room: 'printer'}, 'Printer')
+      }
+    },
     //comprobar el estatus de la impresora
-    // estatusImpresora() {
-    //   console.log('- methods:estatusImpresora', '-> methods:imprimirConecta', '-> cable:perform:channel:Printer:action:status_print')
-    //   //verificar si esta Conectado al websocket la impresora
-    //   this.imprimirConectar()
-    //   // Enviar comando al websocket
-    //   this.$cable.perform({channel: 'Printer', action: 'status_print'}, 'Printer')
-    // },
+    estatusImpresora() {
+      console.log('- methods:estatusImpresora', '-> methods:imprimirConecta', '-> cable:perform:channel:Printer:action:status_print')
+      //verificar si esta Conectado al websocket la impresora
+      this.imprimirConectar()
+      // Enviar comando al websocket
+      this.$cable.perform({channel: 'Printer', action: 'status_print'}, 'Printer')
+    },
     //inicializar los errores y mensajes
     initErrorAndMsg() {
       this.isOutService = false
@@ -64,41 +64,41 @@ export default {
       console.log('- methods:initErrorAndMsg', 'isOutService = ' + this.isOutService, 'errorConnWebSocket = ' + this.errorConnWebSocket, 'messageWebSocket = ' + this.messageWebSocket)
     },
     //verificar estado de la impresora, el POS, e internet
-    // checkStatusConn() {
-    //   this.initErrorAndMsg()
-    //   this.estatusImpresora()
-    // },
+    checkStatusConn() {
+      this.initErrorAndMsg()
+      this.estatusImpresora()
+    },
     //suscribirse al channel Transbank
-    // websocketConectar() {
-    //   console.log('- methods:websocketConectar', 'isConnPrinter = ' + this.isConnPrinter)
-    //   if (this.isConnPOS != true) {
-    //     console.log('+ methods:websocketConectar', '-> cable:subscribe:channel:Transbank')
-    //     this.$cable.subscribe({channel: 'Transbank', room: 'transbank'}, 'Transbank')
-    //   }
-    // },
+    websocketConectar() {
+      console.log('- methods:websocketConectar', 'isConnPrinter = ' + this.isConnPrinter)
+      if (this.isConnPOS != true) {
+        console.log('+ methods:websocketConectar', '-> cable:subscribe:channel:Transbank')
+        this.$cable.subscribe({channel: 'Transbank', room: 'transbank'}, 'Transbank')
+      }
+    },
     //comprobar si el cable del POS está conectado
-    // estatusCablePOS() {
-    //   console.log('- methods:estatusCablePOS', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_cable_pos')
-    //   this.websocketConectar()
-    //   this.$cable.perform({channel: 'Transbank', action: 'status_cable_pos'}, 'Transbank')
-    // },
-    // //comprobar si el POS está conectado
-    // estatusConnPOS() {
-    //   console.log('- methods:estatusConnPOS', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_conn_pos')
-    //   this.websocketConectar()
-    //   this.$cable.perform({channel: 'Transbank', action: 'status_conn_pos'}, 'Transbank')
-    // },
-    // //verificar estatus de la impresora
-    // estatusInternet() {
-    //   console.log('- methods:estatusInternet', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_conn_pos')
-    //   this.websocketConectar()
-    //   this.$cable.perform({channel: 'Transbank', action: 'status_internet'}, 'Transbank')
-    // },
-    // //cancelar suscripción a channel Printer
-    // imprimirDesconectar() {
-    //   console.log('- methods:imprimirDesconectar', '-> cable:unsubscribe:channel:Printer')
-    //   this.$cable.unsubscribe({channel: 'Printer'}, 'Printer')
-    // },
+    estatusCablePOS() {
+      console.log('- methods:estatusCablePOS', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_cable_pos')
+      this.websocketConectar()
+      this.$cable.perform({channel: 'Transbank', action: 'status_cable_pos'}, 'Transbank')
+    },
+    //comprobar si el POS está conectado
+    estatusConnPOS() {
+      console.log('- methods:estatusConnPOS', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_conn_pos')
+      this.websocketConectar()
+      this.$cable.perform({channel: 'Transbank', action: 'status_conn_pos'}, 'Transbank')
+    },
+    //verificar estatus de la impresora
+    estatusInternet() {
+      console.log('- methods:estatusInternet', '-> websocketConectar', '-> cable:perform:channel:Transbank:action:status_conn_pos')
+      this.websocketConectar()
+      this.$cable.perform({channel: 'Transbank', action: 'status_internet'}, 'Transbank')
+    },
+    //cancelar suscripción a channel Printer
+    imprimirDesconectar() {
+      console.log('- methods:imprimirDesconectar', '-> cable:unsubscribe:channel:Printer')
+      this.$cable.unsubscribe({channel: 'Printer'}, 'Printer')
+    },
     //cancelar suscripción a channel Transbank
     websocketDesconectar() {
       console.log('- methods:websocketDesconectar', '-> cable:unsubscribe:channel:Transbank')
@@ -121,7 +121,7 @@ export default {
     },
     //imprimir voucher
     imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
-      // this.imprimirConectar()
+      this.imprimirConectar()
       console.log('- methods:imprimirVoucher', 'ballotValue {}' + ballotValue, 'ticketsValue {}' + ticketsValue, 'codigoUnico {}' + codigoUnico)
 
       //voucher de compra en el POS
@@ -186,7 +186,7 @@ export default {
     imprimirVoucherError(ballotValue, codigoUnico) {
       console.log('- methods:imprimirVoucher','-> imprimirConectar', 'ballotValue {}', ballotValue, 'codigoUnico {}', codigoUnico)
 
-      // this.imprimirConectar()
+      this.imprimirConectar()
 
       //voucher de compra en el POS
       const ballot = {
@@ -251,124 +251,124 @@ export default {
       }
     },
 
-    // //channel Printer
-    // Printer: {
-    //   connected() {
-    //     this.isConnPrinter = true
-    //     console.log('- channel:Printer:connected', 'isConnPrinter=' + this.isConnPrinter)
-    //   },
-    //   rejected() {
-    //     console.log('- channel:Printer:rejected')
-    //   },
-    //   received(dataPrinter) {
-    //     this.messageWebSocket = dataPrinter //<- Mensaje del channel Printer
-    //     console.log('- channel:Printer:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-    //   },
-    //   disconnected() {
-    //     this.isConnPrinter = false
-    //     console.log('- channel:Printer:disconnected', 'isConnPrinter=' + this.isConnPrinter)
-    //   },
-    //   stopped() {
-    //     console.log('- channel:Printer:stopped')
-    //   }
-    // }
+    //channel Printer
+    Printer: {
+      connected() {
+        this.isConnPrinter = true
+        console.log('- channel:Printer:connected', 'isConnPrinter=' + this.isConnPrinter)
+      },
+      rejected() {
+        console.log('- channel:Printer:rejected')
+      },
+      received(dataPrinter) {
+        this.messageWebSocket = dataPrinter //<- Mensaje del channel Printer
+        console.log('- channel:Printer:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+      },
+      disconnected() {
+        this.isConnPrinter = false
+        console.log('- channel:Printer:disconnected', 'isConnPrinter=' + this.isConnPrinter)
+      },
+      stopped() {
+        console.log('- channel:Printer:stopped')
+      }
+    }
   },
 
   mounted() {
     console.log('- mounted', '-> methods:websocketConectar','-> methods:imprimirConectar')
-    // this.websocketConectar()
-    // this.imprimirConectar()
+    this.websocketConectar()
+    this.imprimirConectar()
     //this.isConnWebSocket = !this.$cable._cable.connection.disconnected//<- Verifica si está conectado
   },
 
-  // watch: {
-  //   //Estado de la conexión channel Transbank
-  //   // isConn: function (val) {
-  //   isConnPOS: function (val) {
-  //     console.log('- watch:isConnPOS', 'isConnPOS=' + val)
-  //     if (!val) {
-  //       console.log('+ watch:isConnPOS', '! POS No Conectado')
-  //       this.websocketConectar()//<- Conectar el POS al Socket
-  //       console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
-  //     } else {
-  //       console.log('+ watch:isConnPOS', '! POS Conectado')
-  //     }
-  //   },
-  //   // Estado de la conexión channel impresora
-  //   isConnPrinter: function (val) {
-  //     console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
-  //     if (!val) {
-  //       console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
-  //       this.websocketConectar()
-  //       console.log('+ watch:isConnPrinter', '-> websocketConectar')
-  //     } else {
-  //       console.log('+ watch:isConnPrinter', '! Impresora Conectada')
-  //     }
-  //   },
-  //   // Monitoreo de los mensajes del websocket
-  //   messageWebSocket: function () {
-  //     console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-  //     if (this.messageWebSocket.type !== undefined) {
-  //       // Verificar el tipo de error
-  //       if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
-  //         // verificar si hay error
-  //         this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
-  //         if (!this.errorConnWebSocket) {//<-Pasa si no hay error
-  //           // verificar el tipo de error
-  //           switch (this.messageWebSocket.type) {
-  //             case 'status_printer': {
-  //               console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
-  //               // Verificar si el cable del POS está conectado
-  //               this.estatusCablePOS()
-  //               break
-  //             }
-  //             case 'status_cable_POS': {
-  //               console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
-  //               // Verificar si está conectado el POS
-  //               this.estatusConnPOS()
-  //               break
-  //             }
-  //             case 'status_conn_POS': {
-  //               console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
-  //               // Verificar si hay internet
-  //               this.estatusInternet()
-  //               break
-  //             }
-  //             case 'status_internet': {
-  //               // Comprobamos que no esté en la pantalla de outService
-  //               (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
-  //               console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
-  //               break
-  //             }
-  //           }
-  //         } else {
-  //           console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
-  //           this.isOutService = true //<- Sacar de servicio el totem
-  //         }
-  //       } else { //<- no hay errores de isOutService
-  //         switch (this.messageWebSocket.type) {
-  //           case 'sale_status': {
-  //             console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
-  //             break
-  //           }
-  //           case 'sale': {
-  //             if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
-  //               // Guardando los datos del pago
-  //               this.paymentPOS = this.messageWebSocket.content.payment
-  //               console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
-  //             } else {
-  //               // Error al procesar el pago
-  //               this.isErrorPOS = true
-  //               console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
-  //             }
-  //             this.endTransactionPOS = true
-  //             console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
-  //             break
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // },
+  watch: {
+    //Estado de la conexión channel Transbank
+    // isConn: function (val) {
+    isConnPOS: function (val) {
+      console.log('- watch:isConnPOS', 'isConnPOS=' + val)
+      if (!val) {
+        console.log('+ watch:isConnPOS', '! POS No Conectado')
+        this.websocketConectar()//<- Conectar el POS al Socket
+        console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
+      } else {
+        console.log('+ watch:isConnPOS', '! POS Conectado')
+      }
+    },
+    // Estado de la conexión channel impresora
+    isConnPrinter: function (val) {
+      console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
+      if (!val) {
+        console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
+        this.websocketConectar()
+        console.log('+ watch:isConnPrinter', '-> websocketConectar')
+      } else {
+        console.log('+ watch:isConnPrinter', '! Impresora Conectada')
+      }
+    },
+    // Monitoreo de los mensajes del websocket
+    messageWebSocket: function () {
+      console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+      if (this.messageWebSocket.type !== undefined) {
+        // Verificar el tipo de error
+        if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
+          // verificar si hay error
+          this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
+          if (!this.errorConnWebSocket) {//<-Pasa si no hay error
+            // verificar el tipo de error
+            switch (this.messageWebSocket.type) {
+              case 'status_printer': {
+                console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
+                // Verificar si el cable del POS está conectado
+                this.estatusCablePOS()
+                break
+              }
+              case 'status_cable_POS': {
+                console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
+                // Verificar si está conectado el POS
+                this.estatusConnPOS()
+                break
+              }
+              case 'status_conn_POS': {
+                console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
+                // Verificar si hay internet
+                this.estatusInternet()
+                break
+              }
+              case 'status_internet': {
+                // Comprobamos que no esté en la pantalla de outService
+                (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
+                console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
+                break
+              }
+            }
+          } else {
+            console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
+            this.isOutService = true //<- Sacar de servicio el totem
+          }
+        } else { //<- no hay errores de isOutService
+          switch (this.messageWebSocket.type) {
+            case 'sale_status': {
+              console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
+              break
+            }
+            case 'sale': {
+              if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
+                // Guardando los datos del pago
+                this.paymentPOS = this.messageWebSocket.content.payment
+                console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
+              } else {
+                // Error al procesar el pago
+                this.isErrorPOS = true
+                console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
+              }
+              this.endTransactionPOS = true
+              console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
+              break
+            }
+          }
+        }
+      }
+    }
+  },
 
 }
