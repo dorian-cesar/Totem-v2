@@ -138,12 +138,12 @@ export default {
       )
       console.log(this.valuePOS, this.ballotNumberPOS)
       console.log(this.propsPersonalInformation.total)
-      console.log(this.propsPersonalInformation.tickets[0].codeReservation)
+      console.log(this.propsPersonalInformation.tickets[0].codeReservation.slice(-10))
       this.axios.post(
         'http://192.168.88.254:3000/api/payment',
         {
           amount: this.propsPersonalInformation.total,
-          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(0, 10)
+          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
           // ticketNumber: "B123456789" // prueba numero de boleta transbank
         },
         {
@@ -194,7 +194,7 @@ export default {
       ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
 
       // Comprobar los errores de POS, impresora e internet (3)
-      this.checkStatusConn(); // -> watch errorWebSocket (4)
+      // this.checkStatusConn(); // -> watch errorWebSocket (4)
     },
     //guardar transacción en la API de Pullman (1)
     saveTransaction: async function () {

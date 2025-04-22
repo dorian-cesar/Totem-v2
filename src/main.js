@@ -6,7 +6,7 @@ import 'es6-promise/auto'
 
 // PLUGINS
 import './plugins/VueAxios'
-import './plugins/ActionCableVue'
+// import './plugins/ActionCableVue'
 import './plugins/BootstrapVue'
 import './plugins/VueFontawesome'
 import './plugins/vueScrollTo'
