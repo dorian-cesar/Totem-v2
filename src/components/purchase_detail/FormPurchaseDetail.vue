@@ -138,7 +138,7 @@ export default {
       )
 
       this.axios.post(
-        'http://192.168.88.254:3000/api/payment',
+        'https://192.168.88.254:3000/api/payment',
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
           ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
