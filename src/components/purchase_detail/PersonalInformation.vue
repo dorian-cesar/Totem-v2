@@ -73,7 +73,7 @@
     name: 'PersonalInformation',
     props: {
       tickets: {type: Array, default: () => ([])},
-      total: {type: String, default: () => ('0')}
+      total: {type: String, default: () => ('0')},
     },
   }
 </script>

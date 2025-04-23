@@ -187,6 +187,8 @@
 
         const codeReservation = this.$parent.$parent.codeReservation
 
+        const operatorPnr = this.$parent.$parent.operatorPnr
+
         //this.setTravelBus([{
         this.addTravelBus([{
           busList: busList, // <- Nombre interno del bus
@@ -214,7 +216,8 @@
           bus: bus,
           piso: piso,
           integrador: integrador,
-          codeReservation
+          codeReservation,
+          operatorPnr
         }])
 
       },

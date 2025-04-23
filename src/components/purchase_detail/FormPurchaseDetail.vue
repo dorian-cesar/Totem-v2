@@ -36,7 +36,7 @@ export default {
     return {
       countModal: 1,
       //
-      // isErrorGuardarTransaccion: false,
+      isErrorGuardarTransaccion: false,
       //isErrorPagarPOS:false,
       // isErrorTerminarTransaccionPOS: false,
       //
@@ -137,8 +137,11 @@ export default {
         }
       )
 
-      const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
+      // const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
+      const url = 'http://192.168.88.254:3000'
       const api = '/api/payment'
+
+      this.isErrorTerminarTransaccionPOS(false)
 
       this.axios.post(url + api,
         {
@@ -149,9 +152,11 @@ export default {
         .then(response => {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful)
-          // response.data.data.successful = true
           if (response.data.data.successful === true) {
+            // this.isErrorTerminarTransaccionPOS(false)
             this.isErrorPOS = false;
+            this.ballotNumberPOS = Number(response.data.data.authorizationCode);
+            console.log(this.ballotNumberPOS)
             this.endTransactionPOS(true)
           } else {
             this.isErrorPOS = true;
@@ -187,13 +192,12 @@ export default {
           console.log(
             "+ watch:endTransactionPOS",
             "isErrorPOS =" + this.isErrorPOS,
-            "-> guardarTransaccionPOS"
+            "-> saveTransaction"
           );
           this.saveTransaction();
         }
       }
     },
-
     //error en TerminarTransaccionPOS API Pullman (2)
     isErrorTerminarTransaccionPOS: function (val) {
       console.log(
@@ -254,12 +258,14 @@ export default {
       let valuePOST = 0
       let ballotNumberPOST = ''
       // Asignar los tickets para ser enviados en los parámetros de la API
+      console.log('ticket', this.propsPersonalInformation.tickets)
       for (let ticket of this.propsPersonalInformation.tickets) {
         valuePOST += parseInt(ticket.precio.replace('.', ''))
         ballotNumberPOST = parseInt(ticket.operatorPnr)
         this.transaccionPOS = {
           codigo: ballotNumberPOST
         }
+        console.log('transaccionPOS.codigo', this.transaccionPOS.codigo)
         const itemCarrito = {
           codigoTransaccion: ballotNumberPOST,
           fechaPasada: ticket.fechaServicio,
@@ -294,7 +300,7 @@ export default {
       this.ticketsProcessed = listaCarrito
       this.valuePOS = valuePOST
       this.ballotNumberPOS = this.transaccionPOS.codigo
-      console.log('tickets', this.propsPersonalInformation.tickets)
+      // console.log('tickets', this.propsPersonalInformation.tickets)
       console.log('ticketsProcessed', this.ticketsProcessed)
       setTimeout(() => {
         this.loadingGuardarTransaccion = false
@@ -315,8 +321,16 @@ export default {
           name: this.info.totemName
         }
       )
+        .then(response => {
+          console.log('Transacción guardada exitosamente:', response.data);
+          console.log("ejecutando guardarTransaccionPOS")
+          this.guardarTransaccionPOS();
+        })
+        .catch(error => {
+          console.error('Error al guardar transacción:', (error.response && error.response.data) || error.message);
+          this.isErrorGuardarTransaccion = true;
+        });
       console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
-      // this.guardarTransaccionPOS();
     },
 
     //realizar el pago en el POS
@@ -387,6 +401,7 @@ export default {
         boletos: [],
         estado: true
       }
+      console.log("reservation codes: ", this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         const proxy = "https://newstg3-gdsbus.kupos.cl"
         const API_KEY = "TSXFQYAPI25766888"
@@ -472,6 +487,7 @@ export default {
             total_processed += 1
             if (total_processed >= this.reservationCodes.length) {
               this.ticketsGenerados = ticketsGeneradosFormatted
+              console.log("ticketsGenerados", this.ticketsGenerados)
               this.loadingTerminarTransaccionPOS = true;
             }
           }
@@ -550,24 +566,24 @@ export default {
         this.$router.push("/outofservice");
       }
     },
-    // //verificar error en GuardarTransaccion API Pullman (1)
-    // isErrorGuardarTransaccion: function (val) {
-    //   console.log(
-    //     "- watch:isErrorGuardarTransaccion",
-    //     "isErrorGuardarTransaccion = " + val
-    //   );
-    //   if (val) {
-    //     // Mostrar mensajes de error en la pantalla modal
-    //     this.propsPaymentControl.isChangeStatus = true;
-    //     this.propsPaymentAtendedorControl.isChangeStatus = true;
-    //     console.log(
-    //       " + watch:isErrorGuardarTransaccion",
-    //       "! mostrar mensaje error",
-    //       "propsPaymentControl.isChangeStatus = " +
-    //       this.propsPaymentControl.isChangeStatus
-    //     );
-    //   }
-    // },
+    //verificar error en GuardarTransaccion API Pullman (1)
+    isErrorGuardarTransaccion: function (val) {
+      console.log(
+        "- watch:isErrorGuardarTransaccion",
+        "isErrorGuardarTransaccion = " + val
+      );
+      if (val) {
+        // Mostrar mensajes de error en la pantalla modal
+        this.propsPaymentControl.isChangeStatus = true;
+        this.propsPaymentAtendedorControl.isChangeStatus = true;
+        console.log(
+          " + watch:isErrorGuardarTransaccion",
+          "! mostrar mensaje error",
+          "propsPaymentControl.isChangeStatus = " +
+          this.propsPaymentControl.isChangeStatus
+        );
+      }
+    },
     // //error en TerminarTransaccionPOS API Pullman (2)
     // isErrorTerminarTransaccionPOS: function (val) {
     //   console.log(
@@ -673,9 +689,8 @@ export default {
       // TODO: Volver a activar
       if (!val && !this.isErrorGuardarTransaccion) {
 
-        console.log("+ watch:loadingGuardarTransaccion", "-> methods:pagarPOS");
+        console.log("+ watch:loadingGuardarTransaccion", "-> methods:guardarTransaccionPOS");
         // this.pagarPOS(); //<- Realizar el pago en el POS
-        this.guardarTransaccionPOS();
       }
     },
     // //fin de transacción del POS
@@ -709,7 +724,7 @@ export default {
       console.log(
         "- watch:loadingTerminarTransaccionPOS",
         "loadingTerminarTransaccionPOS = " + val,
-        "ticketsGenerados =" + this.ticketsGenerados
+        "ticketsGenerados =" + this.ticketsGenerados.toString(),
       );
       // Verificar que se generaron los boletos
       if (val && this.ticketsGenerados.boletos) {

@@ -171,16 +171,18 @@ export default {
 
       console.log('+ methods:imprimirVoucher', 'ballot {}', ballot, 'tickets {}', tickets, '-> cable:.perform:channel:Printer')
 
-      this.$cable.perform({
-        channel: 'Printer',
-        action: 'print',
-        data: {
-          sheet: {
-            ballot: ballot,
-            tickets: tickets
-          }
-        }
-      }, 'Printer')
+      // implementar logica de impresion
+
+      // this.$cable.perform({
+      //   channel: 'Printer',
+      //   action: 'print',
+      //   data: {
+      //     sheet: {
+      //       ballot: ballot,
+      //       tickets: tickets
+      //     }
+      //   }
+      // }, 'Printer')
     },
     //imprimir voucher de error API Pullmam
     imprimirVoucherError(ballotValue, codigoUnico) {
