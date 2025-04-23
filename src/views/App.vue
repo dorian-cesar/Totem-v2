@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <logo class="p-3"/>
+    <p class="text-right">1.0.1 Version</p>
     <b-row align-h="center">
       <b-col cols="11">
         <router-view/>
