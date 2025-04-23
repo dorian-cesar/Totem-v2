@@ -322,7 +322,7 @@ export default {
         }
       )
         .then(response => {
-          console.log('Transacción guardada exitosamente:', response.data);
+          console.log('Transacción guardada exitosamente')
           console.log("ejecutando guardarTransaccionPOS")
           this.guardarTransaccionPOS();
         })
