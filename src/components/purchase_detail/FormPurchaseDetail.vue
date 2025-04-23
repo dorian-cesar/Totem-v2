@@ -137,9 +137,10 @@ export default {
         }
       )
 
-      this.axios.post(
-        'https://2cb6-200-27-177-89.ngrok-free.app/api/payment',
-        // 'http://192.168.88.254:3000/api/payment',
+      const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
+      const api = '/api/payment'
+
+      this.axios.post(url + api,
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
           ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
@@ -354,6 +355,7 @@ export default {
       // Imprimir Voucher
       console.log("imprimir");
       this.imprimirVoucher(
+        // parametros para enviar a la impresora
         // this.paymentPOS,
         this.ticketsGenerados.boletos,
         this.transaccionPOS.codigo
@@ -365,7 +367,7 @@ export default {
       console.log("transaccionPOS", this.transaccionPOS.codigo);
       ////this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
       this.imprimirVoucherError(
-        this.paymentPOS,
+        // this.paymentPOS,
         this.transaccionPOS.codigo ? this.transaccionPOS.codigo : "SIN CODIGO"
       );
     },
