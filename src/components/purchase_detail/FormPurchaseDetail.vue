@@ -66,12 +66,12 @@ export default {
       propsPaymentControl: {
         total: "",
         isChangeStatus: false,
-        msg: "No se puede realizar el pago!",
+        msg: "No se puede realizar el pago",
       },
       propsPaymentAtendedorControl: {
         total: "",
         isChangeStatus: false,
-        msg: "No se puede realizar el pago!",
+        msg: "No se puede realizar el pago",
       },
       nameButton: "",
       transaccionPOS: "",
@@ -138,7 +138,7 @@ export default {
       )
 
       this.axios.post(
-        'https://192.168.88.254:3000/api/payment',
+        'http://192.168.88.254:3000/api/payment',
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
           ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
@@ -159,7 +159,6 @@ export default {
           console.error('Error en el pago:', (error.response && error.response.data) || error.message);
           this.isErrorTerminarTransaccionPOS(true)
         });
-      // Temporizador para cerrar operación si no se recibe respuesta en 150 segundos
       this.timeClose = setTimeout(() => {
         this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
       }, 150 * 1000); // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
@@ -187,7 +186,7 @@ export default {
             "isErrorPOS =" + this.isErrorPOS,
             "-> guardarTransaccionPOS"
           );
-          this.guardarTransaccionPOS();
+          this.saveTransaction();
         }
       }
     },
@@ -314,7 +313,7 @@ export default {
         }
       )
       console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
-
+      this.guardarTransaccionPOS();
     },
 
     //realizar el pago en el POS
@@ -437,7 +436,6 @@ export default {
                 tipo_cliente: 'PULLMAN PASS',
               }
               ticketsGeneradosFormatted.boletos.push(response_ticket)
-
 
               this.axios.post(
                 'https://s1.ntic.cl/totem-costa-handler/index.php',

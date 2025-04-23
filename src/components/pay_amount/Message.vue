@@ -3,24 +3,25 @@
 
     <b-card class="px-2 mx-3">
       <b-row>
-        <b-col cols="12" class="text-center pt-4">
+        <b-col cols="12" class="text-center pt-3 pb-3">
           <font-awesome-icon
             :icon="['fas', 'check-circle']"
             size="7x"
-            :style="{ color: 'blue'}"
+            :style="{ color: '#fa5e00'}"
           />
+          <!-- :style="{ color: 'blue'}" -->
         </b-col>
         <b-col cols="12">
           <p class="text-center font-weight-normal" style="font-size: 80px">Feliz Viaje</p>
         </b-col>
         <b-col cols="12">
-          <h5 class="text-center font-italic">Gracias por su preferencia.</h5>
+          <h5 class="text-center font-italic">¡Gracias por su preferencia!</h5>
         </b-col>
         <b-col cols="12" class="pt-4">
           <hr>
-          <p class="font-weight-light">
+          <p class="text-center font-weight-light">
             Si presenta algún problema o necesita información adicional puede comunicarse con
-            nosotros a través de info@pullman.cl o por los teléfonos +56 999 999999.
+            nosotros a través de clientes@pullmanbus.cl o por los teléfonos +56 2 3304 8632
           </p>
         </b-col>
       </b-row>

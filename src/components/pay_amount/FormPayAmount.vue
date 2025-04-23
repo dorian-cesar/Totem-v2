@@ -2,7 +2,7 @@
   <div>
     <b-card class="transparent-main">
       <blockquote class="card-blockquote">
-        <top-header-caption caption="PAGO REALIZADO" class="pt-3"/>
+        <top-header-caption caption="PAGO REALIZADO" class="pt-2"/>
 <!--        <message :amount="getAmount()"/>-->
         <message />
       </blockquote>

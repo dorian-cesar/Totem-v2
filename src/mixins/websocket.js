@@ -57,12 +57,12 @@ export default {
     //   this.$cable.perform({channel: 'Printer', action: 'status_print'}, 'Printer')
     // },
     //inicializar los errores y mensajes
-    initErrorAndMsg() {
-      this.isOutService = false
-      this.errorConnWebSocket = false
-      this.messageWebSocket = ''
-      console.log('- methods:initErrorAndMsg', 'isOutService = ' + this.isOutService, 'errorConnWebSocket = ' + this.errorConnWebSocket, 'messageWebSocket = ' + this.messageWebSocket)
-    },
+    // initErrorAndMsg() {
+    //   this.isOutService = false
+    //   this.errorConnWebSocket = false
+    //   this.messageWebSocket = ''
+    //   console.log('- methods:initErrorAndMsg', 'isOutService = ' + this.isOutService, 'errorConnWebSocket = ' + this.errorConnWebSocket, 'messageWebSocket = ' + this.messageWebSocket)
+    // },
     //verificar estado de la impresora, el POS, e internet
     // checkStatusConn() {
     //   this.initErrorAndMsg()
