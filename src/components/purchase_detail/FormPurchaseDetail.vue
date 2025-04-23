@@ -138,7 +138,8 @@ export default {
       )
 
       this.axios.post(
-        'http://192.168.88.254:3000/api/payment',
+        'https://2cb6-200-27-177-89.ngrok-free.app/',
+        // 'http://192.168.88.254:3000/api/payment',
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
           ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
@@ -147,6 +148,7 @@ export default {
         .then(response => {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful)
+          // response.data.data.successful = true
           if (response.data.data.successful === true) {
             this.isErrorPOS = false;
             this.endTransactionPOS(true)
@@ -313,7 +315,7 @@ export default {
         }
       )
       console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
-      this.guardarTransaccionPOS();
+      // this.guardarTransaccionPOS();
     },
 
     //realizar el pago en el POS
@@ -352,7 +354,7 @@ export default {
       // Imprimir Voucher
       console.log("imprimir");
       this.imprimirVoucher(
-        this.paymentPOS,
+        // this.paymentPOS,
         this.ticketsGenerados.boletos,
         this.transaccionPOS.codigo
       );
@@ -413,9 +415,9 @@ export default {
               let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
               let response_fecha = ticket_info.travel_date
               let response_hora = ticket_info.boarding_point_details.dep_time
-              let response_origen = ticket_info.boarding_point_details.landmark
+              let response_origen = ticket_info.boarding_point_details.landmark // verificar nombre de terminal
               let response_destino = ticket_info.destination
-              let issued_on = new Date(ticket_info.issued_on * 1000);
+              let issued_on = new Date(ticket_info.issued_on * 1000); // verificar resultado de fecha
               issued_on = issued_on.toLocaleString('es-CL', { hour12: false });
               let response_fecha_compra = issued_on
               let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
@@ -670,7 +672,8 @@ export default {
       if (!val && !this.isErrorGuardarTransaccion) {
 
         console.log("+ watch:loadingGuardarTransaccion", "-> methods:pagarPOS");
-        this.pagarPOS(); //<- Realizar el pago en el POS
+        // this.pagarPOS(); //<- Realizar el pago en el POS
+        this.guardarTransaccionPOS();
       }
     },
     // //fin de transacción del POS
