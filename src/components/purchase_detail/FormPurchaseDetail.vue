@@ -138,7 +138,7 @@ export default {
       )
 
       this.axios.post(
-        'https://2cb6-200-27-177-89.ngrok-free.app/',
+        'https://2cb6-200-27-177-89.ngrok-free.app/api/payment',
         // 'http://192.168.88.254:3000/api/payment',
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
