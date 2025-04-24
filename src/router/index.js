@@ -8,6 +8,7 @@ import BusSelection from '@/views/BusSelection'
 import PayAmount from '@/views/PayAmount'
 import PurchaseDetail from '@/views/PurchaseDetail'
 import OutOfService from "@/views/OutOfService"
+import PrintTicket from "@/views/PrintTicket";
 
 Vue.use(Router);
 
@@ -44,5 +45,10 @@ export default new Router({
       name: 'OutOfService',
       component: OutOfService
     },
+    {
+      path: '/print',
+      name: 'PrintTicket',
+      component: PrintTicket
+    }
   ]
 })

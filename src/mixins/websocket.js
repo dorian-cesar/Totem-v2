@@ -179,7 +179,7 @@ export default {
       console.log('+ methods:imprimirVoucher', 'ballot {}', ballot, 'tickets {}', tickets, '-> api/print')
 
       const url = 'http://192.168.88.254:3000'
-      const api = '/api/print'
+      const api = '/api/ticket'
 
       try {
         const response = await axios.post(url + api, {
@@ -226,7 +226,7 @@ export default {
       console.log('+ methods:imprimirVoucher','-> cable:perform:channel:action:print_error','ballot {}', ballot, 'tickets {}', tickets)
 
       const url = 'http://192.168.88.254:3000'
-      const api = '/api/print'
+      const api = '/api/ticket'
 
       try {
         const response = await axios.post(url + api, {
