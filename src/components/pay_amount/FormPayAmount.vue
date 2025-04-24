@@ -47,7 +47,7 @@
     //   }
     // },
     mounted() {
-      setTimeout(() => this.$router.push('/'), 5000)
+      setTimeout(() => this.$router.push('/'), 10000)
     }
   }
 </script>

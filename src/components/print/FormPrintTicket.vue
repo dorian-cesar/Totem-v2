@@ -3,7 +3,7 @@
     <b-container>
       <b-row align-v="center" class="s-custom-height">
         <b-col cols="12">
-          <b-card border-variant="primary">
+          <b-card border-variant="primary" style="background-color: azure;">
             <b-card-text>
               <b-row>
                 <b-col class="">
