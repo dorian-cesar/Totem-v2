@@ -123,6 +123,9 @@ export default {
     imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       // this.imprimirConectar()
       console.log('- methods:imprimirVoucher', 'ballotValue {}' + ballotValue, 'ticketsValue {}' + ticketsValue, 'codigoUnico {}' + codigoUnico)
+      console.log('ballotValue', ballotValue)
+      console.log('ticketsValue', ticketsValue)
+      console.log('codigoUnico', codigoUnico)
 
       //voucher de compra en el POS
       const ballot = {

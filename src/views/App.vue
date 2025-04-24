@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <logo class="p-3"/>
-    <p class="version-text text-right pr-5 mb-0 font-weight-bold">1.9.3 Version</p>
+    <p class="version-text text-right pr-5 mb-0 font-weight-bold">1.9.4 Version</p>
     <b-row align-h="center">
       <b-col cols="11">
         <router-view/>
@@ -25,8 +25,8 @@
   body {
     // background-image: url("../assets/img/background.jpg");
     background: #013ba7 !important;
-    width: 1080px;
-    height: 1920px;
+    width: 1060px;
+    height: 1910px;
     margin: 0px;
   }
 
