@@ -105,20 +105,20 @@ export default {
     //   this.$cable.unsubscribe({channel: 'Transbank'}, 'Transbank')
     // },
     //Realizar el pago en el POS
-    sendNewSale(value, ballotNumber) {
-      console.log('- methods:sendNewSale', '-> methods:initVar', '->  cable:perform:channel:Transbank:action:send_new_sale')
-      this.initVar()
-      this.$cable.perform({
-        channel: 'Transbank',
-        action: 'send_new_sale',
-        data: {
-          message: {
-            value: value,
-            ballot_number: ballotNumber
-          }
-        }
-      }, 'Transbank')
-    },
+    // sendNewSale(value, ballotNumber) {
+    //   console.log('- methods:sendNewSale', '-> methods:initVar', '->  cable:perform:channel:Transbank:action:send_new_sale')
+    //   this.initVar()
+    //   this.$cable.perform({
+    //     channel: 'Transbank',
+    //     action: 'send_new_sale',
+    //     data: {
+    //       message: {
+    //         value: value,
+    //         ballot_number: ballotNumber
+    //       }
+    //     }
+    //   }, 'Transbank')
+    // },
     //imprimir voucher
     imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       // this.imprimirConectar()

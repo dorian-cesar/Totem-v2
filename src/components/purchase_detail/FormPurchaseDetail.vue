@@ -153,7 +153,6 @@ export default {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful)
           if (response.data.data.successful === true) {
-            // this.isErrorTerminarTransaccionPOS(false)
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);
             console.log(this.ballotNumberPOS)
@@ -161,11 +160,13 @@ export default {
           } else {
             this.isErrorPOS = true;
             this.isErrorTerminarTransaccionPOS(true)
+            this.propsPaymentControl.msg = response.data.error;
           }
         })
         .catch(error => {
           console.error('Error en el pago:', (error.response && error.response.data) || error.message);
           this.isErrorTerminarTransaccionPOS(true)
+          this.propsPaymentControl.msg = response.data.error;
         });
       this.timeClose = setTimeout(() => {
         this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
@@ -422,6 +423,7 @@ export default {
         await this.axios
           .post([proxy, api].join('/'))
           .then(({ data }) => {
+            console.log("confirm_booking", data)
             if (typeof data === 'object') {
               let ticket_info = data.result.ticket_details
               let response_boleto = ticket_info.ticket_number
@@ -736,7 +738,7 @@ export default {
         );
         // Imprimir voucher + boletos
         clearTimeout(this.timeClose);
-        this.imprimir();
+        // this.imprimir();
         this.$router.push("/payamount");
       } else if (val && this.ticketsGenerados.estado === false) {
         console.log(
