@@ -1,3 +1,5 @@
+// import axios from 'axios'
+
 export default {
 
   data() {
@@ -128,7 +130,6 @@ export default {
       console.log('codigoUnico', codigoUnico)
 
       //voucher de compra en el POS
-
       // EDITAR VALORES
       // const ballot = {
       //   transaction_date: ballotValue.transaction_date,
@@ -194,7 +195,7 @@ export default {
     },
 
     //imprimir voucher de error API Pullmam
-    imprimirVoucherError(ballotValue, codigoUnico) {
+    async imprimirVoucherError(ballotValue, codigoUnico) {
       console.log('- methods:imprimirVoucher','-> imprimirConectar', 'ballotValue {}', ballotValue, 'codigoUnico {}', codigoUnico)
 
       // this.imprimirConectar()
@@ -224,16 +225,19 @@ export default {
 
       console.log('+ methods:imprimirVoucher','-> cable:perform:channel:action:print_error','ballot {}', ballot, 'tickets {}', tickets)
 
-      // this.$cable.perform({
-      //   channel: 'Printer',
-      //   action: 'print_error',
-      //   data: {
-      //     sheet: {
-      //       ballot: ballot,
-      //       tickets: tickets
-      //     }
-      //   }
-      // }, 'Printer')
+      const url = 'http://192.168.88.254:3000'
+      const api = '/api/print'
+
+      try {
+        const response = await axios.post(url + api, {
+          sheet: {
+            ballot: ballot,
+          }
+        })
+        console.log('Error de impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar el error de impresión', error)
+      }
     },
   },
 
