@@ -27,8 +27,8 @@
         </b-col>
         <!-- Mensaje -->
         <b-col colos="12" class="text-center font-italic">
-          <h1 v-show="!isChangeStatus" class="text-primary py-5">Realice el pago en el equipo</h1>
-          <h1 v-show="isChangeStatus" class="text-danger py-1 pb-4 pt-4">{{msg}}</h1>
+          <h2 v-show="!isChangeStatus" class="text-primary py-5">{{msg}}</h2>
+          <h2 v-show="isChangeStatus" class="text-danger py-1 pb-4 pt-4">{{msgError}}</h2>
         </b-col>
         <b-col cols="12" v-show="isChangeStatus" class="text-center mb-3">
           <b-button
@@ -72,6 +72,7 @@
       idModalPaymentControl: {type: String, default: () => 'modal-payment-control'},// Nombre de la pantalla modal
       isChangeStatus: {type: Boolean, default: () => false},// Estatus del proceso de pago
       msg: {type: String, default: () => ''},// Mensaje al cambiar el estatus
+      msgError: {type: String, default: () => ''},// Mensaje de error
       isTryAgain:{type: Boolean, default: () => true}// Estado del botón "Intentar de Nuevo"
     },
 

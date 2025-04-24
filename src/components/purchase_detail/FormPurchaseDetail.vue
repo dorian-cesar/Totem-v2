@@ -45,6 +45,7 @@ export default {
       //
       valuePOS: 0,
       ballotNumberPOS: "",
+      paymentPOS: "",
       //
       loadingGuardarTransaccion: false,
       loadingTerminarTransaccionPOS: false,
@@ -66,7 +67,8 @@ export default {
       propsPaymentControl: {
         total: "",
         isChangeStatus: false,
-        msg: "No se puede realizar el pago",
+        msg: "Realice el pago en el equipo",
+        msgError: "No se puede realizar el pago",
       },
       propsPaymentAtendedorControl: {
         total: "",
@@ -115,7 +117,7 @@ export default {
       this.setTotalAmount = total;
     },
     //inicio del proceso de pago
-    pagar() {
+    pagarPOS() {
       console.log("- methods:pagar", this.propsPersonalInformation.tickets)
       console.log(
         "- methods:pagar",
@@ -125,17 +127,6 @@ export default {
       this.$bvModal.show("modal-payment-control"); //<- Pantalla modal de espera
       clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
       this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
-
-      this.axios.post(
-        'https://s1.ntic.cl/totem-costa-handler/index.php',
-        {
-          type: 'pagar',
-          data: {
-            tickets: this.propsPersonalInformation.tickets,
-          },
-          name: this.info.totemName
-        }
-      )
 
       // const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
       const url = 'http://192.168.88.254:3000'
@@ -153,21 +144,37 @@ export default {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful)
           if (response.data.data.successful === true) {
+            this.propsPaymentControl.msg = response.data.data.responseMessage;
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);
-            console.log(this.ballotNumberPOS)
+            this.paymentPOS = response.data.data;
+            this.amountPOS = response.data.data.amount;
+            console.log("amountPOS", this.amountPOS)
             this.endTransactionPOS(true)
           } else {
             this.isErrorPOS = true;
             this.isErrorTerminarTransaccionPOS(true)
-            this.propsPaymentControl.msg = response.data.error;
+            this.propsPaymentControl.msgError = response.data.error;
           }
         })
         .catch(error => {
           console.error('Error en el pago:', (error.response && error.response.data) || error.message);
           this.isErrorTerminarTransaccionPOS(true)
-          this.propsPaymentControl.msg = response.data.error;
+          this.propsPaymentControl.msgError = (error.response && error.response.data && error.response.data.error);
         });
+
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'pagarPOS',
+          data: {
+            // valuePOS: this.valuePOS,
+            valuePOS: this.amountPOS,
+            ballotNumberPOS: this.ballotNumberPOS
+          },
+          name: this.info.totemName
+        }
+      )
       this.timeClose = setTimeout(() => {
         this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
       }, 150 * 1000); // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
@@ -219,37 +226,37 @@ export default {
     },
 
     //inicio del proceso de pago
-    pagarAtendedor() {
-      console.log("- methods:pagar", this.propsPersonalInformation.tickets)
-      console.log(
-        "- methods:pagar",
-        "! Fijar el tiempo de espera con setTimeout 150*1000",
-        "-> checkStatusConn"
-      );
-      this.$bvModal.show("modal-payment-atendedor-control"); //<- Pantalla modal de espera
-      clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
-      this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
+    // pagarAtendedor() {
+    //   console.log("- methods:pagar", this.propsPersonalInformation.tickets)
+    //   console.log(
+    //     "- methods:pagar",
+    //     "! Fijar el tiempo de espera con setTimeout 150*1000",
+    //     "-> checkStatusConn"
+    //   );
+    //   this.$bvModal.show("modal-payment-atendedor-control"); //<- Pantalla modal de espera
+    //   clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
+    //   this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
 
-      this.axios.post(
-        'https://s1.ntic.cl/totem-costa-handler/index.php',
-        {
-          type: 'pagar-atendedor',
-          data: {
-            tickets: this.propsPersonalInformation.tickets,
-          },
-          name: this.info.totemName
-        }
-      )
-      this.timeClose = setTimeout(
-        function () {
-          this.timeChangeEstatus = true; //<- Se acabó el tiempo
-        }.bind(this),
-        15 * 1000
-      ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
+    //   this.axios.post(
+    //     'https://s1.ntic.cl/totem-costa-handler/index.php',
+    //     {
+    //       type: 'pagar-atendedor',
+    //       data: {
+    //         tickets: this.propsPersonalInformation.tickets,
+    //       },
+    //       name: this.info.totemName
+    //     }
+    //   )
+    //   this.timeClose = setTimeout(
+    //     function () {
+    //       this.timeChangeEstatus = true; //<- Se acabó el tiempo
+    //     }.bind(this),
+    //     15 * 1000
+    //   ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
 
-      // Comprobar los errores de POS, impresora e internet (3)
-      // this.checkStatusConn(); // -> watch errorWebSocket (4)
-    },
+    //   // Comprobar los errores de POS, impresora e internet (3)
+    //   // this.checkStatusConn(); // -> watch errorWebSocket (4)
+    // },
     //guardar transacción en la API de Pullman (1)
     saveTransaction: async function () {
       this.loadingGuardarTransaccion = true
@@ -257,18 +264,19 @@ export default {
 
       const listaCarrito = []
       let valuePOST = 0
-      let ballotNumberPOST = ''
+      // let ballotNumberPOST = ''
       // Asignar los tickets para ser enviados en los parámetros de la API
       console.log('ticket', this.propsPersonalInformation.tickets)
+      console.log('ballotNumberPOS', this.ballotNumberPOS)
       for (let ticket of this.propsPersonalInformation.tickets) {
         valuePOST += parseInt(ticket.precio.replace('.', ''))
-        ballotNumberPOST = parseInt(ticket.operatorPnr)
-        this.transaccionPOS = {
-          codigo: ballotNumberPOST
-        }
-        console.log('transaccionPOS.codigo', this.transaccionPOS.codigo)
+        // ballotNumberPOST = parseInt(ticket.operatorPnr)
+        // console.log('operatorPnr', ticket.operatorPnr)
+        // this.transaccionPOS = {
+        //   codigo: ballotNumberPOST
+        // }
         const itemCarrito = {
-          codigoTransaccion: ballotNumberPOST,
+          codigoTransaccion: this.ballotNumberPOS,
           fechaPasada: ticket.fechaServicio,
           asiento: ticket.asiento,
           clase: ticket.clase,
@@ -300,8 +308,7 @@ export default {
       }
       this.ticketsProcessed = listaCarrito
       this.valuePOS = valuePOST
-      this.ballotNumberPOS = this.transaccionPOS.codigo
-      // console.log('tickets', this.propsPersonalInformation.tickets)
+      // this.ballotNumberPOS = this.transaccionPOS.codigo
       console.log('ticketsProcessed', this.ticketsProcessed)
       setTimeout(() => {
         this.loadingGuardarTransaccion = false
@@ -335,54 +342,54 @@ export default {
     },
 
     //realizar el pago en el POS
-    pagarPOS() {
-      this.axios.post(
-        'https://s1.ntic.cl/totem-costa-handler/index.php',
-        {
-          type: 'pagarPOS',
-          data: {
-            valuePOS: this.valuePOS,
-            ballotNumberPOS: this.ballotNumberPOS
-          },
-          name: this.info.totemName
-        }
-      )
-      console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
-      // Método en mixins
-      // this.valuePOS = 50
-      // this.axios.post(
-      //   'http://192.168.88.254/api/payment',
-      //   {
-      //     "amount": this.valuePOS,  // Monto en pesos (ej. $10.000)
-      //     "ticketNumber": this.ballotNumberPOS,  // Número de boleta/ticket
-      //     // "printVoucher": true,  // Si deseas imprimir voucher
-      //     // "sendMessages": true  // Si deseas recibir mensajes intermedios
-      //   }
-      // )
-      // this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
+    // pagarPOS() {
+    //   this.axios.post(
+    //     'https://s1.ntic.cl/totem-costa-handler/index.php',
+    //     {
+    //       type: 'pagarPOS',
+    //       data: {
+    //         valuePOS: this.valuePOS,
+    //         ballotNumberPOS: this.ballotNumberPOS
+    //       },
+    //       name: this.info.totemName
+    //     }
+    //   )
+    //   console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
+    // Método en mixins
+    // this.valuePOS = 50
+    // this.axios.post(
+    //   'http://192.168.88.254/api/payment',
+    //   {
+    //     "amount": this.valuePOS,  // Monto en pesos (ej. $10.000)
+    //     "ticketNumber": this.ballotNumberPOS,  // Número de boleta/ticket
+    //     // "printVoucher": true,  // Si deseas imprimir voucher
+    //     // "sendMessages": true  // Si deseas recibir mensajes intermedios
+    //   }
+    // )
+    // this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
 
-      // TODO: Eliminar en producción
-      // console.log("- methods:guardarTransaccionPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
-      // this.guardarTransaccionPOS()
-    },
+    // TODO: Eliminar en producción
+    // console.log("- methods:guardarTransaccionPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
+    // this.guardarTransaccionPOS()
+    // },
     // Imprimir voucher + boletos
     imprimir() {
       // Imprimir Voucher
       console.log("imprimir");
       this.imprimirVoucher(
         // parametros para enviar a la impresora
-        // this.paymentPOS,
+        this.paymentPOS,
         this.ticketsGenerados.boletos,
-        this.transaccionPOS.codigo
+        this.ballotNumberPOS
       );
     },
     //imprimir comprobante de error
     imprimirComprobanteError() {
       console.log("imprimirComprobanteError");
       console.log("transaccionPOS", this.transaccionPOS.codigo);
-      ////this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
+      this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
       this.imprimirVoucherError(
-        // this.paymentPOS,
+        this.paymentPOS,
         this.transaccionPOS.codigo ? this.transaccionPOS.codigo : "SIN CODIGO"
       );
     },
@@ -514,8 +521,9 @@ export default {
     //salir a Home
     goHome() {
       this.liberarAsientos();
-      //this.$router.push('/')
-      this.$router.push({ name: "Home" });
+      this.$router.push({ name: "Home" }).then(() => {
+        window.location.reload();
+      });
     },
     // Click Toolbar button
     eventClick: function (name) {
@@ -524,7 +532,7 @@ export default {
       if ("Right-Button" === name) {
         //<- PAGAR
         console.log("+ methods:eventClick", "-> methods:pagar");
-        this.pagar(); // <- Inicio el proceso de pago (2)
+        this.pagarPOS(); // <- Inicio el proceso de pago (2)
       } else if ("Center-Button" === name) {
         //<- PAGAR
         console.log("+ methods:eventClick", "-> methods:pagar");
@@ -738,7 +746,7 @@ export default {
         );
         // Imprimir voucher + boletos
         clearTimeout(this.timeClose);
-        // this.imprimir();
+        this.imprimir();
         this.$router.push("/payamount");
       } else if (val && this.ticketsGenerados.estado === false) {
         console.log(

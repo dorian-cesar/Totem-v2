@@ -215,16 +215,16 @@ export default {
 
       console.log('+ methods:imprimirVoucher','-> cable:perform:channel:action:print_error','ballot {}', ballot, 'tickets {}', tickets)
 
-      this.$cable.perform({
-        channel: 'Printer',
-        action: 'print_error',
-        data: {
-          sheet: {
-            ballot: ballot,
-            tickets: tickets
-          }
-        }
-      }, 'Printer')
+      // this.$cable.perform({
+      //   channel: 'Printer',
+      //   action: 'print_error',
+      //   data: {
+      //     sheet: {
+      //       ballot: ballot,
+      //       tickets: tickets
+      //     }
+      //   }
+      // }, 'Printer')
     },
   },
 

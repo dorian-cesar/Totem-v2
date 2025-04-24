@@ -206,28 +206,6 @@ export default {
 //      return ((parseInt(this.availableSeats[ultimoPiso1 - 1].seat) + 1).toString() === this.availableSeats[ultimoPiso1].seat)
 //        ? true : false
 //    },
-
-    /**
-     * @deprecated
-     */
-    // Validar disponibilidad del asiento
-    // seatValidatsion: async function () {
-    //   // estatus del flag loadingValidate
-    //   this.isloadingValidate = true
-
-    //   const proxy = URL_PROXY
-    //   const api = 'integrador-web/rest/private/venta/validarAsiento'
-    //   // agregar el numero del asiento a los parámetros de consulta
-    //   this.param.asiento = this.seatNum
-
-    //   // Consult API
-    //   await this.axios
-    //     .post([proxy, api].join('/'), this.param)
-    //     .then(response => (this.isBusy = response.data))
-    //     .catch(error => console.error(error))
-    //     .finally(() => this.isloadingValidate = false)
-    // },
-
     // Mensaje de error
     async showMsgBoxError() {
       await this.$bvModal.msgBoxOk('Se presentó un error al reservar el asiento, debe elegir otro.', {
