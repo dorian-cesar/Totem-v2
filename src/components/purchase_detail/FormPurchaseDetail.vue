@@ -137,24 +137,23 @@ export default {
       this.axios.post(url + api,
         {
           amount: this.propsPersonalInformation.total.replace('.', ''),
-          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
+          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10),
         },
       )
         .then(response => {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful)
           if (response.data.data.successful === true) {
+            console.log("transbank successful response: ", response.data)
             this.propsPaymentControl.msg = response.data.data.responseMessage;
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);
             this.paymentPOS = response.data.data;
             this.amountPOS = response.data.data.amount;
-            console.log("amountPOS", this.amountPOS)
             this.endTransactionPOS(true)
           } else {
             this.isErrorPOS = true;
             this.isErrorTerminarTransaccionPOS(true)
-            this.propsPaymentControl.msgError = response.data.error;
           }
         })
         .catch(error => {
@@ -375,9 +374,8 @@ export default {
     // Imprimir voucher + boletos
     imprimir() {
       // Imprimir Voucher
-      console.log("imprimir");
+      console.log("imprimir voucher");
       this.imprimirVoucher(
-        // parametros para enviar a la impresora
         this.paymentPOS,
         this.ticketsGenerados.boletos,
         this.ballotNumberPOS

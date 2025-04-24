@@ -120,7 +120,7 @@ export default {
     //   }, 'Transbank')
     // },
     //imprimir voucher
-    imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
+    async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       // this.imprimirConectar()
       console.log('- methods:imprimirVoucher', 'ballotValue {}' + ballotValue, 'ticketsValue {}' + ticketsValue, 'codigoUnico {}' + codigoUnico)
       console.log('ballotValue', ballotValue)
@@ -128,25 +128,27 @@ export default {
       console.log('codigoUnico', codigoUnico)
 
       //voucher de compra en el POS
-      const ballot = {
-        transaction_date: ballotValue.transaction_date,
-        transaction_hour: ballotValue.transaction_hour,
-        amount: ballotValue.amount,
-        date_count: ballotValue.date_count,
-        payment_type: ballotValue.payment_type,
-        card_type: ballotValue.card_type,
-        ballot_number: 'U18.1L3',
-        commerce_code: ballotValue.commerce_code,
-        terminal_id: ballotValue.terminal_id,
-        card_number: ballotValue.card_number,
-        account_number: ballotValue.account_number,
-        operation_number: ballotValue.operation_number,
-        auth_code: ballotValue.auth_code,
-        codigo_unico: codigoUnico.toString(),
-        tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
-        numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
-        monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
-      }
+
+      // EDITAR VALORES
+      // const ballot = {
+      //   transaction_date: ballotValue.transaction_date,
+      //   transaction_hour: ballotValue.transaction_hour,
+      //   amount: ballotValue.amount,
+      //   date_count: ballotValue.date_count,
+      //   payment_type: ballotValue.payment_type,
+      //   card_type: ballotValue.card_type,
+      //   ballot_number: 'U18.1L3',
+      //   commerce_code: ballotValue.commerce_code,
+      //   terminal_id: ballotValue.terminal_id,
+      //   card_number: ballotValue.card_number,
+      //   account_number: ballotValue.account_number,
+      //   operation_number: ballotValue.operation_number,
+      //   auth_code: ballotValue.auth_code,
+      //   codigo_unico: codigoUnico.toString(),
+      //   tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
+      //   numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
+      //   monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
+      // }
 
       let tickets = [];
       console.log('+ methods:imprimirVoucher','! Número de boletos ' + ticketsValue.length)
@@ -156,37 +158,41 @@ export default {
         boleto = JSON.parse(boleto)
         tickets.push({
           boleto: boleto.boleto,
-          codigo: boleto.codigoTransaccion,
+          codigo: boleto.codigo,
           rut: '',//<- No se indica Rut en los boletos
-          servicio: boleto.nombreClase,
+          servicio: boleto.servicio,
           ruta: this.buscarRuta(boleto.codigoTerminalOrigen, boleto.codigoTerminalDestino),
           piso: boleto.piso,
           asiento: boleto.asiento,
-          fecha: boleto.fechaSalida,
-          hora: boleto.horaSalida.slice(0, 5),
-          origen: boleto.nombreTerminalOrigen,
-          destino: boleto.nombreTerminalDestino,
+          fecha: boleto.fecha,
+          // hora: boleto.hora.slice(0, 5),
+          hora: boleto.hora,
+          origen: boleto.origen,
+          destino: boleto.destino,
           tipo_cliente: 'PULLMAN PASS',
-          fecha_compra: today,
+          fecha_compra: boleto.fecha_compra,
           total: boleto.total
         })
       }
 
-      console.log('+ methods:imprimirVoucher', 'ballot {}', ballot, 'tickets {}', tickets, '-> cable:.perform:channel:Printer')
+      console.log('+ methods:imprimirVoucher', 'ballot {}', ballot, 'tickets {}', tickets, '-> api/print')
 
-      // implementar logica de impresion
+      const url = 'http://192.168.88.254:3000'
+      const api = '/api/print'
 
-      // this.$cable.perform({
-      //   channel: 'Printer',
-      //   action: 'print',
-      //   data: {
-      //     sheet: {
-      //       ballot: ballot,
-      //       tickets: tickets
-      //     }
-      //   }
-      // }, 'Printer')
+      try {
+        const response = await axios.post(url + api, {
+          sheet: {
+            // ballot: ballot,
+            tickets: tickets
+          }
+        })
+        console.log('Impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
     },
+
     //imprimir voucher de error API Pullmam
     imprimirVoucherError(ballotValue, codigoUnico) {
       console.log('- methods:imprimirVoucher','-> imprimirConectar', 'ballotValue {}', ballotValue, 'codigoUnico {}', codigoUnico)
