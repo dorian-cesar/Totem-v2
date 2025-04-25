@@ -238,30 +238,30 @@ export default {
       )
       previewWindow.document.close()
 
-      // console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
+      console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
+      const url = 'https://192.168.88.246:3000'
+      const api = '/imprimir'
 
-      // // imprimir voucher
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     texto: voucher,
-      //     boletos: boletosTexto
-      //   })
-      //   console.log('Impresión enviada con éxito', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      // imprimir voucher
+      try {
+        const response = await axios.post(url + api, {
+          texto: voucher,
+          boletos: boletosTexto
+        })
+        console.log('Impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
 
-      // // imprimir boletos
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     texto: boletosTexto
-      //   })
-      //   console.log('Impresión enviada con éxito', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      // imprimir boletos
+      try {
+        const response = await axios.post(url + api, {
+          texto: boletosTexto
+        })
+        console.log('Impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
     },
 
     //imprimir voucher de error API Pullmam
