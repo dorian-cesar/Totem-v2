@@ -15,7 +15,7 @@
           @selectedStatus="action('select-arrival', $event)" ref="select-arrival" />
       </b-col>
     </b-row>
-    <hr>
+    <!-- <hr>
     <b-row align-h="center">
       <b-col cols="12">
         <b-form-group>
@@ -23,7 +23,7 @@
             style="height: 68px; font-size: 2rem;" />
         </b-form-group>
       </b-col>
-    </b-row>
+    </b-row> -->
   </div>
 </template>
 

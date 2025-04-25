@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <logo class="p-3"/>
-    <p class="version-text text-right pr-5 mb-0 font-weight-bold">1.9.8 Version</p>
+    <p class="version-text text-right pr-5 mb-0 font-weight-bold">1.9.9 Version</p>
     <b-row align-h="center">
       <b-col cols="11">
         <router-view/>

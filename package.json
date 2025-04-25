@@ -41,7 +41,6 @@
     "node-sass": "^4.14.1",
     "npm-watch": "^0.6.0",
     "popper.js": "^1.15.0",
-    "rut.js": "^2.1.0",
     "sass-loader": "^7.1.0",
     "serve": "^11.3.0",
     "serve-dist": "^1.0.11",
