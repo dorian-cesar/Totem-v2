@@ -129,44 +129,65 @@ export default {
     // },
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
-      // this.imprimirConectar()
       console.log(
         '- methods:imprimirVoucher',
         'ballotValue {}' + ballotValue,
         'ticketsValue {}' + ticketsValue,
         'codigoUnico {}' + codigoUnico
       )
-      console.log('ballotValue', ballotValue)
+      console.log('ballotValue:', ballotValue)
       console.log('ticketsValue', ticketsValue)
       console.log('codigoUnico', codigoUnico)
 
       const realDate = ballotValue.realDate
       const formattedDate = `${realDate.slice(0, 2)}/${realDate.slice(2, 4)}/${realDate.slice(4)}`
-
       const realTime = ballotValue.realTime
       const formattedTime = `${realTime.slice(0, 2)}:${realTime.slice(2, 4)}:${realTime.slice(4)}`
 
       //voucher de compra en el POS
-      const ballot = {
-        transaction_date: ballotValue.formattedDate,
-        transaction_hour: ballotValue.formattedTime,
-        amount: ballotValue.amount,
-        date_count: ballotValue.date_count,
-        payment_type: ballotValue.payment_type,
-        card_type: ballotValue.cardType,
-        ballot_number: 'U18.1L3',
-        commerce_code: ballotValue.commerceCode,
-        terminal_id: ballotValue.terminal_id,
-        card_number: ballotValue.last4Digits,
-        account_number: ballotValue.accountNumber,
-        operation_number: ballotValue.operationNumber,
-        auth_code: ballotValue.authorizationCode,
-        codigo_unico: codigoUnico.toString(),
-        tipo_cuota: '' === ballotValue.shareType ? 'SIN CUOTA' : ballotValue.shareType,
-        numero_cuota: '00' === ballotValue.sharesNumber ? '0' : ballotValue.sharesNumber,
-        monto_cuota: '' === ballotValue.sharesAmount ? '0' : ballotValue.sharesAmount,
-        comentario_cuota: ballotValue.sharesTypeComment
-      }
+      const transaction_date = formattedDate
+      const transaction_hour = formattedTime
+      const amount = ballotValue.amount
+      const commerce_code = ballotValue.commerceCode
+      const terminal_id = ballotValue.terminalId
+      const card_number = ballotValue.last4Digits
+      const card_type = ballotValue.cardType
+      const operation_number = ballotValue.operationNumber
+      const auth_code = ballotValue.authorizationCode
+      const account_number = ballotValue.accountNumber || '---'
+      const codigo_unico = codigoUnico.toString()
+      const tipo_cuota = ballotValue.shareType || 'SIN CUOTA'
+      const numero_cuota = ballotValue.sharesNumber || '0'
+      const monto_cuota = ballotValue.sharesAmount || '0'
+      const comentario_cuota = ballotValue.sharesTypeComment || '---'
+
+      const voucher =
+        '          COMPROBANTE DE VENTA           \n' +
+        '             PAGO EN CUOTAS              \n' +
+        '           TARJETA DE CREDITO            \n' +
+        '        INTEGRACIONES TRANSBANK          \n' +
+        '             TRANSBANK S.A.              \n' +
+        '        ISIDORA GOYENECHEA 3520          \n' +
+        `             ${commerce_code}            \n` +
+        '                Santiago                 \n' +
+        `             ${codigo_unico}             \n` +
+        '    FECHA       HORA        TERMINAL     \n' +
+        `  ${transaction_date}   ${transaction_hour}   ${terminal_id}  \n` +
+        '                                            \n' +
+        `   NUMERO DE TARJETA              ${card_type}   \n` +
+        `   ******${card_number}                             \n` +
+        `   ${card_type}\n` +
+        `   TOTAL:                   $${amount}\n` +
+        `   NUMERO DE CUOTAS:         ${numero_cuota}        \n` +
+        `   TIPO DE CUOTAS: ${tipo_cuota}\n` +
+        `   MONTO CUOTA:          $${monto_cuota}           \n` +
+        `   TASA DE INTERES:              ${comentario_cuota}   \n` +
+        `   NUMERO DE BOLETA:        ${account_number}        \n` +
+        `   NUMERO DE OPERACION:    ${operation_number}     \n` +
+        `   CODIGO DE AUTORIZACION: ${auth_code}        \n` +
+        '                                            \n' +
+        '         GRACIAS POR SU COMPRA           \n' +
+        ' ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n'
 
       let tickets = []
       console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
@@ -194,13 +215,13 @@ export default {
         })
       }
 
-      // console.log('+ methods:imprimirVoucher', 'ballot {}', 'ballot', 'tickets {}', tickets, '-> api/print')
+      console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', tickets, '-> /imprimir')
       const url = 'https://192.168.88.246:3000'
       const api = '/imprimir'
 
       try {
         const response = await axios.post(url + api, {
-          texto: 'Hola desde Vue.js'
+          texto: voucher
         })
         console.log('Impresión enviada con éxito', response.data)
       } catch (error) {
