@@ -130,31 +130,30 @@ export default {
       console.log('codigoUnico', codigoUnico)
 
       //voucher de compra en el POS
-      // EDITAR VALORES
-      // const ballot = {
-      //   transaction_date: ballotValue.transaction_date,
-      //   transaction_hour: ballotValue.transaction_hour,
-      //   amount: ballotValue.amount,
-      //   date_count: ballotValue.date_count,
-      //   payment_type: ballotValue.payment_type,
-      //   card_type: ballotValue.card_type,
-      //   ballot_number: 'U18.1L3',
-      //   commerce_code: ballotValue.commerce_code,
-      //   terminal_id: ballotValue.terminal_id,
-      //   card_number: ballotValue.card_number,
-      //   account_number: ballotValue.account_number,
-      //   operation_number: ballotValue.operation_number,
-      //   auth_code: ballotValue.auth_code,
-      //   codigo_unico: codigoUnico.toString(),
-      //   tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
-      //   numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
-      //   monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
-      // }
+      const ballot = {
+        transaction_date: ballotValue.transaction_date,
+        transaction_hour: ballotValue.transaction_hour,
+        amount: ballotValue.amount,
+        date_count: ballotValue.date_count,
+        payment_type: ballotValue.payment_type,
+        card_type: ballotValue.card_type,
+        ballot_number: 'U18.1L3',
+        commerce_code: ballotValue.commerce_code,
+        terminal_id: ballotValue.terminal_id,
+        card_number: ballotValue.card_number,
+        account_number: ballotValue.account_number,
+        operation_number: ballotValue.operation_number,
+        auth_code: ballotValue.auth_code,
+        codigo_unico: codigoUnico.toString(),
+        tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
+        numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
+        monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
+      }
 
       let tickets = [];
       console.log('+ methods:imprimirVoucher','! Número de boletos ' + ticketsValue.length)
 
-      let today = this.today()
+      // let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
         tickets.push({
@@ -162,7 +161,8 @@ export default {
           codigo: boleto.codigo,
           rut: '',//<- No se indica Rut en los boletos
           servicio: boleto.servicio,
-          ruta: this.buscarRuta(boleto.codigoTerminalOrigen, boleto.codigoTerminalDestino),
+          // ruta: this.buscarRuta(boleto.codigoTerminalOrigen, boleto.codigoTerminalDestino),
+          ruta: `${boleto.origen} ${boleto.hora} - ${boleto.destino} ${boleto.fecha}`,
           piso: boleto.piso,
           asiento: boleto.asiento,
           fecha: boleto.fecha,
@@ -176,22 +176,22 @@ export default {
         })
       }
 
-      console.log('+ methods:imprimirVoucher', 'ballot {}', ballot, 'tickets {}', tickets, '-> api/print')
+      console.log('+ methods:imprimirVoucher', 'ballot {}', "ballot", 'tickets {}', tickets, '-> api/print')
 
-      const url = 'http://192.168.88.254:3000'
-      const api = '/api/print'
+      // const url = 'http://192.168.88.254:3000'
+      // const api = '/api/print'
 
-      try {
-        const response = await axios.post(url + api, {
-          sheet: {
-            // ballot: ballot,
-            tickets: tickets
-          }
-        })
-        console.log('Impresión enviada con éxito', response.data)
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
+      // try {
+      //   const response = await axios.post(url + api, {
+      //     sheet: {
+      //       // ballot: ballot,
+      //       tickets: tickets
+      //     }
+      //   })
+      //   console.log('Impresión enviada con éxito', response.data)
+      // } catch (error) {
+      //   console.error('Error al enviar los datos de impresión', error)
+      // }
     },
 
     //imprimir voucher de error API Pullmam
@@ -225,19 +225,19 @@ export default {
 
       console.log('+ methods:imprimirVoucher','-> cable:perform:channel:action:print_error','ballot {}', ballot, 'tickets {}', tickets)
 
-      const url = 'http://192.168.88.254:3000'
-      const api = '/api/print'
+      // const url = 'http://192.168.88.254:3000'
+      // const api = '/api/print'
 
-      try {
-        const response = await axios.post(url + api, {
-          sheet: {
-            ballot: ballot,
-          }
-        })
-        console.log('Error de impresión enviada con éxito', response.data)
-      } catch (error) {
-        console.error('Error al enviar el error de impresión', error)
-      }
+      // try {
+      //   const response = await axios.post(url + api, {
+      //     sheet: {
+      //       ballot: ballot,
+      //     }
+      //   })
+      //   console.log('Error de impresión enviada con éxito', response.data)
+      // } catch (error) {
+      //   console.error('Error al enviar el error de impresión', error)
+      // }
     },
   },
 

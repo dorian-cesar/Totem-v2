@@ -3,24 +3,25 @@
     <!-- Input select departure -->
     <b-row align-h="center">
       <b-col cols="12">
-        <select-input
-          v-bind="propsDepartureCity"
-          @selectedValue="propsDepartureCity.selected = $event"
-          @selectedStatus="action('select-origin', $event)"
-          ref="select-origin"
-        />
+        <select-input v-bind="propsDepartureCity" @selectedValue="propsDepartureCity.selected = $event"
+          @selectedStatus="action('select-origin', $event)" ref="select-origin" />
       </b-col>
     </b-row>
     <hr>
     <!-- Input select arrival -->
     <b-row align-h="center">
       <b-col cols="12">
-        <select-input
-          v-bind="propsArrivalCity"
-          @selectedValue="propsArrivalCity.selected = $event"
-          @selectedStatus="action('select-arrival', $event)"
-          ref="select-arrival"
-        />
+        <select-input v-bind="propsArrivalCity" @selectedValue="propsArrivalCity.selected = $event"
+          @selectedStatus="action('select-arrival', $event)" ref="select-arrival" />
+      </b-col>
+    </b-row>
+    <hr>
+    <b-row align-h="center">
+      <b-col cols="12">
+        <b-form-group>
+          <b-form-input v-model="rut" placeholder="Ej: 12.345.678-9" @input="rut = formatearRut(rut)" @blur="validarRut"
+            style="height: 68px; font-size: 2rem;" />
+        </b-form-group>
       </b-col>
     </b-row>
   </div>
@@ -28,7 +29,7 @@
 
 <script>
 import Select from "@/components/Select.vue";
-import {mapActions} from "vuex";
+import { mapActions } from "vuex";
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
 
@@ -59,8 +60,9 @@ export default {
       reset: false,
       imgClass: 'destiny-img-class',
     },
+    rut: '',
   }),
-  components: {selectInput: Select},
+  components: { selectInput: Select },
   watch: {
     "propsDepartureCity.selected": function () {
       // Reset arrival city values
@@ -183,8 +185,51 @@ export default {
       });
     },
     action(name, val) {
-      this.$emit("selectAction", {name: name, status: val});
+      this.$emit("selectAction", { name: name, status: val });
     },
+
+    async validarRut() {
+      if (!this.rut || this.rut.trim() === '') {
+        await this.showMsgBoxError('Debe ingresar su RUT.');
+        return;
+      }
+      this.rut = this.formatearRut(this.rut);
+      const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/;
+      if (!rutRegex.test(this.rut)) {
+        await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.');
+      }
+    },
+
+    formatearRut(rut) {
+      // Eliminar todo excepto números y K/k
+      rut = rut.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (rut.length < 2) return rut;
+      let cuerpo = rut.slice(0, -1);
+      let dv = rut.slice(-1);
+      // Agregar puntos cada 3 dígitos desde el final
+      let formateado = '';
+      let i = 0;
+      for (let j = cuerpo.length - 1; j >= 0; j--) {
+        formateado = cuerpo[j] + formateado;
+        i++;
+        if (i % 3 === 0 && j !== 0) {
+          formateado = '.' + formateado;
+        }
+      }
+      return `${formateado}-${dv}`;
+    },
+
+    async showMsgBoxError(msg) {
+      await this.$bvModal.msgBoxOk(msg, {
+        title: 'Información',
+        size: 'sm',
+        buttonSize: 'lg',
+        okVariant: 'danger',
+        headerClass: 'p-2 ml-2 mr-2 border-bottom-0',
+        footerClass: 'p-2 ml-2 mr-2 border-top-0',
+        centered: true
+      });
+    }
   },
 };
 </script>
