@@ -54,13 +54,13 @@ export default {
         })
         .then(({ data }) => {
           if (typeof data === 'object') {
-            this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
-              type: 'tentative_booking',
-              call_url: api,
-              call_data: formatParams,
-              data: data,
-              name: this.info.totemName
-            })
+            // this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
+            //   type: 'tentative_booking',
+            //   call_url: api,
+            //   call_data: formatParams,
+            //   data: data,
+            //   name: this.info.totemName
+            // })
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
@@ -69,11 +69,11 @@ export default {
               this.statusReservation = false
               console.log('no ticket', data)
 
-              this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
-                type: 'tentative_booking_error',
-                data: data,
-                name: this.info.totemName
-              })
+              // this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
+              //   type: 'tentative_booking_error',
+              //   data: data,
+              //   name: this.info.totemName
+              // })
             } else if (typeof data.result !== 'undefined') {
               if (typeof data.result.ticket_details !== 'undefined') {
                 this.statusReservation = true
