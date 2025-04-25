@@ -200,7 +200,7 @@ export default {
 
       try {
         const response = await axios.post(url + api, {
-          mensaje: 'Hola desde Vue.js'
+          texto: 'Hola desde Vue.js'
         })
         console.log('Impresión enviada con éxito', response.data)
       } catch (error) {
