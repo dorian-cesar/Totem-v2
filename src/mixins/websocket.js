@@ -1,13 +1,12 @@
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
-
   data() {
     return {
       //isConnWebSocket: false,
       isConnPOS: null, //<- Estado de la conexión
-      messagePOS: '',//<- Mensaje del POS
-      paymentPOS: '',//<- Monto de la venta
+      messagePOS: '', //<- Mensaje del POS
+      paymentPOS: '', //<- Monto de la venta
       isErrorPOS: false,
       // endTransactionPOS: false, //<- Fin de la transacción del POS
       messagePrinter: '',
@@ -17,7 +16,7 @@ export default {
       //
       messageWebSocket: '', //<- Mensajes del websocket
       errorConnWebSocket: false, //<- Errores de impresora, conexión POS, internet
-      isOutService: false, //<- Estado fuera de servicio
+      isOutService: false //<- Estado fuera de servicio
     }
   },
 
@@ -25,8 +24,8 @@ export default {
     //Fecha de hoy
     today() {
       let date = new Date()
-      let day = (date.getDate().toString().length === 1) ? '0' + date.getDate() : date.getDate()
-      let month = ((date.getMonth() + 1).toString().length === 1) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)
+      let day = date.getDate().toString().length === 1 ? '0' + date.getDate() : date.getDate()
+      let month = (date.getMonth() + 1).toString().length === 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
       let year = date.getFullYear()
 
       return [day, month, year].join('/')
@@ -38,7 +37,14 @@ export default {
       this.paymentPOS = ''
       this.isErrorPOS = false
       this.endTransactionPOS = false
-      console.log('- methods:initVar', 'isConn = '+ this.isConn, 'messagePOS = ' + this.messagePOS, 'paymentPOS = ' + this.paymentPOS, 'isErrorPOS = ' + this.isErrorPOS, 'endTransactionPOS = ' + this.endTransactionPOS)
+      console.log(
+        '- methods:initVar',
+        'isConn = ' + this.isConn,
+        'messagePOS = ' + this.messagePOS,
+        'paymentPOS = ' + this.paymentPOS,
+        'isErrorPOS = ' + this.isErrorPOS,
+        'endTransactionPOS = ' + this.endTransactionPOS
+      )
       //this.isconnPOSX = false
       //this.isConnPrinter = false
     },
@@ -124,42 +130,54 @@ export default {
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       // this.imprimirConectar()
-      console.log('- methods:imprimirVoucher', 'ballotValue {}' + ballotValue, 'ticketsValue {}' + ticketsValue, 'codigoUnico {}' + codigoUnico)
+      console.log(
+        '- methods:imprimirVoucher',
+        'ballotValue {}' + ballotValue,
+        'ticketsValue {}' + ticketsValue,
+        'codigoUnico {}' + codigoUnico
+      )
       console.log('ballotValue', ballotValue)
       console.log('ticketsValue', ticketsValue)
       console.log('codigoUnico', codigoUnico)
 
+      const realDate = ballotValue.realDate
+      const formattedDate = `${realDate.slice(0, 2)}/${realDate.slice(2, 4)}/${realDate.slice(4)}`
+
+      const realTime = ballotValue.realTime
+      const formattedTime = `${realTime.slice(0, 2)}:${realTime.slice(2, 4)}:${realTime.slice(4)}`
+
       //voucher de compra en el POS
       const ballot = {
-        transaction_date: ballotValue.transaction_date,
-        transaction_hour: ballotValue.transaction_hour,
+        transaction_date: ballotValue.formattedDate,
+        transaction_hour: ballotValue.formattedTime,
         amount: ballotValue.amount,
         date_count: ballotValue.date_count,
         payment_type: ballotValue.payment_type,
-        card_type: ballotValue.card_type,
+        card_type: ballotValue.cardType,
         ballot_number: 'U18.1L3',
-        commerce_code: ballotValue.commerce_code,
+        commerce_code: ballotValue.commerceCode,
         terminal_id: ballotValue.terminal_id,
-        card_number: ballotValue.card_number,
-        account_number: ballotValue.account_number,
-        operation_number: ballotValue.operation_number,
-        auth_code: ballotValue.auth_code,
+        card_number: ballotValue.last4Digits,
+        account_number: ballotValue.accountNumber,
+        operation_number: ballotValue.operationNumber,
+        auth_code: ballotValue.authorizationCode,
         codigo_unico: codigoUnico.toString(),
-        tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
-        numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
-        monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
+        tipo_cuota: '' === ballotValue.shareType ? 'SIN CUOTA' : ballotValue.shareType,
+        numero_cuota: '00' === ballotValue.sharesNumber ? '0' : ballotValue.sharesNumber,
+        monto_cuota: '' === ballotValue.sharesAmount ? '0' : ballotValue.sharesAmount,
+        comentario_cuota: ballotValue.sharesTypeComment
       }
 
-      let tickets = [];
-      console.log('+ methods:imprimirVoucher','! Número de boletos ' + ticketsValue.length)
+      let tickets = []
+      console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
 
-      // let today = this.today()
+      let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
         tickets.push({
           boleto: boleto.boleto,
           codigo: boleto.codigo,
-          rut: '',//<- No se indica Rut en los boletos
+          rut: '', //<- No se indica Rut en los boletos
           servicio: boleto.servicio,
           // ruta: this.buscarRuta(boleto.codigoTerminalOrigen, boleto.codigoTerminalDestino),
           ruta: `${boleto.origen} ${boleto.hora} - ${boleto.destino} ${boleto.fecha}`,
@@ -176,70 +194,79 @@ export default {
         })
       }
 
-      console.log('+ methods:imprimirVoucher', 'ballot {}', "ballot", 'tickets {}', tickets, '-> api/print')
+      // console.log('+ methods:imprimirVoucher', 'ballot {}', 'ballot', 'tickets {}', tickets, '-> api/print')
+      const url = 'https://192.168.88.246:3000'
+      const api = '/imprimir'
 
-      // const url = 'http://192.168.88.254:3000'
-      // const api = '/api/print'
-
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     sheet: {
-      //       // ballot: ballot,
-      //       tickets: tickets
-      //     }
-      //   })
-      //   console.log('Impresión enviada con éxito', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      try {
+        const response = await axios.post(url + api, {
+          mensaje: 'Hola desde Vue.js'
+        })
+        console.log('Impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
     },
 
     //imprimir voucher de error API Pullmam
     async imprimirVoucherError(ballotValue, codigoUnico) {
-      console.log('- methods:imprimirVoucher','-> imprimirConectar', 'ballotValue {}', ballotValue, 'codigoUnico {}', codigoUnico)
-
-      // this.imprimirConectar()
+      console.log(
+        '- methods:imprimirVoucher',
+        '-> imprimirConectar',
+        'ballotValue {}',
+        ballotValue,
+        'codigoUnico {}',
+        codigoUnico
+      )
 
       //voucher de compra en el POS
       const ballot = {
-        transaction_date: ballotValue.transaction_date,
-        transaction_hour: ballotValue.transaction_hour,
+        transaction_date: ballotValue.formattedDate,
+        transaction_hour: ballotValue.formattedTime,
         amount: ballotValue.amount,
         date_count: ballotValue.date_count,
         payment_type: ballotValue.payment_type,
-        card_type: ballotValue.card_type,
+        card_type: ballotValue.cardType,
         ballot_number: 'U18.1L3',
-        commerce_code: ballotValue.commerce_code,
+        commerce_code: ballotValue.commerceCode,
         terminal_id: ballotValue.terminal_id,
-        card_number: ballotValue.card_number,
-        account_number: ballotValue.account_number,
-        operation_number: ballotValue.operation_number,
-        auth_code: ballotValue.auth_code,
-        codigo_unico: codigoUnico,
-        tipo_cuota: ('' === ballotValue.tipo_cuota) ? 'SIN CUOTA' : ballotValue.tipo_cuota,
-        numero_cuota: ('00' === ballotValue.numero_cuota) ? '0' : ballotValue.numero_cuota,
-        monto_cuota: ('' === ballotValue.monto_cuota) ? '0' : ballotValue.monto_cuota
+        card_number: ballotValue.last4Digits,
+        account_number: ballotValue.accountNumber,
+        operation_number: ballotValue.operationNumber,
+        auth_code: ballotValue.authorizationCode,
+        codigo_unico: codigoUnico.toString(),
+        tipo_cuota: '' === ballotValue.shareType ? 'SIN CUOTA' : ballotValue.shareType,
+        numero_cuota: '00' === ballotValue.sharesNumber ? '0' : ballotValue.sharesNumber,
+        monto_cuota: '' === ballotValue.sharesAmount ? '0' : ballotValue.sharesAmount,
+        comentario_cuota: ballotValue.sharesTypeComment
       }
 
-      let tickets = [{codigo: codigoUnico}]
+      let tickets = [{ codigo: codigoUnico }]
 
-      console.log('+ methods:imprimirVoucher','-> cable:perform:channel:action:print_error','ballot {}', ballot, 'tickets {}', tickets)
+      console.log(
+        '+ methods:imprimirVoucher',
+        '-> cable:perform:channel:action:print_error',
+        'ballot {}',
+        ballot,
+        'tickets {}',
+        tickets
+      )
 
-      // const url = 'http://192.168.88.254:3000'
-      // const api = '/api/print'
+      const url = 'https://192.168.88.246:3000'
+      const api = '/imprimir'
 
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     sheet: {
-      //       ballot: ballot,
-      //     }
-      //   })
-      //   console.log('Error de impresión enviada con éxito', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar el error de impresión', error)
-      // }
-    },
-  },
+      try {
+        const response = await axios.post(url + api, {
+          sheet: {
+            ballot: 'ballot'
+          }
+        })
+        console.log('Error de impresión enviada con éxito', response.data)
+      } catch (error) {
+        console.error('Error al enviar el error de impresión', error)
+      }
+    }
+  }
 
   // channels: {
   //   //channel Transbank
@@ -266,27 +293,27 @@ export default {
   //     }
   //   },
 
-    // //channel Printer
-    // Printer: {
-    //   connected() {
-    //     this.isConnPrinter = true
-    //     console.log('- channel:Printer:connected', 'isConnPrinter=' + this.isConnPrinter)
-    //   },
-    //   rejected() {
-    //     console.log('- channel:Printer:rejected')
-    //   },
-    //   received(dataPrinter) {
-    //     this.messageWebSocket = dataPrinter //<- Mensaje del channel Printer
-    //     console.log('- channel:Printer:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-    //   },
-    //   disconnected() {
-    //     this.isConnPrinter = false
-    //     console.log('- channel:Printer:disconnected', 'isConnPrinter=' + this.isConnPrinter)
-    //   },
-    //   stopped() {
-    //     console.log('- channel:Printer:stopped')
-    //   }
-    // }
+  // //channel Printer
+  // Printer: {
+  //   connected() {
+  //     this.isConnPrinter = true
+  //     console.log('- channel:Printer:connected', 'isConnPrinter=' + this.isConnPrinter)
+  //   },
+  //   rejected() {
+  //     console.log('- channel:Printer:rejected')
+  //   },
+  //   received(dataPrinter) {
+  //     this.messageWebSocket = dataPrinter //<- Mensaje del channel Printer
+  //     console.log('- channel:Printer:received', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+  //   },
+  //   disconnected() {
+  //     this.isConnPrinter = false
+  //     console.log('- channel:Printer:disconnected', 'isConnPrinter=' + this.isConnPrinter)
+  //   },
+  //   stopped() {
+  //     console.log('- channel:Printer:stopped')
+  //   }
+  // }
   // },
 
   // mounted() {
@@ -297,93 +324,93 @@ export default {
   // },
 
   // watch: {
-    //Estado de la conexión channel Transbank
-    // isConn: function (val) {
-    // isConnPOS: function (val) {
-    //   console.log('- watch:isConnPOS', 'isConnPOS=' + val)
-    //   if (!val) {
-    //     console.log('+ watch:isConnPOS', '! POS No Conectado')
-    //     this.websocketConectar()//<- Conectar el POS al Socket
-    //     console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
-    //   } else {
-    //     console.log('+ watch:isConnPOS', '! POS Conectado')
-    //   }
-    // },
-    // Estado de la conexión channel impresora
-    // isConnPrinter: function (val) {
-    //   console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
-    //   if (!val) {
-    //     console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
-    //     this.websocketConectar()
-    //     console.log('+ watch:isConnPrinter', '-> websocketConectar')
-    //   } else {
-    //     console.log('+ watch:isConnPrinter', '! Impresora Conectada')
-    //   }
-    // },
-    // Monitoreo de los mensajes del websocket
-    // messageWebSocket: function () {
-    //   console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
-    //   if (this.messageWebSocket.type !== undefined) {
-    //     // Verificar el tipo de error
-    //     if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
-    //       // verificar si hay error
-    //       this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
-    //       if (!this.errorConnWebSocket) {//<-Pasa si no hay error
-    //         // verificar el tipo de error
-    //         switch (this.messageWebSocket.type) {
-    //           case 'status_printer': {
-    //             console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
-    //             // Verificar si el cable del POS está conectado
-    //             this.estatusCablePOS()
-    //             break
-    //           }
-    //           case 'status_cable_POS': {
-    //             console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
-    //             // Verificar si está conectado el POS
-    //             this.estatusConnPOS()
-    //             break
-    //           }
-    //           case 'status_conn_POS': {
-    //             console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
-    //             // Verificar si hay internet
-    //             this.estatusInternet()
-    //             break
-    //           }
-    //           case 'status_internet': {
-    //             // Comprobamos que no esté en la pantalla de outService
-    //             (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
-    //             console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
-    //             break
-    //           }
-    //         }
-    //       } else {
-    //         console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
-    //         this.isOutService = true //<- Sacar de servicio el totem
-    //       }
-    //     } else { //<- no hay errores de isOutService
-    //       switch (this.messageWebSocket.type) {
-    //         case 'sale_status': {
-    //           console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
-    //           break
-    //         }
-    //         case 'sale': {
-    //           if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
-    //             // Guardando los datos del pago
-    //             this.paymentPOS = this.messageWebSocket.content.payment
-    //             console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
-    //           } else {
-    //             // Error al procesar el pago
-    //             this.isErrorPOS = true
-    //             console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
-    //           }
-    //           this.endTransactionPOS = true
-    //           console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
-    //           break
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+  //Estado de la conexión channel Transbank
+  // isConn: function (val) {
+  // isConnPOS: function (val) {
+  //   console.log('- watch:isConnPOS', 'isConnPOS=' + val)
+  //   if (!val) {
+  //     console.log('+ watch:isConnPOS', '! POS No Conectado')
+  //     this.websocketConectar()//<- Conectar el POS al Socket
+  //     console.log('+ watch:isConnPOS', '! Intentando Conectar POS')
+  //   } else {
+  //     console.log('+ watch:isConnPOS', '! POS Conectado')
+  //   }
   // },
-
+  // Estado de la conexión channel impresora
+  // isConnPrinter: function (val) {
+  //   console.log('- watch:isConnPrinter', 'isConnPrinter=' + val)
+  //   if (!val) {
+  //     console.log('+ watch:isConnPrinter', '! Impresora No Conectada')
+  //     this.websocketConectar()
+  //     console.log('+ watch:isConnPrinter', '-> websocketConectar')
+  //   } else {
+  //     console.log('+ watch:isConnPrinter', '! Impresora Conectada')
+  //   }
+  // },
+  // Monitoreo de los mensajes del websocket
+  // messageWebSocket: function () {
+  //   console.log('- watch:messageWebSocket', 'messageWebSocket.type=' + this.messageWebSocket.type, 'messageWebSocket.msg=' + this.messageWebSocket.msg)
+  //   if (this.messageWebSocket.type !== undefined) {
+  //     // Verificar el tipo de error
+  //     if (['status_conn_POS', 'status_cable_POS', 'status_internet', 'status_printer'].indexOf(this.messageWebSocket.type) > -1) {
+  //       // verificar si hay error
+  //       this.errorConnWebSocket = ('OK' !== this.messageWebSocket.msg)
+  //       if (!this.errorConnWebSocket) {//<-Pasa si no hay error
+  //         // verificar el tipo de error
+  //         switch (this.messageWebSocket.type) {
+  //           case 'status_printer': {
+  //             console.log('+ watch:messageWebSocket status_printer', '-> estatusCablePOS')
+  //             // Verificar si el cable del POS está conectado
+  //             this.estatusCablePOS()
+  //             break
+  //           }
+  //           case 'status_cable_POS': {
+  //             console.log('+ watch:messageWebSocket status_cable_POS ', '-> estatusConnPOS')
+  //             // Verificar si está conectado el POS
+  //             this.estatusConnPOS()
+  //             break
+  //           }
+  //           case 'status_conn_POS': {
+  //             console.log('+ watch:messageWebSocket status_conn_POS ', '-> estatusInternet')
+  //             // Verificar si hay internet
+  //             this.estatusInternet()
+  //             break
+  //           }
+  //           case 'status_internet': {
+  //             // Comprobamos que no esté en la pantalla de outService
+  //             (this.isOutService) ? this.isOutService = false : this.isCheckOutService = true
+  //             console.log('+ watch:messageWebSocket status_internet ', 'isOutService=' + this.isOutService)
+  //             break
+  //           }
+  //         }
+  //       } else {
+  //         console.log('+ watch:messageWebSocket', 'isOutService=' + this.isOutService)
+  //         this.isOutService = true //<- Sacar de servicio el totem
+  //       }
+  //     } else { //<- no hay errores de isOutService
+  //       switch (this.messageWebSocket.type) {
+  //         case 'sale_status': {
+  //           console.log('+ watch:messageWebSocket', '? sale_status', 'messageWebSocket',this.messageWebSocket.type)
+  //           break
+  //         }
+  //         case 'sale': {
+  //           if ('APROBADA' === this.messageWebSocket.content.msg) {// <- Verificar si paso el pago
+  //             // Guardando los datos del pago
+  //             this.paymentPOS = this.messageWebSocket.content.payment
+  //             console.log('+ watch:messageWebSocket','? sale ? APROBADA', 'paymentPOS = '+this.paymentPOS)
+  //           } else {
+  //             // Error al procesar el pago
+  //             this.isErrorPOS = true
+  //             console.log('+ watch:messageWebSocket', 'isErrorPOS = '+this.isErrorPOS)
+  //           }
+  //           this.endTransactionPOS = true
+  //           console.log('+ watch:messageWebSocket', 'endTransactionPOS= '+this.isErrorPOS)
+  //           break
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  // },
 }
+

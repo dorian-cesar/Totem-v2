@@ -46,11 +46,11 @@ export default {
   //     //return this.getTotalAmount()
   //   }
   // },
-  mounted() {
-    setTimeout(() => {
-      this.$router.push('/');
-      window.location.reload();
-    }, 6000);
-  }
+  // mounted() {
+  //   setTimeout(() => {
+  //     this.$router.push('/');
+  //     window.location.reload();
+  //   }, 6000);
+  // }
 }
 </script>

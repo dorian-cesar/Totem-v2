@@ -129,7 +129,7 @@ export default {
       this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
 
       // const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
-      const url = 'http://192.168.88.254:3000'
+      const url = 'https://192.168.88.254:3000'
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)
