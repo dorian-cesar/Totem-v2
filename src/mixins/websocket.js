@@ -168,19 +168,19 @@ export default {
         '         INTEGRACIONES TRANSBANK          \n' +
         '              TRANSBANK S.A.              \n' +
         '         ISIDORA GOYENECHEA 3520          \n' +
-        `                ${commerce_code}          \n` +
+        `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
-        `                   ${codigo_unico}        \n` +
+        `             ${codigo_unico}              \n` +
         '     FECHA       HORA        TERMINAL     \n' +
         `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
         '                                             \n' +
         `    NUMERO DE TARJETA                     \n` +
         `    ******${card_number}                   \n` +
-        `    TIPO DE TARJETA                ${card_type}\n` +
+        `    TIPO DE TARJETA               ${card_type}\n` +
         `    TOTAL:                        $${amount}\n` +
         `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
         `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
-        `    MONTO CUOTA:                 $${monto_cuota}\n` +
+        `    MONTO CUOTA:                  $${monto_cuota}\n` +
         `    TASA DE INTERES:  ${comentario_cuota}\n` +
         `    NUMERO DE BOLETA:             ${account_number}\n` +
         `    NUMERO DE OPERACION:          ${operation_number}\n` +

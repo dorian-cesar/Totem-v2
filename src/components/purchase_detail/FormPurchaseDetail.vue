@@ -162,18 +162,18 @@ export default {
           this.propsPaymentControl.msgError = (error.response && error.response.data && error.response.data.error);
         });
 
-      // this.axios.post(
-      //   'https://s1.ntic.cl/totem-costa-handler/index.php',
-      //   {
-      //     type: 'pagarPOS',
-      //     data: {
-      //       // valuePOS: this.valuePOS,
-      //       valuePOS: this.amountPOS,
-      //       ballotNumberPOS: this.ballotNumberPOS
-      //     },
-      //     name: this.info.totemName
-      //   }
-      // )
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'pagarPOS',
+          data: {
+            // valuePOS: this.valuePOS,
+            valuePOS: this.amountPOS,
+            ballotNumberPOS: this.ballotNumberPOS
+          },
+          name: this.info.totemName
+        }
+      )
       this.timeClose = setTimeout(() => {
         this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
       }, 150 * 1000); // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
@@ -313,21 +313,21 @@ export default {
         this.loadingGuardarTransaccion = false
       }, 1000)
 
-      // this.axios.post(
-      //   'https://s1.ntic.cl/totem-costa-handler/index.php',
-      //   {
-      //     type: 'saveTransaction',
-      //     data: {
-      //       valuePOS: this.valuePOS,
-      //       ballotNumberPOS: this.ballotNumberPOS,
-      //       loadingGuardarTransaccion: this.loadingGuardarTransaccion,
-      //       ticketsProcessed: this.ticketsProcessed,
-      //       tickets: this.propsPersonalInformation.tickets,
-      //       isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
-      //     },
-      //     name: this.info.totemName
-      //   }
-      // )
+        this.axios.post(
+          'https://s1.ntic.cl/totem-costa-handler/index.php',
+          {
+            type: 'saveTransaction',
+            data: {
+              valuePOS: this.valuePOS,
+              ballotNumberPOS: this.ballotNumberPOS,
+              loadingGuardarTransaccion: this.loadingGuardarTransaccion,
+              ticketsProcessed: this.ticketsProcessed,
+              tickets: this.propsPersonalInformation.tickets,
+              isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
+            },
+            name: this.info.totemName
+          }
+        )
         .then(response => {
           console.log('Transacción guardada exitosamente')
           console.log("ejecutando guardarTransaccionPOS")

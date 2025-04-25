@@ -146,15 +146,15 @@ export default {
               this.tickets_reprint = ticketsGeneradosFormatted
               this.imprimir()
 
-              // this.axios.post(
-              //   'https://s1.ntic.cl/totem-costa-handler/index.php',
-              //   {
-              //     type: 'print_request',
-              //     call_url: api,
-              //     data: this.ticketsGenerados,
-              //     name: this.$info.totemName
-              //   }
-              // )
+              this.axios.post(
+                'https://s1.ntic.cl/totem-costa-handler/index.php',
+                {
+                  type: 'print_request',
+                  call_url: api,
+                  data: this.ticketsGenerados,
+                  name: this.$info.totemName
+                }
+              )
             } else {
               this.texto = 'Código de reserva inválido. Verifique que si el boleto fue comprado en nuestros Totems o si su reserva se encuentra confirmada'
               setTimeout(() => {
