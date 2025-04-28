@@ -187,12 +187,13 @@ export default {
         `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
         '                                             \n' +
         '          GRACIAS POR SU COMPRA           \n' +
-        '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n'
+        '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
+        '                                             \n'
 
       let tickets = []
       console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
 
-      let today = this.today()
+      // let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
         tickets.push({
@@ -214,54 +215,59 @@ export default {
           total: boleto.total
         })
       }
-      let boletosTexto = '\n      --------- BOLETOS ---------\n'
 
-      for (const t of tickets) {
-        boletosTexto +=
-          '------------ BOLETO PULLMAN -----------\n' +
-          `BOLETO:        ${t.boleto}\n` +
-          `SERVICIO:      ${t.servicio}\n` +
-          `RUTA:          ${t.ruta}\n` +
-          `PISO:          ${t.piso}\n` +
-          `ASIENTO:       ${t.asiento}\n` +
-          `ORIGEN:        ${t.origen}\n` +
-          `DESTINO:       ${t.destino}\n` +
-          `TIPO CLIENTE:  ${t.tipo_cliente}\n` +
-          `FECHA COMPRA:  ${t.fecha_compra}\n` +
-          `HORA DE VIAJE: ${t.hora}\n` +
-          `TOTAL:         $${t.total}\n`
+      const url = 'https://192.168.88.246:3000'
+      const api = '/imprimir'
+
+      // Voucher transbank
+      try {
+        const response = await axios.post(url + api, {
+          texto: voucher
+        })
+        console.log('Impresión enviada con éxito - transbank', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
       }
 
+      // Todos los boletos
+      let boletosTexto = ''
+      for (const t of tickets) {
+        let boletoTexto =
+          '--------------- BOLETO PULLMAN --------------\n' +
+          ` BOLETO:            ${t.boleto}\n` +
+          ` SERVICIO:          ${t.servicio}\n` +
+          ` RUTA: ${t.ruta}                 \n` +
+          ` PISO:              ${t.piso}\n` +
+          ` ASIENTO:           ${t.asiento}\n` +
+          ` ORIGEN:            ${t.origen}\n` +
+          ` DESTINO:           ${t.destino}\n` +
+          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+          ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+          ` HORA DE VIAJE:     ${t.hora}\n` +
+          ` TOTAL:             $${t.total}\n` +
+          '                              \n' +
+          '                              \n'
+
+        boletosTexto += boletoTexto
+
+        try {
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          })
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+        } catch (error) {
+          console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        }
+      }
+
+      // Mostrar voucher + boletos en el navegador
       const previewWindow = window.open('', '_blank')
       previewWindow.document.write(
         '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
       )
       previewWindow.document.close()
 
-      console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
-      const url = 'https://192.168.88.246:3000'
-      const api = '/imprimir'
-
-      // imprimir voucher
-      try {
-        const response = await axios.post(url + api, {
-          texto: voucher,
-          boletos: boletosTexto
-        })
-        console.log('Impresión enviada con éxito', response.data)
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
-
-      // imprimir boletos
-      try {
-        const response = await axios.post(url + api, {
-          texto: boletosTexto
-        })
-        console.log('Impresión enviada con éxito', response.data)
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
+      // console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
 
     //imprimir voucher de error API Pullmam
@@ -275,29 +281,58 @@ export default {
         codigoUnico
       )
 
-      //voucher de compra en el POS
-      const ballot = {
-        transaction_date: ballotValue.formattedDate,
-        transaction_hour: ballotValue.formattedTime,
-        amount: ballotValue.amount,
-        date_count: ballotValue.date_count,
-        payment_type: ballotValue.payment_type,
-        card_type: ballotValue.cardType,
-        ballot_number: 'U18.1L3',
-        commerce_code: ballotValue.commerceCode,
-        terminal_id: ballotValue.terminal_id,
-        card_number: ballotValue.last4Digits,
-        account_number: ballotValue.accountNumber,
-        operation_number: ballotValue.operationNumber,
-        auth_code: ballotValue.authorizationCode,
-        codigo_unico: codigoUnico.toString(),
-        tipo_cuota: '' === ballotValue.shareType ? 'SIN CUOTA' : ballotValue.shareType,
-        numero_cuota: '00' === ballotValue.sharesNumber ? '0' : ballotValue.sharesNumber,
-        monto_cuota: '' === ballotValue.sharesAmount ? '0' : ballotValue.sharesAmount,
-        comentario_cuota: ballotValue.sharesTypeComment
-      }
+      const realDate = ballotValue.realDate
+      const formattedDate = `${realDate.slice(0, 2)}/${realDate.slice(2, 4)}/${realDate.slice(4)}`
+      const realTime = ballotValue.realTime
+      const formattedTime = `${realTime.slice(0, 2)}:${realTime.slice(2, 4)}:${realTime.slice(4)}`
 
-      let tickets = [{ codigo: codigoUnico }]
+      //voucher de compra en el POS
+      const transaction_date = formattedDate
+      const transaction_hour = formattedTime
+      const amount = ballotValue.amount
+      const commerce_code = ballotValue.commerceCode
+      const terminal_id = ballotValue.terminalId
+      const card_number = ballotValue.last4Digits
+      const card_type = ballotValue.cardType
+      const operation_number = ballotValue.operationNumber
+      const auth_code = ballotValue.authorizationCode
+      const account_number = ballotValue.accountNumber || '---'
+      const codigo_unico = codigoUnico.toString()
+      const tipo_cuota = ballotValue.shareType || 'SIN CUOTA'
+      const numero_cuota = ballotValue.sharesNumber || '0'
+      const monto_cuota = ballotValue.sharesAmount || '0'
+      const comentario_cuota = ballotValue.sharesTypeComment || '---'
+
+      // let tickets = [{ codigo: codigoUnico }]
+
+      const voucher =
+        '           COMPROBANTE DE VENTA           \n' +
+        '              PAGO EN CUOTAS              \n' +
+        '            TARJETA DE CREDITO            \n' +
+        '         INTEGRACIONES TRANSBANK          \n' +
+        '              TRANSBANK S.A.              \n' +
+        '         ISIDORA GOYENECHEA 3520          \n' +
+        `              ${commerce_code}            \n` +
+        '                Santiago                  \n' +
+        `             ${codigo_unico}              \n` +
+        '     FECHA       HORA        TERMINAL     \n' +
+        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+        '                                             \n' +
+        `    NUMERO DE TARJETA                     \n` +
+        `    ******${card_number}                   \n` +
+        `    TIPO DE TARJETA               ${card_type}\n` +
+        `    TOTAL:                        $${amount}\n` +
+        `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
+        `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
+        `    MONTO CUOTA:                  $${monto_cuota}\n` +
+        `    TASA DE INTERES:  ${comentario_cuota}\n` +
+        `    NUMERO DE BOLETA:             ${account_number}\n` +
+        `    NUMERO DE OPERACION:          ${operation_number}\n` +
+        `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
+        '                                             \n' +
+        '          GRACIAS POR SU COMPRA           \n' +
+        '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
+        '                                             \n'
 
       console.log(
         '+ methods:imprimirVoucher',
@@ -313,9 +348,7 @@ export default {
 
       try {
         const response = await axios.post(url + api, {
-          sheet: {
-            ballot: 'ballot'
-          }
+          texto: voucher
         })
         console.log('Error de impresión enviada con éxito', response.data)
       } catch (error) {

@@ -142,25 +142,23 @@ export default {
       )
         .then(response => {
           console.log('Pago procesado:', response.data);
-          console.log("successful: ", response.data.data.successful)
+          console.log("successful: ", response.data.data.successful);
           if (response.data.data.successful === true) {
-            console.log("transbank successful response: ", response.data)
+            console.log("transbank successful response: ", response.data);
             this.propsPaymentControl.msg = response.data.data.responseMessage;
+            setTimeout(() => {
+              this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes';
+            }, 3000);
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);
             this.paymentPOS = response.data.data;
             this.amountPOS = response.data.data.amount;
-            this.endTransactionPOS(true)
+            this.endTransactionPOS(true);
           } else {
             this.isErrorPOS = true;
-            this.isErrorTerminarTransaccionPOS(true)
+            this.isErrorTerminarTransaccionPOS(true);
           }
         })
-        .catch(error => {
-          console.error('Error en el pago:', (error.response && error.response.data) || error.message);
-          this.isErrorTerminarTransaccionPOS(true)
-          this.propsPaymentControl.msgError = (error.response && error.response.data && error.response.data.error);
-        });
 
       this.axios.post(
         'https://s1.ntic.cl/totem-costa-handler/index.php',
@@ -313,21 +311,21 @@ export default {
         this.loadingGuardarTransaccion = false
       }, 1000)
 
-        this.axios.post(
-          'https://s1.ntic.cl/totem-costa-handler/index.php',
-          {
-            type: 'saveTransaction',
-            data: {
-              valuePOS: this.valuePOS,
-              ballotNumberPOS: this.ballotNumberPOS,
-              loadingGuardarTransaccion: this.loadingGuardarTransaccion,
-              ticketsProcessed: this.ticketsProcessed,
-              tickets: this.propsPersonalInformation.tickets,
-              isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
-            },
-            name: this.info.totemName
-          }
-        )
+      this.axios.post(
+        'https://s1.ntic.cl/totem-costa-handler/index.php',
+        {
+          type: 'saveTransaction',
+          data: {
+            valuePOS: this.valuePOS,
+            ballotNumberPOS: this.ballotNumberPOS,
+            loadingGuardarTransaccion: this.loadingGuardarTransaccion,
+            ticketsProcessed: this.ticketsProcessed,
+            tickets: this.propsPersonalInformation.tickets,
+            isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
+          },
+          name: this.info.totemName
+        }
+      )
         .then(response => {
           console.log('Transacción guardada exitosamente')
           console.log("ejecutando guardarTransaccionPOS")
