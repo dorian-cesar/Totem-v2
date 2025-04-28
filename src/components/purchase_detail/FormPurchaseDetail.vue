@@ -147,7 +147,7 @@ export default {
             console.log("transbank successful response: ", response.data);
             this.propsPaymentControl.msg = response.data.data.responseMessage;
             setTimeout(() => {
-              this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes';
+              this.propsPaymentControl.msg += '<br>Espere mientras confirmamos sus pasajes';
             }, 3000);
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);

@@ -261,11 +261,11 @@ export default {
       }
 
       // Mostrar voucher + boletos en el navegador
-      const previewWindow = window.open('', '_blank')
-      previewWindow.document.write(
-        '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
-      )
-      previewWindow.document.close()
+      // const previewWindow = window.open('', '_blank')
+      // previewWindow.document.write(
+      //   '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
+      // )
+      // previewWindow.document.close()
 
       // console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
