@@ -32,6 +32,7 @@ import Select from "@/components/Select.vue";
 import { mapActions } from "vuex";
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
+import { eventBus } from '@/mixins/eventBus.js'; // Importa el bus de eventos
 
 export default {
   name: "OriginDestination",
@@ -192,7 +193,7 @@ export default {
     async validarRut() {
       if (!this.rut || this.rut.trim() === '') {
         await this.showMsgBoxError('Debe ingresar su RUT.');
-        this.isContinueButtonDisabled = true;
+        this.isContinueButtonDisabled = true; // Asegúrate de que este valor se actualice
         return;
       }
 
@@ -201,7 +202,7 @@ export default {
 
       if (!rutRegex.test(this.rut)) {
         await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.');
-        this.isContinueButtonDisabled = true;
+        this.isContinueButtonDisabled = true; // Asegúrate de que este valor se actualice
       } else {
         this.isContinueButtonDisabled = false;
       }
@@ -238,11 +239,13 @@ export default {
     },
 
     validateForm() {
-      if (this.propsDepartureCity.selected && this.propsArrivalCity.selected && this.rut) {
-        this.isContinueButtonDisabled = false;
-      } else {
-        this.isContinueButtonDisabled = true;
-      }
+      const departureSelected = this.propsDepartureCity.selected && this.propsDepartureCity.selected.value !== 'PRESELECT_VALUE';
+      const arrivalSelected = this.propsArrivalCity.selected && this.propsArrivalCity.selected.value !== 'PRESELECT_VALUE';
+      const rutValid = this.rut && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/.test(this.rut);
+
+      const isValid = departureSelected && arrivalSelected && rutValid;
+
+      eventBus.updateFormValidity(isValid); // Asegúrate de emitir el valor correcto
     }
   }
 };

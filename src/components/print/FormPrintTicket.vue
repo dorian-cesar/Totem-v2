@@ -229,10 +229,10 @@ export default {
             '                              \n' +
             '                              \n';
 
-          // const response = await axios.post(url + api, {
-          //   texto: boletoTexto
-          // });
-          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          });
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.';
         setTimeout(() => {
@@ -267,26 +267,26 @@ export default {
     }
   },
   watch: {},
-  mounted() {
-    this.keyboard = new SimpleKeyboard({
-      // onChange: this.onChange,
-      onKeyPress: this.onKeyPress,
-      //layout: layout,
-      layoutName: "default",
-      layout: {
-        default: [
-          "1 2 3 4 5 6 7 8 9 0",
-          "Q W E R T Y U I O P",
-          "A S D F G H J K L Ñ",
-          "Z X C V B N M {bksp}"
-        ]
-      },
-      display: {
-        '{bksp}': 'Borrar',
-        '{sp}': ' '
-      }
-    });
-  }
+  // mounted() {
+  //   this.keyboard = new SimpleKeyboard({
+  //     // onChange: this.onChange,
+  //     onKeyPress: this.onKeyPress,
+  //     //layout: layout,
+  //     layoutName: "default",
+  //     layout: {
+  //       default: [
+  //         "1 2 3 4 5 6 7 8 9 0",
+  //         "Q W E R T Y U I O P",
+  //         "A S D F G H J K L Ñ",
+  //         "Z X C V B N M {bksp}"
+  //       ]
+  //     },
+  //     display: {
+  //       '{bksp}': 'Borrar',
+  //       '{sp}': ' '
+  //     }
+  //   });
+  // }
 }
 </script>
 

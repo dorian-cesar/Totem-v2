@@ -190,8 +190,8 @@ export default {
         '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
         '                                             \n'
 
-        let tickets = []
-        console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
+      let tickets = []
+      console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
 
       // let today = this.today()
       for (let boleto of ticketsValue) {
@@ -260,12 +260,14 @@ export default {
         }
       }
 
-      // mostrar voucher + boletos en el navegador
-      // const previewWindow = window.open('', '_blank')
-      // previewWindow.document.write(
-      //   '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
-      // )
-      // previewWindow.document.close()
+      const previewWindow = window.open('', '_blank')
+
+      previewWindow.document.write(`
+           <pre style="font-size:14px; white-space:pre-wrap;">
+          ${voucher}${boletosTexto}</pre>
+      `)
+
+      previewWindow.document.close()
 
       console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
