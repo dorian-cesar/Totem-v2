@@ -15,15 +15,15 @@
           @selectedStatus="action('select-arrival', $event)" ref="select-arrival" />
       </b-col>
     </b-row>
-    <!-- <hr>
+    <hr>
     <b-row align-h="center">
       <b-col cols="12">
         <b-form-group>
           <b-form-input v-model="rut" placeholder="Ej: 12.345.678-9" @input="rut = formatearRut(rut)" @blur="validarRut"
-            style="height: 68px; font-size: 2rem;" />
+            style="height: 68px; font-size: 2rem;" autocomplete="off" />
         </b-form-group>
       </b-col>
-    </b-row> -->
+    </b-row>
   </div>
 </template>
 
@@ -61,34 +61,35 @@ export default {
       imgClass: 'destiny-img-class',
     },
     rut: '',
+    isContinueButtonDisabled: true, // Nueva propiedad para controlar el botón
   }),
   components: { selectInput: Select },
   watch: {
-    "propsDepartureCity.selected": function () {
-      // Reset arrival city values
-      if (!this.propsDepartureCity.selected) {
-        // default city
+    "propsDepartureCity.selected"(newVal) {
+      if (!newVal) {
         this.propsDepartureCity.selected = {
           label: PRESELECT_LABEL,
           value: PRESELECT_VALUE,
         };
       }
       this.setArrivalCity();
-      // Reset the options in input select arrival when the
-      // departure city is select
-      if (this.propsDepartureCity.selected) {
+      if (newVal) {
         this.propsArrivalCity.options = [];
         this.getListArrivalCities();
         this.$emit("selected", true);
       }
     },
 
-    "propsArrivalCity.selected": function () {
-      if (this.propsArrivalCity.selected) {
-        // Save values in the store
+    "propsArrivalCity.selected"(newVal) {
+      if (newVal) {
         this.setValues();
+        this.validateForm();
         this.$emit("selected", true);
       }
+    },
+
+    rut() {
+      this.validateForm();
     },
   },
   mounted() {
@@ -191,31 +192,36 @@ export default {
     async validarRut() {
       if (!this.rut || this.rut.trim() === '') {
         await this.showMsgBoxError('Debe ingresar su RUT.');
+        this.isContinueButtonDisabled = true;
         return;
       }
+
       this.rut = this.formatearRut(this.rut);
       const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/;
+
       if (!rutRegex.test(this.rut)) {
         await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.');
+        this.isContinueButtonDisabled = true;
+      } else {
+        this.isContinueButtonDisabled = false;
       }
     },
 
     formatearRut(rut) {
-      // Eliminar todo excepto números y K/k
       rut = rut.replace(/[^0-9kK]/g, '').toUpperCase();
       if (rut.length < 2) return rut;
+
       let cuerpo = rut.slice(0, -1);
       let dv = rut.slice(-1);
-      // Agregar puntos cada 3 dígitos desde el final
+
       let formateado = '';
-      let i = 0;
-      for (let j = cuerpo.length - 1; j >= 0; j--) {
-        formateado = cuerpo[j] + formateado;
-        i++;
-        if (i % 3 === 0 && j !== 0) {
+      for (let i = cuerpo.length - 1, j = 0; i >= 0; i--, j++) {
+        formateado = cuerpo[i] + formateado;
+        if (j % 3 === 2 && i !== 0) {
           formateado = '.' + formateado;
         }
       }
+
       return `${formateado}-${dv}`;
     },
 
@@ -229,7 +235,15 @@ export default {
         footerClass: 'p-2 ml-2 mr-2 border-top-0',
         centered: true
       });
+    },
+
+    validateForm() {
+      if (this.propsDepartureCity.selected && this.propsArrivalCity.selected && this.rut) {
+        this.isContinueButtonDisabled = false;
+      } else {
+        this.isContinueButtonDisabled = true;
+      }
     }
-  },
+  }
 };
 </script>
