@@ -11,7 +11,7 @@
                     Ingrese su código de reserva (ej: TS2301150405100000000)
                   </p>
                   <input type="text" placeholder="Ingrese su código de reserva" data-layout="normal" class="w-100" style="background-color: azure;"
-                    v-model="codeReprint" />
+                    v-model="codeReprint" disabled="disabled" />
                   <!-- disabled="disabled" -->
                   <p class="text-center text-primary pb-2 font-weight-bolder s-custom-font">
                     {{ texto }}
