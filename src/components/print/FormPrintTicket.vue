@@ -11,7 +11,7 @@
                     Ingrese su código de reserva (ej: TS2301150405100000000)
                   </p>
                   <input type="text" placeholder="Ingrese su código de reserva" data-layout="normal" class="w-100" style="background-color: azure;"
-                    v-model="codeReprint" disabled="disabled" />
+                    v-model="codeReprint" />
                   <!-- disabled="disabled" -->
                   <p class="text-center text-primary pb-2 font-weight-bolder s-custom-font">
                     {{ texto }}
@@ -47,6 +47,7 @@ import WebSocket from '@/mixins/websocket.js'
 import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
 import info from '../../../info.json'
+import axios from 'axios'
 
 export default {
   name: 'FormPrinTicket',
@@ -153,7 +154,7 @@ export default {
                 }
               )
             } else {
-              this.texto = 'Código de reserva inválido. Verifique que si el boleto fue comprado en nuestros Totems o si su reserva se encuentra confirmada'
+              this.texto = 'Código de reserva inválido. Verifique que si el boleto fue escrito correctamente o si su reserva se encuentra confirmada'
               setTimeout(() => {
                 this.texto = ''
               }, 10000)
@@ -228,10 +229,10 @@ export default {
             '                              \n' +
             '                              \n';
 
-          // const response = await axios.post(url + api, {
-          //   texto: boletoTexto
-          // });
-          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          });
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
         }
         this.texto = 'Boleto impreso correctamente';
         setTimeout(() => {
