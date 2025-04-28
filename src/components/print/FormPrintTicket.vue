@@ -154,7 +154,7 @@ export default {
                 }
               )
             } else {
-              this.texto = 'Código de reserva inválido. Verifique que si el boleto fue escrito correctamente o si su reserva se encuentra confirmada'
+              this.texto = 'Código de reserva inválido. Verifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada'
               setTimeout(() => {
                 this.texto = ''
               }, 10000)
