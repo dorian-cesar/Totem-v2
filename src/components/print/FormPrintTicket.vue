@@ -13,7 +13,7 @@
                   <input type="text" placeholder="Ingrese su código de reserva" data-layout="normal" class="w-100" style="background-color: azure;"
                     v-model="codeReprint" />
                   <!-- disabled="disabled" -->
-                  <p class="text-center text-primary pb-2 font-weight-bolder s-custom-font">
+                  <p class="text-center text-primary pb-2 font-weight-bolder s-custom-font" style="white-space: pre-line;">
                     {{ texto }}
                   </p>
                 </b-col>
@@ -154,7 +154,7 @@ export default {
                 }
               )
             } else {
-              this.texto = 'Código de reserva inválido. Verifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada'
+              this.texto = 'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
               setTimeout(() => {
                 this.texto = ''
               }, 10000)
@@ -229,12 +229,12 @@ export default {
             '                              \n' +
             '                              \n';
 
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          });
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
+          // const response = await axios.post(url + api, {
+          //   texto: boletoTexto
+          // });
+          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
         }
-        this.texto = 'Boleto impreso correctamente';
+        this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.';
         setTimeout(() => {
           this.texto = '';
         }, 5000);
