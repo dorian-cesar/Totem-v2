@@ -148,7 +148,7 @@ export default {
             this.propsPaymentControl.msg = response.data.data.responseMessage;
             setTimeout(() => {
               this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes';
-            }, 2500);
+            }, 2000);
             this.isErrorPOS = false;
             this.ballotNumberPOS = Number(response.data.data.authorizationCode);
             this.paymentPOS = response.data.data;

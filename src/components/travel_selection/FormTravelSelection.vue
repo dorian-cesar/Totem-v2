@@ -23,10 +23,10 @@
         />
         <!-- Keyboard-->
         <br>
-        <keyboard-touch
+        <!-- <keyboard-touch
           v-show="isShowKeyBoard "
           @onKeyPress="onKeyPress"
-        />
+        /> -->
       </blockquote>
     </b-card>
     <!-- Toolbar button-->

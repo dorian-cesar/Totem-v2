@@ -10,9 +10,9 @@
                   <p class=" text-primary pb-2 font-weight-bolder s-custom-font">
                     Ingrese su código de reserva (ej: TS2301150405100000000)
                   </p>
-                  <input type="text" placeholder="Ingrese su código de reserva" data-layout="normal" class="w-100"
-                         v-model="codeReprint" disabled="disabled" />
-
+                  <input type="text" placeholder="Ingrese su código de reserva" data-layout="normal" class="w-100" style="background-color: azure;"
+                    v-model="codeReprint" />
+                  <!-- disabled="disabled" -->
                   <p class="text-center text-primary pb-2 font-weight-bolder s-custom-font">
                     {{ texto }}
                   </p>
@@ -27,20 +27,13 @@
       <b-row>
         <!-- Left Button -->
         <b-col cols="6" class="container-fluid">
-          <b-button
-            variant="primary"
-            class="custom-button btn-lg button-radius"
-            @click="goHome"
-          >
+          <b-button variant="primary" class="custom-button btn-lg button-radius" @click="goHome">
             <h2>REGRESAR</h2>
           </b-button>
         </b-col>
         <!-- Right Button -->
         <b-col cols="6" class="container-fluid text-right">
-          <b-button
-            class="custom-button btn-lg btn-info button-radius"
-            @click="getBookingDetails"
-          >
+          <b-button class="custom-button btn-lg btn-info button-radius" @click="getBookingDetails">
             <h2>IMPRIMIR</h2>
           </b-button>
         </b-col>
@@ -53,6 +46,7 @@
 import WebSocket from '@/mixins/websocket.js'
 import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
+import info from '../../../info.json'
 
 export default {
   name: 'FormPrinTicket',
@@ -76,6 +70,7 @@ export default {
       text3: 'Estimado usuario pedimos disculpas por las molestias ocasionadas.' +
         'Nos encontramos trabajando para mejorar el servicio.',
       interval: null,
+      info
     }
   },
   methods: {
@@ -96,14 +91,16 @@ export default {
       }
     },
     getBookingDetails: async function () {
-      // const proxy = "https://cors.kupos-api.workers.dev"
-      // const API_KEY = "TSSDFPAPI30103014"
+      const proxy = "https://newstg3-gdsbus.kupos.cl"
+      const API_KEY = "TSXFQYAPI25766888"
       let api = ''
-      api = `/gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=TSSDFPAPI30103014`
+      api = `/gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=${API_KEY}`
+
+      this.texto = 'Imprimiendo boleto, por favor espere...';
 
       await this.axios
         .get([proxy, api].join('/'))
-        .then(({data}) => {
+        .then(({ data }) => {
           if (typeof data === 'object') {
             if (typeof data.result !== 'undefined' && typeof data.result.ticket_details !== 'undefined' && data.result.ticket_details !== null) {
               let ticketsGeneradosFormatted = {
@@ -123,7 +120,7 @@ export default {
               let response_origen = ticket_info.boarding_point_details.landmark
               let response_destino = ticket_info.destination
               let issued_on = new Date();
-              issued_on = issued_on.toLocaleString('es-CL', {hour12: false});
+              issued_on = issued_on.toLocaleString('es-CL', { hour12: false });
               let response_fecha_compra = issued_on
               let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
               let response_ticket = {
@@ -144,7 +141,7 @@ export default {
               }
               ticketsGeneradosFormatted.boletos.push(response_ticket)
               this.tickets_reprint = ticketsGeneradosFormatted
-              this.imprimir()
+              this.rePrint()
 
               this.axios.post(
                 'https://s1.ntic.cl/totem-costa-handler/index.php',
@@ -152,7 +149,7 @@ export default {
                   type: 'print_request',
                   call_url: api,
                   data: this.ticketsGenerados,
-                  name: this.$info.totemName
+                  name: this.info.totemName
                 }
               )
             } else {
@@ -164,7 +161,9 @@ export default {
           }
         })
         .catch(error => {
-            console.error(error)
+          console.error(error);
+          this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.';
+          setTimeout(() => { this.texto = ''; }, 10000);
 
           //   this.axios.post(
           //     'https://s1.ntic.cl/totem-costa-handler/index.php',
@@ -172,50 +171,84 @@ export default {
           //       type: 'print_error',
           //       call_url: api,
           //       data: this.ticketsGenerados,
-          //       name: this.$info.totemName
+          //       name: this.info.totemName
           //     }
           //   )
-          }
+        }
         )
         .finally(() => {
 
-          }
+        }
         )
     },
-    imprimir() {
-      // Imprimir Voucher
-      let paymentPos = {
-        "pos_response": "00",
-        "commerce_code": "597043507025",
-        "terminal_id": "UX105471",
-        "ballot_number": "214508",
-        "auth_code": "reprint",
-        "amount": "000000001",
-        "card_number": "***********",
-        "operation_number": "008619",
-        "payment_type": "DB",
-        "date_count": "    00",
-        "account_number": "                   ",
-        "card_type": "P ",
-        "transaction_date": "14012023",
-        "transaction_hour": "165405",
-        "voucher": "00",
-        "numero_cuota": "00",
-        "monto_cuota": "",
-        "tipo_cuota": ""
+
+    // imprime el boleto
+    async rePrint() {
+      this.codeReprint = '';
+      let tickets = [];
+      console.log('+ methods:imprimirVoucher', '! Número de boletos ' + this.tickets_reprint.boletos.length);
+
+      for (let boleto of this.tickets_reprint.boletos) {
+        tickets.push({
+          boleto: boleto.boleto,
+          codigo: boleto.codigo,
+          rut: '', // No se indica Rut en los boletos
+          servicio: boleto.servicio,
+          ruta: `${boleto.origen} ${boleto.hora} - ${boleto.destino} ${boleto.fecha}`,
+          piso: boleto.piso,
+          asiento: boleto.asiento,
+          fecha: boleto.fecha,
+          hora: boleto.hora,
+          origen: boleto.origen,
+          destino: boleto.destino,
+          tipo_cliente: 'PULLMAN PASS',
+          fecha_compra: boleto.fecha_compra,
+          total: boleto.total
+        });
       }
 
-      this.imprimirVoucher(
-        paymentPos,
-        this.tickets_reprint.boletos,
-        this.codeReprint
-      );
-      this.codeReprint = '';
+      const url = 'https://192.168.88.246:3000';
+      const api = '/imprimir';
 
+      try {
+        for (const t of tickets) {
+          let boletoTexto =
+            '--------------- BOLETO PULLMAN --------------\n' +
+            ` BOLETO:            ${t.boleto}\n` +
+            ` SERVICIO:          ${t.servicio}\n` +
+            ` RUTA: ${t.ruta}                 \n` +
+            ` PISO:              ${t.piso}\n` +
+            ` ASIENTO:           ${t.asiento}\n` +
+            ` ORIGEN:            ${t.origen}\n` +
+            ` DESTINO:           ${t.destino}\n` +
+            ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+            ` HORA DE VIAJE:     ${t.hora}\n` +
+            ` TOTAL:             $${t.total}\n` +
+            '                              \n' +
+            '                              \n';
+
+          // const response = await axios.post(url + api, {
+          //   texto: boletoTexto
+          // });
+          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data);
+        }
+        this.texto = 'Boleto impreso correctamente';
+        setTimeout(() => {
+          this.texto = '';
+        }, 5000);
+      } catch (error) {
+        console.error('Error al imprimir boletos', error);
+        this.texto = 'Hubo un error al intentar imprimir el boleto. Intente nuevamente más tarde.';
+        setTimeout(() => {
+          this.texto = '';
+        }, 10000);
+      }
     },
+
     goHome() {
       //this.$router.push('/')
-      this.$router.push({name: "Home"});
+      this.$router.push({ name: "Home" });
     },
     // Click Toolbar button
     eventClick: function (name) {

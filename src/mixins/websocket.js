@@ -22,32 +22,32 @@ export default {
 
   methods: {
     //Fecha de hoy
-    today() {
-      let date = new Date()
-      let day = date.getDate().toString().length === 1 ? '0' + date.getDate() : date.getDate()
-      let month = (date.getMonth() + 1).toString().length === 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
-      let year = date.getFullYear()
+    // today() {
+    //   let date = new Date()
+    //   let day = date.getDate().toString().length === 1 ? '0' + date.getDate() : date.getDate()
+    //   let month = (date.getMonth() + 1).toString().length === 1 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+    //   let year = date.getFullYear()
 
-      return [day, month, year].join('/')
-    },
+    //   return [day, month, year].join('/')
+    // },
     //inicialización de variables
-    initVar() {
-      this.isConn = false
-      this.messagePOS = ''
-      this.paymentPOS = ''
-      this.isErrorPOS = false
-      this.endTransactionPOS = false
-      console.log(
-        '- methods:initVar',
-        'isConn = ' + this.isConn,
-        'messagePOS = ' + this.messagePOS,
-        'paymentPOS = ' + this.paymentPOS,
-        'isErrorPOS = ' + this.isErrorPOS,
-        'endTransactionPOS = ' + this.endTransactionPOS
-      )
-      //this.isconnPOSX = false
-      //this.isConnPrinter = false
-    },
+    // initVar() {
+    //   this.isConn = false
+    //   this.messagePOS = ''
+    //   this.paymentPOS = ''
+    //   this.isErrorPOS = false
+    //   this.endTransactionPOS = false
+    //   console.log(
+    //     '- methods:initVar',
+    //     'isConn = ' + this.isConn,
+    //     'messagePOS = ' + this.messagePOS,
+    //     'paymentPOS = ' + this.paymentPOS,
+    //     'isErrorPOS = ' + this.isErrorPOS,
+    //     'endTransactionPOS = ' + this.endTransactionPOS
+    //   )
+    //   //this.isconnPOSX = false
+    //   //this.isConnPrinter = false
+    // },
     // //Suscribirse al channel Printer
     // imprimirConectar() {
     //   console.log('- methods:imprimirConectar', 'isConnPrinter = ' + this.isConnPrinter)
@@ -190,8 +190,8 @@ export default {
         '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
         '                                             \n'
 
-      let tickets = []
-      console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
+        let tickets = []
+        console.log('+ methods:imprimirVoucher', '! Número de boletos ' + ticketsValue.length)
 
       // let today = this.today()
       for (let boleto of ticketsValue) {
