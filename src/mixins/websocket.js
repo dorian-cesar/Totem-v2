@@ -220,14 +220,14 @@ export default {
       const api = '/imprimir'
 
       // voucher transbank
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     texto: voucher
-      //   })
-      //   console.log('Impresión enviada con éxito - transbank', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      try {
+        const response = await axios.post(url + api, {
+          texto: voucher
+        })
+        console.log('Impresión enviada con éxito - transbank', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -250,22 +250,22 @@ export default {
 
         boletosTexto += boletoTexto
 
-        // try {
-        //   const response = await axios.post(url + api, {
-        //     texto: boletoTexto
-        //   })
-        //   console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
-        // } catch (error) {
-        //   console.error(`Error al imprimir boleto ${t.boleto}`, error)
-        // }
+        try {
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          })
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+        } catch (error) {
+          console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        }
       }
 
       // mostrar voucher + boletos en el navegador
-      const previewWindow = window.open('', '_blank')
-      previewWindow.document.write(
-        '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
-      )
-      previewWindow.document.close()
+      // const previewWindow = window.open('', '_blank')
+      // previewWindow.document.write(
+      //   '<pre style="font-size:14px; white-space:pre-wrap;">' + voucher + '\n' + boletosTexto + '</pre>'
+      // )
+      // previewWindow.document.close()
 
       // console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
