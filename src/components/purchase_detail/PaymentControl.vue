@@ -27,8 +27,8 @@
         </b-col>
         <!-- Mensaje -->
         <b-col colos="12" class="text-center font-italic">
-          <h2 v-show="!isChangeStatus" class="text-primary py-5">{{msg}}</h2>
-          <h2 v-show="isChangeStatus" class="text-danger py-1 pb-4 pt-4">{{msgError}}</h2>
+          <h2 v-show="!isChangeStatus" class="text-primary py-5" style="white-space: pre-line;">{{msg}}</h2>
+          <h2 v-show="isChangeStatus" class="text-danger py-1 pb-4 pt-4" style="white-space: pre-line;">{{msgError}}</h2>
         </b-col>
         <b-col cols="12" v-show="isChangeStatus" class="text-center mb-3">
           <b-button
