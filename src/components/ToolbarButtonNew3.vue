@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import { eventBus } from '@/mixins/eventBus.js'; // Importa el bus de eventos
 
 export default {
   name: 'ToolBarButtonNew3',
@@ -30,12 +29,6 @@ export default {
     rbLabel: { type: String, default: () => 'CONTINUAR' },
     rbIsDisable: { type: Boolean, default: () => true },
   },
-  watch: {
-    '$eventBus.isFormValid'(newStatus) {
-      console.log('Formulario válido:', newStatus);
-      this.rbIsDisable = !newStatus;  // Asegúrate de que esto actualice correctamente el estado del botón
-    },
-  }
 }
 
 </script>

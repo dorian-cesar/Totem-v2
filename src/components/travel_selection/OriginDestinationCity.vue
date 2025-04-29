@@ -18,9 +18,10 @@
     <hr>
     <b-row align-h="center">
       <b-col cols="12">
+        <img center :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
         <b-form-group>
-          <b-form-input v-model="rut" placeholder="Ej: 12.345.678-9" @input="rut = formatearRut(rut)" @blur="validarRut"
-            style="height: 68px; font-size: 2rem;" autocomplete="off" />
+          <b-form-input v-bind="propsRut" v-model="rut" @input="rut = formatearRut(rut)" @blur="validarRut"
+            style="height: 68px; font-size: 40px; color: black" autocomplete="off" />
         </b-form-group>
       </b-col>
     </b-row>
@@ -32,14 +33,15 @@ import Select from "@/components/Select.vue";
 import { mapActions } from "vuex";
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
-import { eventBus } from '@/mixins/eventBus.js'; // Importa el bus de eventos
+import ImgRut from '@/assets/img/usuario-rut.png'
 
 export default {
   name: "OriginDestination",
   data: () => ({
-    // Props departure city,
     ImgOrigin,
     ImgDestiny,
+    ImgRut,
+    // Props departure city
     propsDepartureCity: {
       caption: "ORIGEN",
       icon: ImgOrigin,
@@ -61,8 +63,15 @@ export default {
       reset: false,
       imgClass: 'destiny-img-class',
     },
-    rut: '',
-    isContinueButtonDisabled: true, // Nueva propiedad para controlar el botón
+    propsRut: {
+      caption: "RUT",
+      icon: ImgRut,
+      options: [],
+      placeholder: "Ej: 12.345.678-9",
+      rutValido: "",
+      reset: false,
+    },
+    rut: "",
   }),
   components: { selectInput: Select },
   watch: {
@@ -84,13 +93,8 @@ export default {
     "propsArrivalCity.selected"(newVal) {
       if (newVal) {
         this.setValues();
-        this.validateForm();
         this.$emit("selected", true);
       }
-    },
-
-    rut() {
-      this.validateForm();
     },
   },
   mounted() {
@@ -201,28 +205,25 @@ export default {
     async validarRut() {
       if (!this.rut || this.rut.trim() === '') {
         await this.showMsgBoxError('Debe ingresar su RUT.');
-        this.isContinueButtonDisabled = true; // Asegúrate de que este valor se actualice
+        this.rutValido = false;
         return;
       }
-
-      this.rut = this.formatearRut(this.rut);
+      const formattedRut = this.formatearRut(this.rut);
       const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/;
-
-      if (!rutRegex.test(this.rut)) {
+      if (!rutRegex.test(formattedRut)) {
         await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.');
-        this.isContinueButtonDisabled = true; // Asegúrate de que este valor se actualice
+        this.rutValido = false;
       } else {
-        this.isContinueButtonDisabled = false;
+        this.rut = formattedRut;
+        this.rutValido = true;
+        this.$emit('rutValido', this.rutValido);
       }
     },
-
     formatearRut(rut) {
       rut = rut.replace(/[^0-9kK]/g, '').toUpperCase();
       if (rut.length < 2) return rut;
-
       let cuerpo = rut.slice(0, -1);
       let dv = rut.slice(-1);
-
       let formateado = '';
       for (let i = cuerpo.length - 1, j = 0; i >= 0; i--, j++) {
         formateado = cuerpo[i] + formateado;
@@ -230,10 +231,8 @@ export default {
           formateado = '.' + formateado;
         }
       }
-
       return `${formateado}-${dv}`;
     },
-
     async showMsgBoxError(msg) {
       await this.$bvModal.msgBoxOk(msg, {
         title: 'Información',
@@ -245,16 +244,16 @@ export default {
         centered: true
       });
     },
-
-    validateForm() {
-      const departureSelected = this.propsDepartureCity.selected && this.propsDepartureCity.selected.value !== 'PRESELECT_VALUE';
-      const arrivalSelected = this.propsArrivalCity.selected && this.propsArrivalCity.selected.value !== 'PRESELECT_VALUE';
-      const rutValid = this.rut && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/.test(this.rut);
-
-      const isValid = departureSelected && arrivalSelected && rutValid;
-
-      eventBus.updateFormValidity(isValid); // Asegúrate de emitir el valor correcto
-    }
   }
 };
 </script>
+
+<style scoped>
+
+.rut-img-class {
+  width: 50px;
+  margin-bottom: 10px;
+  margin-left: 7px;
+}
+
+</style>
