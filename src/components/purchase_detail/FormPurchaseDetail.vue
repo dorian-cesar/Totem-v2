@@ -133,9 +133,6 @@ export default {
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)
-      console.log("api", url + api)
-      console.log("amount: ", this.propsPersonalInformation.total.replace('.', ''))
-      console.log("ticketNumber: ", this.propsPersonalInformation.tickets[0].codeReservation.slice(-10))
 
       this.axios.post(url + api,
         {
@@ -163,16 +160,22 @@ export default {
             this.isErrorTerminarTransaccionPOS(true);
           }
         })
-        // .catch(error => {
-        //   console.error("Error en la conexión con POS:", error.message);
-        //   if (error.message === 'Network Error' || error.code === 'ECONNABORTED' || error.message.includes('timeout') || error.message.includes('ERR_CONNECTION_TIMED_OUT')) {
-        //     this.propsPaymentControl.msgError = 'No se pudo conectar con el POS\nPOS sin conexión';
-        //   } else {
-        //     this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS';
-        //   }
-        //   this.isErrorPOS = true;
-        //   this.isErrorTerminarTransaccionPOS(true);
-        // });
+        .catch(error => {
+          console.error("Error en la conexión con POS:", error.message);
+          if (error.response && error.response.status === 500 ||
+            error.message === 'Network Error' ||
+            error.code === 'ECONNABORTED' ||
+            error.message.includes('timeout') ||
+            error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
+            error.message.includes('ERR_CONNECTION_REFUSED')
+          ) {
+            this.propsPaymentControl.msgError = 'No existe conexión con el POS\nPOS desconectado';
+          } else {
+            this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS';
+          }
+          this.isErrorPOS = true;
+          this.isErrorTerminarTransaccionPOS(true);
+        });
 
       this.axios.post(
         'https://s1.ntic.cl/totem-costa-handler/index.php',
