@@ -216,7 +216,6 @@ export default {
       } else {
         this.rut = formattedRut;
         this.rutValido = true;
-        // this.setRut(this.rut);
         localStorage.setItem('rut', this.rut);
         this.$emit('rutValido', this.rutValido);
       }
