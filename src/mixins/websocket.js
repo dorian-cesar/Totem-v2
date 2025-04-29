@@ -170,7 +170,7 @@ export default {
         '         ISIDORA GOYENECHEA 3520          \n' +
         `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
-        `             ${codigo_unico}              \n` +
+        `              ${codigo_unico}             \n` +
         '     FECHA       HORA        TERMINAL     \n' +
         `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
         '                                             \n' +
@@ -220,14 +220,14 @@ export default {
       const api = '/imprimir'
 
       // voucher transbank
-      try {
-        const response = await axios.post(url + api, {
-          texto: voucher
-        })
-        console.log('Impresión enviada con éxito - transbank', response.data)
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
+      // try {
+      //   const response = await axios.post(url + api, {
+      //     texto: voucher
+      //   })
+      //   console.log('Impresión enviada con éxito - transbank', response.data)
+      // } catch (error) {
+      //   console.error('Error al enviar los datos de impresión', error)
+      // }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -250,14 +250,14 @@ export default {
 
         boletosTexto += boletoTexto
 
-        try {
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          })
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
-        } catch (error) {
-          console.error(`Error al imprimir boleto ${t.boleto}`, error)
-        }
+        // try {
+        //   const response = await axios.post(url + api, {
+        //     texto: boletoTexto
+        //   })
+        //   console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+        // } catch (error) {
+        //   console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        // }
       }
 
       const previewWindow = window.open('', '_blank')

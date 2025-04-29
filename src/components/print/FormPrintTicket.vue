@@ -103,6 +103,8 @@ export default {
 
       this.texto = 'Imprimiendo boleto, por favor espere...';
 
+      // const rut = localStorage.getItem('rut')
+
       await this.axios
         .get([proxy, api].join('/'))
         .then(({ data }) => {
@@ -131,7 +133,7 @@ export default {
               let response_ticket = {
                 boleto: response_boleto,
                 codigo: response_codigo.toString(),
-                rut: '',//<- No se indica Rut en los boletos
+                rut: "",
                 servicio: response_servicio,
                 ruta: response_ruta,
                 piso: response_piso,
@@ -197,7 +199,7 @@ export default {
         tickets.push({
           boleto: boleto.boleto,
           codigo: boleto.codigo,
-          rut: '', // No se indica Rut en los boletos
+          rut: "",
           servicio: boleto.servicio,
           ruta: `${boleto.origen} ${boleto.hora} - ${boleto.destino} ${boleto.fecha}`,
           piso: boleto.piso,

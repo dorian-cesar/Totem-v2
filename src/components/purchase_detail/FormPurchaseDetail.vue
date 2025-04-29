@@ -417,6 +417,8 @@ export default {
     guardarTransaccionPOS: async function () {
       this.loadingTerminarTransaccionPOS = false;
       let total_processed = 0
+      const rut = localStorage.getItem('rut');
+
 
       let ticketsGeneradosFormatted = {
         boletos: [],
@@ -467,7 +469,7 @@ export default {
               let response_ticket = {
                 boleto: response_boleto.toString(),
                 codigo: response_codigo.toString(),
-                rut: '',//<- No se indica Rut en los boletos
+                rut: rut,
                 servicio: response_servicio,
                 ruta: response_ruta,
                 piso: response_piso,

@@ -189,6 +189,8 @@
 
         const operatorPnr = this.$parent.$parent.operatorPnr
 
+        const rut = localStorage.getItem('rut')
+
         //this.setTravelBus([{
         this.addTravelBus([{
           busList: busList, // <- Nombre interno del bus
@@ -200,7 +202,7 @@
           trip: trip,
           date: date,
           name: '', // <- name del prepend(Boleto 1, Boleto 2,...)
-          rut: '', // <- por defecto
+          rut: rut,
           // nuevos
           servicio: servicio,
           fechaServicio: date,

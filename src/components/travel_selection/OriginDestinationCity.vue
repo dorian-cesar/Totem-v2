@@ -18,7 +18,7 @@
     <hr>
     <b-row align-h="center">
       <b-col cols="12">
-        <img center :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
+        <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
         <b-form-group>
           <b-form-input v-bind="propsRut" v-model="rut" @input="rut = formatearRut(rut)" @blur="validarRut"
             style="height: 68px; font-size: 40px; color: black" autocomplete="off" />
@@ -216,6 +216,8 @@ export default {
       } else {
         this.rut = formattedRut;
         this.rutValido = true;
+        // this.setRut(this.rut);
+        localStorage.setItem('rut', this.rut);
         this.$emit('rutValido', this.rutValido);
       }
     },
@@ -239,21 +241,19 @@ export default {
         size: 'sm',
         buttonSize: 'lg',
         okVariant: 'danger',
-        headerClass: 'p-2 ml-2 mr-2 border-bottom-0',
-        footerClass: 'p-2 ml-2 mr-2 border-top-0',
+        headerClass: 'p-2 ml-2 mr-3 mt-2 border-bottom-0',
+        footerClass: 'p-2 ml-3 border-top-0',
         centered: true
       });
-    },
+    }
   }
 };
 </script>
 
-<style scoped>
-
+<style>
 .rut-img-class {
   width: 50px;
   margin-bottom: 10px;
   margin-left: 7px;
 }
-
 </style>
