@@ -16,8 +16,12 @@ export default {
     async seatReservation(option, param, service) {
 
       this.isLoadingReservation = true
-      const proxy = 'https://newstg3-gdsbus.kupos.cl'
-      const API_KEY = 'TSXFQYAPI25766888'
+      // api dev
+      // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+      // const API_KEY = 'TSXFQYAPI25766888'
+      // api kupos
+      const proxy = "https://gds.kupos.com"
+      const API_KEY = "TSSDFPAPI30103014"
       let api = ''
 
       if ('add' === option)

@@ -164,7 +164,7 @@ export default {
           }
         })
         let results = response.data.result;
-        console.log(results)
+        // console.log(results)
         results.shift();
         let data = []
         for (let result of results) {

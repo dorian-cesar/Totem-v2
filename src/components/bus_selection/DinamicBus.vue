@@ -235,46 +235,25 @@ export default {
 
         // this.setupParam()
         this.isReservation = true // reservar asiento
-        // this.param.book_ticket = {
-        //   seat_details: {
-        //     seat_detail: [{
-        //       seat_number: num,
-        //       fare: this.service.tarifaPrimerPisoInternet,
-        //       title: "Mr",
-        //       name: "Ivan Valenzuela",
-        //       age: "33",
-        //       sex: "M",
-        //       is_primary: "true",
-        //       id_card_type: "1",
-        //       id_card_number: "17211508k",
-        //       id_card_issued_by: "oneone"
-        //     }]
-        //   },
-        //   contact_detail: {
-        //     mobile_number: "942858102",
-        //     emergency_name: "Ivan Valenzuela",
-        //     email: "ivalenzuela@wit.la"
-        //   }
-        // }
         this.param.book_ticket = {
           seat_details: {
             seat_detail: [{
               seat_number: num,
               fare: this.service.tarifaPrimerPisoInternet,
               title: "Mr",
-              name: "Diego Wigodski",
+              name: "Ivan Valenzuela",
               age: "33",
               sex: "M",
               is_primary: "true",
               id_card_type: "1",
-              id_card_number: "177027286",
+              id_card_number: "17211508k",
               id_card_issued_by: "oneone"
             }]
           },
           contact_detail: {
-            mobile_number: "981914052",
-            emergency_name: "Diego Wigodski",
-            email: "dwigodski@wit.la"
+            mobile_number: "942858102",
+            emergency_name: "Ivan Valenzuela",
+            email: "ivalenzuela@wit.la"
           }
         }
         this.param.origin_id = this.param.origen
