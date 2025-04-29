@@ -133,6 +133,9 @@ export default {
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)
+      console.log("api", url + api)
+      console.log("amount: ", this.propsPersonalInformation.total.replace('.', ''))
+      console.log("ticketNumber: ", this.propsPersonalInformation.tickets[0].codeReservation.slice(-10))
 
       this.axios.post(url + api,
         {
@@ -160,6 +163,16 @@ export default {
             this.isErrorTerminarTransaccionPOS(true);
           }
         })
+        // .catch(error => {
+        //   console.error("Error en la conexión con POS:", error.message);
+        //   if (error.message === 'Network Error' || error.code === 'ECONNABORTED' || error.message.includes('timeout') || error.message.includes('ERR_CONNECTION_TIMED_OUT')) {
+        //     this.propsPaymentControl.msgError = 'No se pudo conectar con el POS\nPOS sin conexión';
+        //   } else {
+        //     this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS';
+        //   }
+        //   this.isErrorPOS = true;
+        //   this.isErrorTerminarTransaccionPOS(true);
+        // });
 
       this.axios.post(
         'https://s1.ntic.cl/totem-costa-handler/index.php',
@@ -409,11 +422,11 @@ export default {
       console.log("reservation codes: ", this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        // const proxy = "https://newstg3-gdsbus.kupos.cl"
-        // const API_KEY = "TSXFQYAPI25766888"
+        const proxy = "https://newstg3-gdsbus.kupos.cl"
+        const API_KEY = "TSXFQYAPI25766888"
         // api kupos
-        const proxy = "https://gds.kupos.com"
-        const API_KEY = "TSSDFPAPI30103014"
+        // const proxy = "https://gds.kupos.com"
+        // const API_KEY = "TSSDFPAPI30103014"
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento

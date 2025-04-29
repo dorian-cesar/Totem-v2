@@ -17,11 +17,11 @@ export default {
 
       this.isLoadingReservation = true
       // api dev
-      // const proxy = 'https://newstg3-gdsbus.kupos.cl'
-      // const API_KEY = 'TSXFQYAPI25766888'
+      const proxy = 'https://newstg3-gdsbus.kupos.cl'
+      const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
-      const proxy = "https://gds.kupos.com"
-      const API_KEY = "TSSDFPAPI30103014"
+      // const proxy = "https://gds.kupos.com"
+      // const API_KEY = "TSSDFPAPI30103014"
       let api = ''
 
       if ('add' === option)
