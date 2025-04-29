@@ -15,7 +15,7 @@
           @selectedStatus="action('select-arrival', $event)" ref="select-arrival" />
       </b-col>
     </b-row>
-    <hr>
+    <!-- <hr>
     <b-row align-h="center">
       <b-col cols="12">
         <b-form-group>
@@ -24,7 +24,7 @@
         </b-form-group>
       </b-col>
     </b-row>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -62,7 +62,7 @@ export default {
       imgClass: 'destiny-img-class',
     },
     rut: '',
-    isContinueButtonDisabled: true, // Nueva propiedad para controlar el botón
+    // isContinueButtonDisabled: true,
   }),
   components: { selectInput: Select },
   watch: {
@@ -84,14 +84,13 @@ export default {
     "propsArrivalCity.selected"(newVal) {
       if (newVal) {
         this.setValues();
-        this.validateForm();
         this.$emit("selected", true);
       }
     },
 
-    rut() {
-      this.validateForm();
-    },
+    // rut() {
+    //   this.validateForm();
+    // },
   },
   mounted() {
     // Get list of departure cities
@@ -164,7 +163,7 @@ export default {
           }
         })
         let results = response.data.result;
-        console.log(results)
+        // console.log(results)
         results.shift();
         let data = []
         for (let result of results) {
@@ -246,15 +245,15 @@ export default {
       });
     },
 
-    validateForm() {
-      const departureSelected = this.propsDepartureCity.selected && this.propsDepartureCity.selected.value !== 'PRESELECT_VALUE';
-      const arrivalSelected = this.propsArrivalCity.selected && this.propsArrivalCity.selected.value !== 'PRESELECT_VALUE';
-      const rutValid = this.rut && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/.test(this.rut);
+    // validateForm() {
+    //   const departureSelected = this.propsDepartureCity.selected && this.propsDepartureCity.selected.value !== 'PRESELECT_VALUE';
+    //   const arrivalSelected = this.propsArrivalCity.selected && this.propsArrivalCity.selected.value !== 'PRESELECT_VALUE';
+    //   const rutValid = this.rut && /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/.test(this.rut);
 
-      const isValid = departureSelected && arrivalSelected && rutValid;
+    //   const isValid = departureSelected && arrivalSelected && rutValid;
 
-      eventBus.updateFormValidity(isValid); // Asegúrate de emitir el valor correcto
-    }
+    //   eventBus.updateFormValidity(isValid); // Asegúrate de emitir el valor correcto
+    // }
   }
 };
 </script>
