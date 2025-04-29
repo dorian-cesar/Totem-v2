@@ -113,10 +113,14 @@ export default {
     getListDepartureCities: async function () {
       try {
         // api antigua
-        const proxy = "https://gds.ticketsimply.us"
-        const API_KEY = "TSSDFPAPI30103014"
+        // const proxy = "https://gds.ticketsimply.us"
+        // const API_KEY = "TSSDFPAPI30103014"
+        // api dev
         // const proxy = "https://newstg3-gdsbus.kupos.cl"
         // const API_KEY = "TSXFQYAPI25766888"
+        // api kupos
+        const proxy = "https://gds.kupos.com"
+        const API_KEY = "TSSDFPAPI30103014"
         const api = `/gds/api/cities.json?api_key=${API_KEY}`
 
         const response = await this.axios.get([proxy, api].join("/"), {
@@ -144,10 +148,13 @@ export default {
     getListArrivalCities: async function () {
       try {
         // api antigua
-        const proxy = "https://gds.ticketsimply.us"
-        const API_KEY = "TSSDFPAPI30103014"
+        // const proxy = "https://gds.ticketsimply.us"
+        // const API_KEY = "TSSDFPAPI30103014"
         // const proxy = "https://newstg3-gdsbus.kupos.cl"
         // const API_KEY = "TSXFQYAPI25766888"
+        // api kupos
+        const proxy = "https://gds.kupos.com"
+        const API_KEY = "TSSDFPAPI30103014"
         const api = `/gds/api/cities.json?api_key=${API_KEY}`
         const body = this.propsDepartureCity.selected.value
 
@@ -157,6 +164,7 @@ export default {
           }
         })
         let results = response.data.result;
+        console.log(results)
         results.shift();
         let data = []
         for (let result of results) {

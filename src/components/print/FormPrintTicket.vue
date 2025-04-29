@@ -92,8 +92,12 @@ export default {
       }
     },
     getBookingDetails: async function () {
-      const proxy = "https://newstg3-gdsbus.kupos.cl"
-      const API_KEY = "TSXFQYAPI25766888"
+      // api dev
+      // const proxy = "https://newstg3-gdsbus.kupos.cl"
+      // const API_KEY = "TSXFQYAPI25766888"
+      // api kupos
+      const proxy = "https://gds.kupos.com"
+      const API_KEY = "TSSDFPAPI30103014"
       let api = ''
       api = `/gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=${API_KEY}`
 

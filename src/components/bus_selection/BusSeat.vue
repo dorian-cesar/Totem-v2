@@ -3,31 +3,22 @@
     <!-- Show the spinner, when searching seats bus -->
     <div v-if="loading" class="text-black-50 text-center">
       <b-spinner type="grow"></b-spinner>
-      <span class="text-black-50 pl-2 h4"
-      >Espere cargando información del Bus</span
-      >
+      <span class="text-black-50 pl-2 h4">Espere cargando información del Bus</span>
     </div>
     <!-- draw bus  -->
-    <dinamic-bus
-      v-else
-      :param="{
-        servicio: idServicio,
-        fecha: fechaServicio,
-        boarding_at: boarding_at,
-        origen: idOrigen,
-        destino: idDestino,
-        integrador
-      }"
-      :service="{
+    <dinamic-bus v-else :param="{
+      servicio: idServicio,
+      fecha: fechaServicio,
+      boarding_at: boarding_at,
+      origen: idOrigen,
+      destino: idDestino,
+      integrador
+    }" :service="{
         tarifaPrimerPisoInternet,
         tarifaSegundoPisoInternet,
         servicioPrimerPiso,
         servicioSegundoPiso
-      }"
-      :drawSeats="propsDinamicBus.drawSeats"
-      :availableSeats="propsDinamicBus.availableSeats"
-      :key="key"
-    />
+      }" :drawSeats="propsDinamicBus.drawSeats" :availableSeats="propsDinamicBus.availableSeats" :key="key" />
   </div>
 </template>
 
@@ -46,34 +37,34 @@ export default {
       availableSeats: [],
     },
   }),
-  components: {DinamicBus},
+  components: { DinamicBus },
   props: {
-    type: {type: String, required: true, default: () => ""},
-    name: {type: String, required: true, default: () => ""},
-    active: {type: String, required: true, default: () => ""},
-    nameBus: {type: String, required: true, default: () => ""},
-    idServicio: {type: Number, required: true, default: () => ""},
-    idOrigen: {type: Number, required: true, default: () => ""},
-    idDestino: {type: Number, required: true, default: () => ""},
-    tipoBusPiso1: {type: String, required: true, default: () => ""},
-    tipoBusPiso2: {type: String, default: () => ""},
-    fechaServicio: {type: String, required: true, default: () => ""},
-    boarding_at: {type: String, required: true, default: () => ""},
-    horaSalida: {type: String, required: true, default: () => ""},
-    horaLlegada: {type: String, required: true, default: () => ""},
-    asientosDisponibles: {type: Number, required: true, default: () => ""},
-    asientosReservados:  {type: Number, required: true, default: () => ""},
-    asientosTotales:  {type: Number, required: true, default: () => ""},
-    integrador: {type: Number, required: true, default: () => 0},
-    empresa: {type: String, required: true, default: () => ""},
-    idClaseBusPisoUno: {type: String, required: true, default: () => ""},
-    idClaseBusPisoDos: {type: String, required: true, default: () => ""},
-    busPiso1: {type: String, required: true, default: () => ""},
-    busPiso2: {type: String, required: true, default: () => ""},
-    tarifaPrimerPisoInternet: {type: String, required: true},
-    tarifaSegundoPisoInternet: {type: String, required: true},
-    servicioPrimerPiso: {type: String, required: true},
-    servicioSegundoPiso: {type: String, required: true}
+    type: { type: String, required: true, default: () => "" },
+    name: { type: String, required: true, default: () => "" },
+    active: { type: String, required: true, default: () => "" },
+    nameBus: { type: String, required: true, default: () => "" },
+    idServicio: { type: Number, required: true, default: () => "" },
+    idOrigen: { type: Number, required: true, default: () => "" },
+    idDestino: { type: Number, required: true, default: () => "" },
+    tipoBusPiso1: { type: String, required: true, default: () => "" },
+    tipoBusPiso2: { type: String, default: () => "" },
+    fechaServicio: { type: String, required: true, default: () => "" },
+    boarding_at: { type: String, required: true, default: () => "" },
+    horaSalida: { type: String, required: true, default: () => "" },
+    horaLlegada: { type: String, required: true, default: () => "" },
+    asientosDisponibles: { type: Number, required: true, default: () => "" },
+    asientosReservados: { type: Number, required: true, default: () => "" },
+    asientosTotales: { type: Number, required: true, default: () => "" },
+    integrador: { type: Number, required: true, default: () => 0 },
+    empresa: { type: String, required: true, default: () => "" },
+    idClaseBusPisoUno: { type: String, required: true, default: () => "" },
+    idClaseBusPisoDos: { type: String, required: true, default: () => "" },
+    busPiso1: { type: String, required: true, default: () => "" },
+    busPiso2: { type: String, required: true, default: () => "" },
+    tarifaPrimerPisoInternet: { type: String, required: true },
+    tarifaSegundoPisoInternet: { type: String, required: true },
+    servicioPrimerPiso: { type: String, required: true },
+    servicioSegundoPiso: { type: String, required: true }
   },
   methods: {
     // Arreglar los datos para dibujar los asientos del bus
@@ -126,11 +117,11 @@ export default {
     //cambiar el nombre por compatibilidad con el código del componente Seat
     getChangeName(value) {
       return [
-        {name: "libre", change: "free"},
-        {name: "ocupado", change: "busy"},
-        {name: "pet-free", change: "busy"}, // <- Bloquea los puestos de mascotas
-        {name: "pet-busy", change: "busy"}, // <- Bloquea los puestos de mascotas
-        {name: "seleccionado", change: "selected"}
+        { name: "libre", change: "free" },
+        { name: "ocupado", change: "busy" },
+        { name: "pet-free", change: "busy" }, // <- Bloquea los puestos de mascotas
+        { name: "pet-busy", change: "busy" }, // <- Bloquea los puestos de mascotas
+        { name: "seleccionado", change: "selected" }
       ].find((val) => val.name === value).change;
     },
 
@@ -138,11 +129,15 @@ export default {
     searchBusService: async function () {
       try {
 
-        const proxy = "https://newstg3-gdsbus.kupos.cl"
-        const API_KEY = "TSXFQYAPI25766888"
+        // api dev
+        // const proxy = "https://newstg3-gdsbus.kupos.cl"
+        // const API_KEY = "TSXFQYAPI25766888"
+        // api kupos
+        const proxy = "https://gds.kupos.com"
+        const API_KEY = "TSSDFPAPI30103014"
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
-        // const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
+        //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
 
 
         const response = await this.axios.get([proxy, api1].join("/"), {
@@ -155,34 +150,34 @@ export default {
           throw new Error('La respuesta de la API no contiene los datos esperados.');
         }
         // búsqueda de planilla
-//        const requestOne = this.axios.post([proxy, api1].join("/"), {
-//          idServicio: this.idServicio,
-//          tipoBusPiso1:  this.tipoBusPiso1,
-//          tipoBusPiso2:  this.tipoBusPiso2,
-//          fechaServicio:  this.fechaServicio,
-//          integrador:  this.integrador,
-//        })
-//
-//        // búsqueda de planilla vertical
-//        const requestTwo = this.axios.post([proxy, api2].join("/"), {
-//          idServicio: this.idServicio,
-//          tipoBusPiso1: this.tipoBusPiso1,
-//          tipoBusPiso2: this.tipoBusPiso2,
-//          fechaServicio: this.fechaServicio,
-//          idOrigen: this.idOrigen,
-//          idDestino: this.idDestino,
-//          integrador: this.integrador,
-//          clasePiso1: this.idClaseBusPisoUno,
-//	        clasePiso2: this.idClaseBusPisoDos
-//        })
+        //        const requestOne = this.axios.post([proxy, api1].join("/"), {
+        //          idServicio: this.idServicio,
+        //          tipoBusPiso1:  this.tipoBusPiso1,
+        //          tipoBusPiso2:  this.tipoBusPiso2,
+        //          fechaServicio:  this.fechaServicio,
+        //          integrador:  this.integrador,
+        //        })
+        //
+        //        // búsqueda de planilla vertical
+        //        const requestTwo = this.axios.post([proxy, api2].join("/"), {
+        //          idServicio: this.idServicio,
+        //          tipoBusPiso1: this.tipoBusPiso1,
+        //          tipoBusPiso2: this.tipoBusPiso2,
+        //          fechaServicio: this.fechaServicio,
+        //          idOrigen: this.idOrigen,
+        //          idDestino: this.idDestino,
+        //          integrador: this.integrador,
+        //          clasePiso1: this.idClaseBusPisoUno,
+        //	        clasePiso2: this.idClaseBusPisoDos
+        //        })
 
 
-//         let responseOne, responseTwo
-//         for( let times = 0, isEmpty = true; times < 10 && isEmpty; times++ ){
-//           [responseOne, responseTwo] = await this.axios.all([ requestOne, requestTwo])
-//
-//           isEmpty = (Object.keys(responseOne.data).length === 0 || Object.keys(responseTwo.data).length === 0)
-//         }
+        //         let responseOne, responseTwo
+        //         for( let times = 0, isEmpty = true; times < 10 && isEmpty; times++ ){
+        //           [responseOne, responseTwo] = await this.axios.all([ requestOne, requestTwo])
+        //
+        //           isEmpty = (Object.keys(responseOne.data).length === 0 || Object.keys(responseTwo.data).length === 0)
+        //         }
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
         layout_available.shift();
