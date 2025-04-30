@@ -131,7 +131,7 @@ export default {
       clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
       this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
 
-      const url = 'https://192.168.88.254:3000'
+      const url = this.info.urlServer;
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)
@@ -175,7 +175,7 @@ export default {
             bookingData.fecha_transaccion = this.dataPOS.realDate;
             bookingData.hora_transaccion = this.dataPOS.realTime;
             bookingData.total_transaccion = this.dataPOS.amount;
-            this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', { bookingData })
+            this.axios.post(this.info.urlLogs, { bookingData })
               .then(() => {
                 console.log('Guardado exitoso en DB (pagarPos)');
                 console.log('Datos para DB pagarPOS: ', bookingData)
@@ -194,7 +194,7 @@ export default {
           } else {
             bookingData.estado_transaccion = 'Pago fallido';
             bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '');
-            this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', { bookingData })
+            this.axios.post(this.info.urlLogs, { bookingData })
               .then(() => {
                 console.log('Error guardado en DB (pagarPos)');
                 console.log('Datos del error para DB pagarPOS: ', bookingData)
@@ -486,30 +486,55 @@ export default {
                 total: response_total.toString(),
                 tipo_cliente: 'PULLMAN PASS',
               }
+
               ticketsGeneradosFormatted.boletos.push(response_ticket)
 
-              // this.axios.post(
-              //   'http://192.168.88.254/backend-log-totem-transbank/api.php',
-              //   {
-              //     bookingData
-              //   }
-              // )
+
+              const bookingData = {
+                numTotem: this.info.totemName,
+                rut: rut,
+                origen: this.$store.state.TravelSelection.nameDepartureCity,
+                destino: response_ticket.destino,
+                fecha_viaje: response_ticket.fecha,
+                hora_viaje: response_ticket.hora,
+                asiento: response_ticket.asiento,
+                codigo_reserva: response_ticket.boleto,
+                estado_boleto: 'Confirmado',
+                codigo_confirmacion: "",
+                codigo_transaccion: this.dataPOS.ticket,
+                estado_transaccion: 'Pago realizado',
+                numero_transaccion: this.dataPOS.operationNumber,
+                fecha_transaccion: this.dataPOS.realDate,
+                hora_transaccion: this.dataPOS.realTime,
+                total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+              };
+
+              this.axios.post(this.info.urlLogs, {
+                bookingData
+              })
+                .then(() => {
+                  console.log('Datos para DB confirm_booking: ', bookingData)
+                  console.log('Guardado exitoso en DB (confirm booking)');
+                })
+                .catch((error) => {
+                  console.error('Datos del error para DB, confirm_booking: ', error);
+                });
             }
           })
           .catch(error => {
             console.error(error)
             total_processed += 1
 
-            // this.axios.post(
-            //   'https://s1.ntic.cl/totem-costa-handler/index.php',
-            //   {
-            //     type: 're_print_error',
-            //     call_url: api,
-            //     data: ticketsGeneradosFormatted,
-            //     error: JSON.stringify(error),
-            //     name: this.info.totemName
-            //   }
-            // )
+            // ARREGLAR DATA INEXISTENTE
+            this.axios.post(this.info.urlLogs, {
+              bookingData
+            })
+              .then(() => {
+                console.log('Error guardado en DB (confirm booking)');
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB:', error);
+              });
           }
           )
           .finally(() => {

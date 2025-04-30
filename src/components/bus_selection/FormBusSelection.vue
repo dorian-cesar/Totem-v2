@@ -229,12 +229,6 @@ export default {
       }
       // console.log("propsListBusDeparture.schedules", this.propsListBusDeparture.schedules)
       this.propsListCaptionOrigin.totalList = this.propsListBusDeparture.schedules.length.toString()
-
-      //Guardar log
-      // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), request: body }, name: this.$info.totemName})
-      // clonar objeto
-      // const dataClone =  Oblect.asign({},response.data.map(e=>{e.logo = '';return e}))
-      // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), response: dataClone}, name: this.$info.totemName})
     },
 
     // Get return bus list
@@ -314,9 +308,6 @@ export default {
       }
 
       this.propsListCaptionDestination.totalList = this.propsListBusDestination.schedules.length.toString()
-      //Guardar log
-      // this.axios.post('http://3.80.65.145/logtotem', { frame:{ url:[proxy, api].join('/'), request: param }, name: this.$info.totemName})
-      // this.axios.post('http://3.80.65.145/logtotem', { frame:{ url:[proxy, api].join('/'), response: response.data }, name: this.$info.totemName})
     }
   },
 

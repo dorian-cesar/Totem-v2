@@ -1,5 +1,6 @@
 {
   "totemName": "1",
-  "ipServer": "",
+  "urlServer": "https://192.168.88.254:3000",
+  "urlLogs": "http://192.168.88.254/backend-log-totem-transbank/api.php",
   "port": ""
 }
