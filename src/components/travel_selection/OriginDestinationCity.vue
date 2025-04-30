@@ -217,6 +217,12 @@ export default {
         this.rut = formattedRut;
         this.rutValido = true;
         localStorage.setItem('rut', this.rut);
+        let rut = localStorage.getItem('rut');
+        rut = rut.replace(/\./g, '').replace('-', '');
+        if (rut.length > 1) {
+          rut = rut.slice(0, rut.length - 1) + '-' + rut.slice(-1);
+        }        
+        localStorage.setItem('rut', rut);
         this.$emit('rutValido', this.rutValido);
       }
     },

@@ -17,7 +17,7 @@
             <p class="h1 text-center text-primary pb-5 font-weight-bold">
               {{text2}}
             </p>
-            <p class="h4 p-4 font-italic">
+            <p class="h4 text-center p-4 font-italic">
               {{text3}}
             </p>
           </b-col>
@@ -36,7 +36,7 @@
       return {
         text1: 'EQUIPO TEMPORALMENTE',
         text2: 'FUERA DE SERVICIO',
-        text3: 'Estimado usuario pedimos disculpas por las molestias ocasionadas. ' +
+        text3: 'Estimado usuario pedimos disculpas por las molestias ocasionadas.' +
           'Nos encontramos trabajando para mejorar el servicio.',
         interval: null,
       }

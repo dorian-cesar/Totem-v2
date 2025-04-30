@@ -9,6 +9,7 @@
     <dinamic-bus v-else :param="{
       servicio: idServicio,
       fecha: fechaServicio,
+      horaSalida: horaSalida,
       boarding_at: boarding_at,
       origen: idOrigen,
       destino: idDestino,

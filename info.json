@@ -1,3 +1,5 @@
 {
-  "totemName": "Totem 1"
+  "totemName": "Totem 1",
+  "ipServer": "",
+  "port": ""
 }

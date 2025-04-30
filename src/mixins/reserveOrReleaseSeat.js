@@ -14,7 +14,6 @@ export default {
   methods: {
     // cambiar el estatus del flag loading
     async seatReservation(option, param, service) {
-
       this.isLoadingReservation = true
       // api dev
       const proxy = 'https://newstg3-gdsbus.kupos.cl'
@@ -23,6 +22,7 @@ export default {
       // const proxy = "https://gds.kupos.com"
       // const API_KEY = "TSSDFPAPI30103014"
       let api = ''
+      const rut = localStorage.getItem('rut')
 
       if ('add' === option)
         api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
@@ -32,14 +32,18 @@ export default {
       } // liberar asiento
       // else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'
 
+      // console.log('param', param)
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
       const formatParams = {
         book_ticket: param.book_ticket,
+        // seat_number: param.book_ticket.seat_detail[0].seat_number,
         origin_id: param.origin_id,
         destination_id: param.destination_id,
         boarding_at: param.boarding_at,
         no_of_seats: param.no_of_seats,
-        travel_date: param.travel_date
+        travel_date: param.travel_date,
+        travel_time: param.travel_time,
+        rut: rut
         // data de api antigua
         // customer_company_gst: {
         //   name: "Pullman",
@@ -47,7 +51,7 @@ export default {
         //   address: "TEST"
         // }
       }
-      // console.log(JSON.stringify(formatParams, null, 2));
+      // console.log(JSON.stringify(formatParams, null, 2))
       await this.axios
         .post([proxy, api].join('/'), formatParams, {
           headers: {
@@ -58,13 +62,33 @@ export default {
         })
         .then(({ data }) => {
           if (typeof data === 'object') {
-            // this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
-            //   type: 'tentative_booking',
-            //   call_url: api,
-            //   call_data: formatParams,
-            //   data: data,
-            //   name: this.info.totemName
-            // })
+            const bookingData = {
+              ticket: {
+                rut: rut,
+                origen: this.$store.state.TravelSelection.nameDepartureCity,
+                destino: this.$store.state.TravelSelection.nameArrivalCity,
+                fecha_viaje: formatParams.travel_date,
+                hora_viaje: formatParams.travel_time,
+                asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
+                codigo_reserva: data.result.ticket_details.pnr_number,
+                estado_boleto: "Reservado",
+                codigo_confirmacion: ""
+              },
+              pos: {
+                codigo_venta: "",
+                estado_transaccion: "",
+                numero_transaccion: "",
+                fecha_transaccion: "",
+                hora_transaccion: "",
+                total: ""
+              }
+            };
+
+            console.log('Datos para DB tentative booking:', bookingData)
+
+            this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+              data: bookingData,
+            })
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
@@ -72,12 +96,13 @@ export default {
             ) {
               this.statusReservation = false
               console.log('no ticket', data)
+              bookingData.ticket.estado_boleto = "Reserva cancelada";
+              bookingData.ticket.codigo_reserva = "";
 
-              // this.axios.post('https://s1.ntic.cl/totem-costa-handler/index.php', {
-              //   type: 'tentative_booking_error',
-              //   data: data,
-              //   name: this.info.totemName
-              // })
+              this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+                data: bookingData
+              })
+
             } else if (typeof data.result !== 'undefined') {
               if (typeof data.result.ticket_details !== 'undefined') {
                 this.statusReservation = true
@@ -91,6 +116,12 @@ export default {
             } else {
               this.statusReservation = false
               console.log('no result', data)
+              bookingData.ticket.estado_boleto = "Reserva cancelada";
+              bookingData.ticket.codigo_reserva = "";
+
+              this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+                data: bookingData
+              })
             }
           }
 
