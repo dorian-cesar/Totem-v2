@@ -27,6 +27,8 @@ import reserveOrReleaseSeat from "@/mixins/reserveOrReleaseSeat";
 import PaymentAtendedorControl from "./PaymentAtendedorControl.vue";
 import info from "../../../info.json";
 
+const rut = localStorage.getItem('rut');
+
 export default {
   name: "FormEnterRut",
 
@@ -86,6 +88,7 @@ export default {
       reservationCodes: [],
       //
       isCheckOutService: false, //<- Chequeo de isOutService completado
+      dataPOS: "",
       info,
     };
   },
@@ -128,7 +131,6 @@ export default {
       clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
       this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
 
-      // const url = 'https://1a7b-200-27-177-89.ngrok-free.app'
       const url = 'https://192.168.88.254:3000'
       const api = '/api/payment'
 
@@ -143,9 +145,44 @@ export default {
         .then(response => {
           console.log('Pago procesado:', response.data);
           console.log("successful: ", response.data.data.successful);
+          //inicializar variables
+          const bookingData = {
+            numTotem: this.info.totemName,
+            rut: rut,
+            origen: this.$store.state.TravelSelection.nameDepartureCity,
+            destino: this.$store.state.TravelSelection.nameArrivalCity,
+            fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+            hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+            asiento: this.propsPersonalInformation.tickets[0].seat,
+            codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+            estado_boleto: 'Reservado',
+            codigo_confirmacion: '',
+            codigo_transaccion: '',
+            estado_transaccion: '',
+            numero_transaccion: '',
+            fecha_transaccion: '',
+            hora_transaccion: '',
+            total_transaccion: '',
+          };
+
           if (response.data.data.successful === true) {
             console.log("transbank successful response: ", response.data);
+            this.dataPOS = response.data.data;
             this.propsPaymentControl.msg = response.data.data.responseMessage;
+            bookingData.codigo_transaccion = this.dataPOS.ticket;
+            bookingData.estado_transaccion = 'Pago realizado';
+            bookingData.numero_transaccion = this.dataPOS.operationNumber;
+            bookingData.fecha_transaccion = this.dataPOS.realDate;
+            bookingData.hora_transaccion = this.dataPOS.realTime;
+            bookingData.total_transaccion = this.dataPOS.amount;
+            this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', { bookingData })
+              .then(() => {
+                console.log('Guardado exitoso en DB (pagarPos)');
+                console.log('Datos para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, pagarPOS: ', error);
+              });
             setTimeout(() => {
               this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes';
             }, 2000);
@@ -155,6 +192,16 @@ export default {
             this.amountPOS = response.data.data.amount;
             this.endTransactionPOS(true);
           } else {
+            bookingData.estado_transaccion = 'Pago fallido';
+            bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '');
+            this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', { bookingData })
+              .then(() => {
+                console.log('Error guardado en DB (pagarPos)');
+                console.log('Datos del error para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, error pagarPOS: ', error);
+              });
             this.propsPaymentControl.msgError = response.data.data.responseMessage;
             this.isErrorPOS = true;
             this.isErrorTerminarTransaccionPOS(true);
@@ -176,19 +223,6 @@ export default {
           this.isErrorPOS = true;
           this.isErrorTerminarTransaccionPOS(true);
         });
-
-      this.axios.post(
-        'https://s1.ntic.cl/totem-costa-handler/index.php',
-        {
-          type: 'pagarPOS',
-          data: {
-            // valuePOS: this.valuePOS,
-            valuePOS: this.amountPOS,
-            ballotNumberPOS: this.ballotNumberPOS
-          },
-          name: this.info.totemName
-        }
-      )
       this.timeClose = setTimeout(() => {
         this.timeChangeEstatus = true; // Tiempo agotado para el cambio de estado
       }, 150 * 1000); // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
@@ -324,34 +358,14 @@ export default {
       this.valuePOS = valuePOST
       // this.ballotNumberPOS = this.transaccionPOS.codigo
       console.log('ticketsProcessed', this.ticketsProcessed)
-      setTimeout(() => {
-        this.loadingGuardarTransaccion = false
-      }, 1000)
+      // setTimeout(() => {
+      //   this.loadingGuardarTransaccion = false
+      // }, 1000)
 
-      this.axios.post(
-        'https://s1.ntic.cl/totem-costa-handler/index.php',
-        {
-          type: 'saveTransaction',
-          data: {
-            valuePOS: this.valuePOS,
-            ballotNumberPOS: this.ballotNumberPOS,
-            loadingGuardarTransaccion: this.loadingGuardarTransaccion,
-            ticketsProcessed: this.ticketsProcessed,
-            tickets: this.propsPersonalInformation.tickets,
-            isErrorGuardarTransaccion: this.isErrorGuardarTransaccion,
-          },
-          name: this.info.totemName
-        }
-      )
-        .then(response => {
-          console.log('Transacción guardada exitosamente')
-          console.log("ejecutando guardarTransaccionPOS")
-          this.guardarTransaccionPOS();
-        })
-        .catch(error => {
-          console.error('Error al guardar transacción:', (error.response && error.response.data) || error.message);
-          this.isErrorGuardarTransaccion = true;
-        });
+      console.log('Transacción guardada exitosamente')
+      console.log("ejecutando guardarTransaccionPOS")
+      this.guardarTransaccionPOS();
+
       console.log('+ methods:saveTransaction', 'valuePOS = ' + this.valuePOS, 'ballotNumberPOS = ' + this.ballotNumberPOS, 'loadingGuardarTransaccion = ' + this.loadingGuardarTransaccion, 'isErrorGuardarTransaccion = ' + this.isErrorGuardarTransaccion)
     },
 
@@ -417,7 +431,6 @@ export default {
     guardarTransaccionPOS: async function () {
       this.loadingTerminarTransaccionPOS = false;
       let total_processed = 0
-      const rut = localStorage.getItem('rut');
 
 
       let ticketsGeneradosFormatted = {
@@ -436,15 +449,6 @@ export default {
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
 
-        // await this.axios.post(
-        //   'https://s1.ntic.cl/totem-costa-handler/index.php',
-        //   {
-        //     type: 'confirmation_request',
-        //     call_url: api,
-        //     data: rc,
-        //     name: this.info.totemName
-        //   }
-        // )
         let data_from_api = []
         await this.axios
           .post([proxy, api].join('/'))
@@ -485,12 +489,9 @@ export default {
               ticketsGeneradosFormatted.boletos.push(response_ticket)
 
               // this.axios.post(
-              //   'https://s1.ntic.cl/totem-costa-handler/index.php',
+              //   'http://192.168.88.254/backend-log-totem-transbank/api.php',
               //   {
-              //     type: 're_print_request',
-              //     call_url: api,
-              //     data: ticketsGeneradosFormatted,
-              //     name: this.info.totemName
+              //     bookingData
               //   }
               // )
             }

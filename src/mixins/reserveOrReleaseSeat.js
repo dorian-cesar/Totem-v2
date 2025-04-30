@@ -44,6 +44,7 @@ export default {
         travel_date: param.travel_date,
         travel_time: param.travel_time,
         rut: rut
+        // codigo_reserva: param
         // data de api antigua
         // customer_company_gst: {
         //   name: "Pullman",
@@ -62,33 +63,45 @@ export default {
         })
         .then(({ data }) => {
           if (typeof data === 'object') {
+            console.log('data', data)
+
+            const hasTicketDetails = data && data.result && data.result.ticket_details
+
             const bookingData = {
-              ticket: {
-                rut: rut,
-                origen: this.$store.state.TravelSelection.nameDepartureCity,
-                destino: this.$store.state.TravelSelection.nameArrivalCity,
-                fecha_viaje: formatParams.travel_date,
-                hora_viaje: formatParams.travel_time,
-                asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
-                codigo_reserva: data.result.ticket_details.pnr_number,
-                estado_boleto: "Reservado",
-                codigo_confirmacion: ""
-              },
-              pos: {
-                codigo_venta: "",
-                estado_transaccion: "",
-                numero_transaccion: "",
-                fecha_transaccion: "",
-                hora_transaccion: "",
-                total: ""
-              }
-            };
+              numTotem: this.info.totemName,
+              rut: rut,
+              origen: this.$store.state.TravelSelection.nameDepartureCity,
+              destino: this.$store.state.TravelSelection.nameArrivalCity,
+              fecha_viaje: formatParams.travel_date,
+              hora_viaje: formatParams.travel_time,
+              asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
+              codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
+              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva cancelada',
+              codigo_confirmacion: '',
+              codigo_transaccion: '',
+              estado_transaccion: '',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
 
             console.log('Datos para DB tentative booking:', bookingData)
+            if (hasTicketDetails) {
+              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                bookingData
+              })
+              .then(() => {
+                console.log('Guardado exitoso en DB (tentative booking)');
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB:', error);
+              });
+            }
+            // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+            //   bookingData,
+            // })
 
-            this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-              data: bookingData,
-            })
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
@@ -96,13 +109,20 @@ export default {
             ) {
               this.statusReservation = false
               console.log('no ticket', data)
-              bookingData.ticket.estado_boleto = "Reserva cancelada";
-              bookingData.ticket.codigo_reserva = "";
+              console.log('Datos para DB tentative booking:', bookingData)
 
-              this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-                data: bookingData
+              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                bookingData
               })
-
+              .then(() => {
+                console.log('Error guardado en DB (tentative booking)');
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB:', error);
+              });
+              // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+              //   bookingData,
+              // })
             } else if (typeof data.result !== 'undefined') {
               if (typeof data.result.ticket_details !== 'undefined') {
                 this.statusReservation = true
@@ -112,16 +132,31 @@ export default {
               } else {
                 this.statusReservation = false
                 console.log('no ticket', data)
+                setTimeout(() => {
+                      this.$router.push('/travelselection');
+                      window.location.reload();
+                    }, 3000);
               }
             } else {
               this.statusReservation = false
               console.log('no result', data)
-              bookingData.ticket.estado_boleto = "Reserva cancelada";
-              bookingData.ticket.codigo_reserva = "";
-
-              this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-                data: bookingData
+              console.log('Datos para DB tentative booking:', bookingData)
+              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                bookingData
               })
+              .then(() => {
+                console.log('Error guardado en DB (tentative booking)');
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB:', error);
+              });
+              // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
+              //   bookingData,
+              // })
+              setTimeout(() => {
+                this.$router.push('/travelselection');
+                window.location.reload();
+              }, 3000);
             }
           }
 
@@ -135,6 +170,10 @@ export default {
           this.codeReservation = ''
           // console.log('no result', data)
           console.log('no result')
+          setTimeout(() => {
+            this.$router.push('/travelselection');
+            window.location.reload();
+          }, 3000);
         })
         .finally(() => (this.isLoadingReservation = false))
     }
