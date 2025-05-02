@@ -6,62 +6,69 @@
       <span class="text-black-50 pl-2 h4">Espere cargando información del Bus</span>
     </div>
     <!-- draw bus  -->
-    <dinamic-bus v-else :param="{
-      servicio: idServicio,
-      fecha: fechaServicio,
-      horaSalida: horaSalida,
-      boarding_at: boarding_at,
-      origen: idOrigen,
-      destino: idDestino,
-      integrador
-    }" :service="{
+    <dinamic-bus
+      v-else
+      :param="{
+        servicio: idServicio,
+        fecha: fechaServicio,
+        horaSalida: horaSalida,
+        boarding_at: boarding_at,
+        origen: idOrigen,
+        destino: idDestino,
+        integrador
+      }"
+      :service="{
         tarifaPrimerPisoInternet,
         tarifaSegundoPisoInternet,
         servicioPrimerPiso,
         servicioSegundoPiso
-      }" :drawSeats="propsDinamicBus.drawSeats" :availableSeats="propsDinamicBus.availableSeats" :key="key" />
+      }"
+      :drawSeats="propsDinamicBus.drawSeats"
+      :availableSeats="propsDinamicBus.availableSeats"
+      :key="key"
+    />
   </div>
 </template>
 
 <script>
-import DinamicBus from "@/components/bus_selection/DinamicBus";
-import Utils from "@/mixins/utils";
+import DinamicBus from '@/components/bus_selection/DinamicBus'
+import Utils from '@/mixins/utils'
 
 export default {
-  name: "BusSeat",
+  name: 'BusSeat',
   mixins: [Utils],
   data: () => ({
     //key:'',
     loading: true,
     propsDinamicBus: {
       drawSeats: [],
-      availableSeats: [],
-    },
+      availableSeats: []
+    }
   }),
   components: { DinamicBus },
   props: {
-    type: { type: String, required: true, default: () => "" },
-    name: { type: String, required: true, default: () => "" },
-    active: { type: String, required: true, default: () => "" },
-    nameBus: { type: String, required: true, default: () => "" },
-    idServicio: { type: Number, required: true, default: () => "" },
-    idOrigen: { type: Number, required: true, default: () => "" },
-    idDestino: { type: Number, required: true, default: () => "" },
-    tipoBusPiso1: { type: String, required: true, default: () => "" },
-    tipoBusPiso2: { type: String, default: () => "" },
-    fechaServicio: { type: String, required: true, default: () => "" },
-    boarding_at: { type: String, required: true, default: () => "" },
-    horaSalida: { type: String, required: true, default: () => "" },
-    horaLlegada: { type: String, required: true, default: () => "" },
-    asientosDisponibles: { type: Number, required: true, default: () => "" },
-    asientosReservados: { type: Number, required: true, default: () => "" },
-    asientosTotales: { type: Number, required: true, default: () => "" },
+    type: { type: String, required: true, default: () => '' },
+    name: { type: String, required: true, default: () => '' },
+    active: { type: String, required: true, default: () => '' },
+    nameBus: { type: String, required: true, default: () => '' },
+    idServicio: { type: Number, required: true, default: () => '' },
+    idOrigen: { type: Number, required: true, default: () => '' },
+    idDestino: { type: Number, required: true, default: () => '' },
+    tipoBusPiso1: { type: String, required: true, default: () => '' },
+    tipoBusPiso2: { type: String, default: () => '' },
+    fechaServicio: { type: String, required: true, default: () => '' },
+    boarding_at: { type: String, required: true, default: () => '' },
+    horaSalida: { type: String, required: true, default: () => '' },
+    horaLlegada: { type: String, required: true, default: () => '' },
+    asientosDisponibles: { type: Number, required: true, default: () => '' },
+    asientosReservados: { type: Number, required: true, default: () => '' },
+    asientosTotales: { type: Number, required: true, default: () => '' },
     integrador: { type: Number, required: true, default: () => 0 },
-    empresa: { type: String, required: true, default: () => "" },
-    idClaseBusPisoUno: { type: String, required: true, default: () => "" },
-    idClaseBusPisoDos: { type: String, required: true, default: () => "" },
-    busPiso1: { type: String, required: true, default: () => "" },
-    busPiso2: { type: String, required: true, default: () => "" },
+    empresa: { type: String, required: true, default: () => '' },
+    idClaseBusPisoUno: { type: String, required: true, default: () => '' },
+    idClaseBusPisoDos: { type: String, required: true, default: () => '' },
+    busPiso1: { type: String, required: true, default: () => '' },
+    busPiso2: { type: String, required: true, default: () => '' },
     tarifaPrimerPisoInternet: { type: String, required: true },
     tarifaSegundoPisoInternet: { type: String, required: true },
     servicioPrimerPiso: { type: String, required: true },
@@ -78,7 +85,7 @@ export default {
 
         for (let i = 0; i < responseDataFloor2.length; i++) {
           const row = responseDataFloor2[i]
-          hasSeatsFloor2 = row.findIndex(seatNro => seatNro !== null) > -1
+          hasSeatsFloor2 = row.findIndex((seatNro) => seatNro !== null) > -1
           if (hasSeatsFloor2) break
         }
 
@@ -90,7 +97,7 @@ export default {
 
     // Arreglas los datos para determinar el estado del asiento
     fixSeatsData(responseData) {
-      let val = [];
+      let val = []
 
       // Floor
       for (let floor in responseData) {
@@ -98,41 +105,36 @@ export default {
         for (let column of responseData[floor]) {
           // Position
           for (let position of column) {
-            if (
-              this.isNumeric(position.asiento) &&
-              position.estado !== 'sinasiento'
-            ) {
-
+            if (this.isNumeric(position.asiento) && position.estado !== 'sinasiento') {
               val.push({
                 floor: floor - 1,
                 seat: position.asiento,
                 status: this.getChangeName(position.estado)
-              });
+              })
             }
           }
         }
       }
-      return val;
+      return val
     },
 
     //cambiar el nombre por compatibilidad con el código del componente Seat
     getChangeName(value) {
       return [
-        { name: "libre", change: "free" },
-        { name: "ocupado", change: "busy" },
-        { name: "pet-free", change: "busy" }, // <- Bloquea los puestos de mascotas
-        { name: "pet-busy", change: "busy" }, // <- Bloquea los puestos de mascotas
-        { name: "seleccionado", change: "selected" }
-      ].find((val) => val.name === value).change;
+        { name: 'libre', change: 'free' },
+        { name: 'ocupado', change: 'busy' },
+        { name: 'pet-free', change: 'busy' }, // <- Bloquea los puestos de mascotas
+        { name: 'pet-busy', change: 'busy' }, // <- Bloquea los puestos de mascotas
+        { name: 'seleccionado', change: 'selected' }
+      ].find((val) => val.name === value).change
     },
 
     //buscar distribución y estado de los asientos en el bus
     searchBusService: async function () {
       try {
-
         // api dev
-        const proxy = "https://newstg3-gdsbus.kupos.cl"
-        const API_KEY = "TSXFQYAPI25766888"
+        const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         // const proxy = "https://gds.kupos.com"
         // const API_KEY = "TSSDFPAPI30103014"
@@ -140,15 +142,14 @@ export default {
         //const api1 = "integrador-web/rest/private/venta/planilla"
         //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
 
-
-        const response = await this.axios.get([proxy, api1].join("/"), {
+        const response = await this.axios.get([proxy, api1].join('/'), {
           headers: {
             'content-type': 'application/json'
           }
         })
 
         if (!response.data || !response.data.result || !response.data.result.bus_layout) {
-          throw new Error('La respuesta de la API no contiene los datos esperados.');
+          throw new Error('La respuesta de la API no contiene los datos esperados.')
         }
         // búsqueda de planilla
         //        const requestOne = this.axios.post([proxy, api1].join("/"), {
@@ -172,7 +173,6 @@ export default {
         //	        clasePiso2: this.idClaseBusPisoDos
         //        })
 
-
         //         let responseOne, responseTwo
         //         for( let times = 0, isEmpty = true; times < 10 && isEmpty; times++ ){
         //           [responseOne, responseTwo] = await this.axios.all([ requestOne, requestTwo])
@@ -181,7 +181,7 @@ export default {
         //         }
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
-        layout_available.shift();
+        layout_available.shift()
         let available_seats = []
         for (let avail of layout_available) {
           let available_seat = avail.split('|')
@@ -193,7 +193,7 @@ export default {
           available_seats.push(available_seat_parsed)
         }
 
-        let rows = layout.split(',').filter(row => row !== "DR_IMG|.GY")
+        let rows = layout.split(',').filter((row) => row !== 'DR_IMG|.GY')
         // console.log("Filas después de filtrar:", rows)
         let seats_rows = []
         let seats_rows_plain = []
@@ -287,10 +287,10 @@ export default {
 
         for (let floor of floors) {
           // Filtra los arrays vacíos en cada piso
-          let filtered_floor = floor.filter(row => row.length > 0)
+          let filtered_floor = floor.filter((row) => row.length > 0)
 
           let row_size = 5
-          let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null));
+          let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null))
 
           let row_position = 0
           for (let row of filtered_floor) {
@@ -303,8 +303,8 @@ export default {
           }
 
           // Eliminar el índice 0 si todos los asientos son 'seat_null'
-          if (grid_horizontal[0].every(seat => seat === seat_null)) {
-            grid_horizontal.shift(); // Elimina el primer índice (índice 0)
+          if (grid_horizontal[0].every((seat) => seat === seat_null)) {
+            grid_horizontal.shift() // Elimina el primer índice (índice 0)
           }
 
           grid_full.push(grid_horizontal)
@@ -315,35 +315,28 @@ export default {
         this.propsDinamicBus.drawSeats = [...grid_full]
         this.propsDinamicBus.availableSeats = [...available_seats]
 
-        this.loading = false;
-
-        //Guardar log
-        // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api1].join('/'), request: requestOne }, name: this.$info.totemName})
-        // this.axios.post('http://3.80.65.145/logtotem', { frame: { url:[proxy, api1].join('/'), response: responseOne.data }, name: this.$info.totemName})
-        // this.axios.post('http://3.80.65.145/logtotem', { frame: { url:[proxy, api2].join('/'), request: requestTwo }, name: this.$info.totemName})
-        // this.axios.post('http://3.80.65.145/logtotem', { frame: { url:[proxy, api2].join('/'), response: responseTwo.data }, name: this.$info.totemName})
-
+        this.loading = false
       } catch (error) {
-        console.error("Error al obtener los datos del servicio del bus:", error);
-        this.loading = false;
+        console.error('Error al obtener los datos del servicio del bus:', error)
+        this.loading = false
       }
-    },
+    }
   },
 
   mounted() {
-    this.searchBusService();
-    this.key = this.numeroEquivalente(this.idServicio);
+    this.searchBusService()
+    this.key = this.numeroEquivalente(this.idServicio)
   },
   watch: {
     loading: function (val) {
       if (!val) {
         // scroll Top after show bus seat
-        this.$scrollTo(["#list", this.name].join("-"), 500, {
-          container: ["#listado", this.type].join("-"),
-          easing: 'ease-in-out',
-        });
+        this.$scrollTo(['#list', this.name].join('-'), 500, {
+          container: ['#listado', this.type].join('-'),
+          easing: 'ease-in-out'
+        })
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
