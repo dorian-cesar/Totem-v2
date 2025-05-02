@@ -119,7 +119,7 @@ export default {
                   console.log('Error guardado en DB (tentative booking)')
                 })
                 .catch((error) => {
-                  console.error('Error al guardar en DB:', error)
+                  console.error('Error al guardar en DB, tentative_booking: ', error)
                 })
             } else if (typeof data.result !== 'undefined') {
               if (typeof data.result.ticket_details !== 'undefined') {
@@ -147,7 +147,7 @@ export default {
                   console.log('Error guardado en DB (tentative booking)')
                 })
                 .catch((error) => {
-                  console.error('Error al guardar en DB:', error)
+                  console.error('Error al guardar en DB, tentative_booking :', error)
                 })
               setTimeout(() => {
                 this.$router.push('/travelselection')

@@ -289,7 +289,7 @@ export default {
     //             console.log('Datos del error para DB pagarPOS: ', bookingData)
     //           })
     //           .catch((error) => {
-    //             console.error('Error al guardar en DB, error pagarPOS: ', error)
+    //             console.error('Error al guardar en DB, pagarPOS : ', error)
     //           })
     //         this.propsPaymentControl.msgError = response.data.data.responseMessage
     //         this.isErrorPOS = true
