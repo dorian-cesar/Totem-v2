@@ -20,7 +20,7 @@ export default {
       const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       // const proxy = "https://gds.kupos.com"
-      // const API_KEY = "TSSDFPAPI30103014"
+      // const API_KEY = 'TSSDFPAPI30103014'
       let api = ''
       const rut = localStorage.getItem('rut')
 
@@ -76,7 +76,7 @@ export default {
               hora_viaje: formatParams.travel_time,
               asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
               codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
-              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva cancelada',
+              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
               codigo_confirmacion: '',
               codigo_transaccion: '',
               estado_transaccion: 'Pendiente',
@@ -96,13 +96,12 @@ export default {
                   console.log('Guardado exitoso en DB (tentative booking)')
                 })
                 .catch((error) => {
-                  console.error('Error al guardar en DB:', error)
+                  console.error('Error al guardar en DB, tentative booking: ', error)
                 })
             }
             // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
             //   bookingData,
             // })
-
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
