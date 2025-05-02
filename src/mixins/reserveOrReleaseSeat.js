@@ -89,7 +89,7 @@ export default {
             console.log('Datos para DB tentative booking:', bookingData)
             if (hasTicketDetails) {
               this.axios
-                .post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                .post(this.info.urlLogs, {
                   bookingData
                 })
                 .then(() => {
@@ -113,7 +113,7 @@ export default {
               console.log('Datos para DB tentative booking:', bookingData)
 
               this.axios
-                .post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                .post(this.info.urlLogs, {
                   bookingData
                 })
                 .then(() => {
@@ -141,7 +141,7 @@ export default {
               console.log('no result', data)
               console.log('Datos para DB tentative booking:', bookingData)
               this.axios
-                .post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
+                .post(this.info.urlLogs, {
                   bookingData
                 })
                 .then(() => {
