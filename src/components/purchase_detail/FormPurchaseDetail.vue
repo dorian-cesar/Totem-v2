@@ -117,6 +117,100 @@ export default {
       this.propsPaymentAtendedorControl.total = total
       this.setTotalAmount = total
     },
+
+    //simulacion POS
+    // pagarPOS() {
+    //   console.log('- methods:pagar', this.propsPersonalInformation.tickets)
+    //   console.log('- methods:pagar', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
+    //   this.$bvModal.show('modal-payment-control')
+    //   clearTimeout(this.timeClose)
+    //   this.timeChangeEstatus = false
+    //   const simulatePOSResponse = true // true = éxito, false = fallo
+    //   if (simulatePOSResponse !== undefined) {
+    //     console.log(`[SIMULACIÓN] Respuesta del POS: ${simulatePOSResponse ? 'ÉXITO' : 'FALLO'}`)
+    //     const simulatedPOSResponse = {
+    //       data: {
+    //         data: {
+    //           successful: simulatePOSResponse,
+    //           responseMessage: simulatePOSResponse ? 'Pago aprobado' : 'Transacción rechazada (simulado)',
+    //           commerceCode: '597055555532',
+    //           terminalId: '12345678',
+    //           last4Digits: Math.floor(1000 + Math.random() * 9000).toString(),
+    //           cardType: 'VISA',
+    //           accountNumber: '---',
+    //           shareType: 'SIN CUOTA',
+    //           sharesNumber: '0',
+    //           sharesAmount: '0',
+    //           sharesTypeComment: '---',
+    //           ...(simulatePOSResponse && {
+    //             ticket: 'SIM' + Math.floor(Math.random() * 1000000),
+    //             operationNumber: Math.floor(Math.random() * 100000).toString(),
+    //             realDate:
+    //               new Date().getDate().toString().padStart(2, '0') +
+    //               (new Date().getMonth() + 1).toString().padStart(2, '0') +
+    //               new Date().getFullYear().toString().slice(-2),
+    //             realTime:
+    //               new Date().getHours().toString().padStart(2, '0') +
+    //               new Date().getMinutes().toString().padStart(2, '0') +
+    //               new Date().getSeconds().toString().padStart(2, '0'),
+    //             amount: this.propsPersonalInformation.total.replace('.', ''),
+    //             authorizationCode: Math.floor(100000 + Math.random() * 900000).toString()
+    //           })
+    //         }
+    //       }
+    //     }
+    //     console.log('Pago procesado (simulado):', simulatedPOSResponse.data)
+    //     this.dataPOS = simulatedPOSResponse.data.data
+    //     this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
+    //     const bookingData = {
+    //       numTotem: this.info.totemName,
+    //       rut: rut,
+    //       origen: this.$store.state.TravelSelection.nameDepartureCity,
+    //       destino: this.$store.state.TravelSelection.nameArrivalCity,
+    //       fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+    //       hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+    //       asiento: this.propsPersonalInformation.tickets[0].seat,
+    //       codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+    //       estado_boleto: 'Reservado',
+    //       codigo_transaccion: simulatePOSResponse ? this.dataPOS.ticket : '',
+    //       estado_transaccion: simulatePOSResponse ? 'Pago realizado' : 'Pago fallido',
+    //       numero_transaccion: simulatePOSResponse ? this.dataPOS.operationNumber : '',
+    //       fecha_transaccion: simulatePOSResponse ? this.dataPOS.realDate : '',
+    //       hora_transaccion: simulatePOSResponse ? this.dataPOS.realTime : '',
+    //       total_transaccion: simulatePOSResponse
+    //         ? this.dataPOS.amount
+    //         : this.propsPersonalInformation.total.replace('.', '')
+    //     }
+    //     this.axios
+    //       .post(this.info.urlLogs, { bookingData })
+    //       .then(() => {
+    //         console.log('Guardado exitoso en DB pagarPOS simulado')
+    //         console.log('Datos para DB pagarPOS: ', bookingData)
+    //       })
+    //       .catch((error) => {
+    //         console.error('Error al guardar en DB, pagarPOS: ', error)
+    //       })
+    //     if (simulatePOSResponse) {
+    //       setTimeout(() => {
+    //         this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
+    //       }, 2000)
+    //       this.isErrorPOS = false
+    //       this.ballotNumberPOS = Number(this.dataPOS.authorizationCode)
+    //       this.paymentPOS = this.dataPOS
+    //       this.amountPOS = this.dataPOS.amount
+    //       this.endTransactionPOS(true)
+    //     } else {
+    //       this.propsPaymentControl.msgError = simulatedPOSResponse.data.data.responseMessage
+    //       this.isErrorPOS = true
+    //       this.isErrorTerminarTransaccionPOS(true)
+    //     }
+    //     this.timeClose = setTimeout(() => {
+    //       this.timeChangeEstatus = true
+    //     }, 150 * 1000)
+    //     return
+    //   }
+    // },
+
     //inicio del proceso de pago
     pagarPOS() {
       console.log('- methods:pagar', this.propsPersonalInformation.tickets)
@@ -427,7 +521,7 @@ export default {
         const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         // const proxy = "https://gds.kupos.com"
-        // const API_KEY = "TSSDFPAPI30103014"
+        // const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento

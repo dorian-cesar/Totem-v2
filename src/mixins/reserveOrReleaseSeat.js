@@ -79,7 +79,7 @@ export default {
               estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva cancelada',
               codigo_confirmacion: '',
               codigo_transaccion: '',
-              estado_transaccion: '',
+              estado_transaccion: 'Pendiente',
               numero_transaccion: '',
               fecha_transaccion: '',
               hora_transaccion: '',
