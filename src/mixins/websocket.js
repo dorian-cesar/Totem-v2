@@ -62,8 +62,7 @@ export default {
         '              PAGO EN CUOTAS              \n' +
         '            TARJETA DE CREDITO            \n' +
         '         INTEGRACIONES TRANSBANK          \n' +
-        '              TRANSBANK S.A.              \n' +
-        '         ISIDORA GOYENECHEA 3520          \n' +
+        '              PULLMAN S.A.              \n' +
         `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
         `              ${codigo_unico}             \n` +
