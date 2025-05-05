@@ -221,6 +221,7 @@ export default {
 
       const url = this.info.urlServer
       const api = '/api/payment'
+      console.log(url + api)
 
       this.isErrorTerminarTransaccionPOS(false)
 
