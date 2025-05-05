@@ -133,27 +133,27 @@ export default {
       let boletosTexto = ''
       for (const t of tickets) {
         let boletoTexto =
-          '--------------- BOLETO PULLMAN --------------\n' +
-          ` BOLETO:            ${t.boleto}\n` +
-          ` SERVICIO:          ${t.servicio}\n` +
-          ` RUTA: ${t.ruta}                 \n` +
-          ` PISO:              ${t.piso}\n` +
-          ` ASIENTO:           ${t.asiento}\n` +
-          ` ORIGEN:            ${t.origen}\n` +
-          ` DESTINO:           ${t.destino}\n` +
-          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
-          ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-          ` HORA DE VIAJE:     ${t.hora}\n` +
-          ` TOTAL:             $${t.total}\n` +
-          '                              \n' +
-          '                              \n' +
-          '--------------- TERMINOS Y CONDICIONES --------------\n' +
-          'Este comprobante no es un pasaje\n' +
-          'valido. Por favor acerquese a una de\n' +
-          'nuestras sucursales con su Cedula de\n' +
-          'Identidad o Pasaporte para imprimir el\n' +
-          'pasaje para el Servicio señalado.\n' +
-          '------------------------------------------------------\n'
+        '--------------- BOLETO PULLMAN --------------\n' +
+        ` BOLETO:            ${t.boleto}\n` +
+        ` SERVICIO:          ${t.servicio}\n` +
+        ` RUTA: ${t.ruta}                 \n` +
+        ` PISO:              ${t.piso}\n` +
+        ` ASIENTO:           ${t.asiento}\n` +
+        ` ORIGEN:            ${t.origen}\n` +
+        ` DESTINO:           ${t.destino}\n` +
+        ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+        ` HORA DE VIAJE:     ${t.hora}\n` +
+        ` TOTAL:             $${t.total}\n` +
+        '                              \n' +
+        '                              \n' +
+        '------------ TERMINOS Y CONDICIONES ---------\n' +
+        'Este comprobante no es un pasaje\n' +
+        'valido. Por favor acerquese a una de\n' +
+        'nuestras sucursales con su Cedula de\n' +
+        'Identidad o Pasaporte para imprimir el\n' +
+        'pasaje para el Servicio señalado.\n' +
+        '---------------------------------------------\n'
 
         boletosTexto += boletoTexto
 
@@ -218,8 +218,7 @@ export default {
         '              PAGO EN CUOTAS              \n' +
         '            TARJETA DE CREDITO            \n' +
         '         INTEGRACIONES TRANSBANK          \n' +
-        '              TRANSBANK S.A.              \n' +
-        '         ISIDORA GOYENECHEA 3520          \n' +
+        '              PULLMAN S.A.                \n' +
         `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
         `             ${codigo_unico}              \n` +
