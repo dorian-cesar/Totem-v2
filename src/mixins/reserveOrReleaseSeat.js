@@ -20,7 +20,7 @@ export default {
       const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       // const proxy = "https://gds.kupos.com"
-      // const API_KEY = "TSSDFPAPI30103014"
+      // const API_KEY = 'TSSDFPAPI30103014'
       let api = ''
       const rut = localStorage.getItem('rut')
 
@@ -76,10 +76,10 @@ export default {
               hora_viaje: formatParams.travel_time,
               asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
               codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
-              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva cancelada',
+              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
               codigo_confirmacion: '',
               codigo_transaccion: '',
-              estado_transaccion: '',
+              estado_transaccion: 'Pendiente',
               numero_transaccion: '',
               fecha_transaccion: '',
               hora_transaccion: '',
@@ -88,20 +88,20 @@ export default {
 
             console.log('Datos para DB tentative booking:', bookingData)
             if (hasTicketDetails) {
-              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
-                bookingData
-              })
-              .then(() => {
-                console.log('Guardado exitoso en DB (tentative booking)');
-              })
-              .catch((error) => {
-                console.error('Error al guardar en DB:', error);
-              });
+              this.axios
+                .post(this.info.urlLogs, {
+                  bookingData
+                })
+                .then(() => {
+                  console.log('Guardado exitoso en DB (tentative booking)')
+                })
+                .catch((error) => {
+                  console.error('Error al guardar en DB, tentative booking: ', error)
+                })
             }
             // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
             //   bookingData,
             // })
-
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
@@ -111,18 +111,16 @@ export default {
               console.log('no ticket', data)
               console.log('Datos para DB tentative booking:', bookingData)
 
-              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
-                bookingData
-              })
-              .then(() => {
-                console.log('Error guardado en DB (tentative booking)');
-              })
-              .catch((error) => {
-                console.error('Error al guardar en DB:', error);
-              });
-              // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-              //   bookingData,
-              // })
+              this.axios
+                .post(this.info.urlLogs, {
+                  bookingData
+                })
+                .then(() => {
+                  console.log('Error guardado en DB (tentative booking)')
+                })
+                .catch((error) => {
+                  console.error('Error al guardar en DB, tentative_booking: ', error)
+                })
             } else if (typeof data.result !== 'undefined') {
               if (typeof data.result.ticket_details !== 'undefined') {
                 this.statusReservation = true
@@ -133,36 +131,30 @@ export default {
                 this.statusReservation = false
                 console.log('no ticket', data)
                 setTimeout(() => {
-                      this.$router.push('/travelselection');
-                      window.location.reload();
-                    }, 3000);
+                  this.$router.push('/travelselection')
+                  window.location.reload()
+                }, 3000)
               }
             } else {
               this.statusReservation = false
               console.log('no result', data)
               console.log('Datos para DB tentative booking:', bookingData)
-              this.axios.post('http://192.168.88.254/backend-log-totem-transbank/api.php', {
-                bookingData
-              })
-              .then(() => {
-                console.log('Error guardado en DB (tentative booking)');
-              })
-              .catch((error) => {
-                console.error('Error al guardar en DB:', error);
-              });
-              // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-              //   bookingData,
-              // })
+              this.axios
+                .post(this.info.urlLogs, {
+                  bookingData
+                })
+                .then(() => {
+                  console.log('Error guardado en DB (tentative booking)')
+                })
+                .catch((error) => {
+                  console.error('Error al guardar en DB, tentative_booking :', error)
+                })
               setTimeout(() => {
-                this.$router.push('/travelselection');
-                window.location.reload();
-              }, 3000);
+                this.$router.push('/travelselection')
+                window.location.reload()
+              }, 3000)
             }
           }
-
-          //Guardar log
-          // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), resquest: param }, name: this.$info.totemName})
-          // this.axios.post('http://3.80.65.145/logtotem', {frame: { url:[proxy, api].join('/'), response: data }, name: this.$info.totemName})
         })
         .catch((error) => {
           console.error(error)
@@ -171,12 +163,11 @@ export default {
           // console.log('no result', data)
           console.log('no result')
           setTimeout(() => {
-            this.$router.push('/travelselection');
-            window.location.reload();
-          }, 3000);
+            this.$router.push('/travelselection')
+            window.location.reload()
+          }, 3000)
         })
         .finally(() => (this.isLoadingReservation = false))
     }
   }
 }
-
