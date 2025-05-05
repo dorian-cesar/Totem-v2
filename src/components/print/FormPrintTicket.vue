@@ -14,8 +14,8 @@
                     type="text"
                     placeholder="Ingrese su código de reserva"
                     data-layout="normal"
-                    class="w-100"
-                    style="background-color: azure; text-transform: uppercase;"
+                    class="w-100 input-codigo"
+                    style="background-color: azure;"
                     v-model="codeReprint"
                   />
                   <!-- disabled="disabled" -->
@@ -408,6 +408,14 @@ input {
 
 .button-radius {
   border-radius: 60px;
+}
+
+.input-codigo {
+  text-transform: uppercase;
+}
+
+.input-codigo::placeholder {
+  text-transform: none;
 }
 </style>
 
