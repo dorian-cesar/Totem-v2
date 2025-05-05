@@ -147,10 +147,10 @@ export default {
           ` TOTAL:             $${t.total}\n` +
           '                              \n' +
           '                              \n' +
-          '--------------- TÉRMINOS Y CONDICIONES --------------\n' +
+          '--------------- TERMINOS Y CONDICIONES --------------\n' +
           'Este comprobante no es un pasaje\n' +
-          'válido. Por favor acérquese a una de\n' +
-          'nuestras sucursales con su Cédula de\n' +
+          'valido. Por favor acerquese a una de\n' +
+          'nuestras sucursales con su Cedula de\n' +
           'Identidad o Pasaporte para imprimir el\n' +
           'pasaje para el Servicio señalado.\n' +
           '------------------------------------------------------\n'
