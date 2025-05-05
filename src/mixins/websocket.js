@@ -1,4 +1,5 @@
 import axios from 'axios'
+import info from "../../info.json";
 
 export default {
   data() {
@@ -16,7 +17,8 @@ export default {
       //
       messageWebSocket: '', //<- Mensajes del websocket
       errorConnWebSocket: false, //<- Errores de impresora, conexión POS, internet
-      isOutService: false //<- Estado fuera de servicio
+      isOutService: false, //<- Estado fuera de servicio
+      info
     }
   },
 
@@ -110,18 +112,23 @@ export default {
         })
       }
 
-      const url = 'https://192.168.88.246:3000'
+      // const url = 'https://192.168.88.246:3000'
+      // const api = '/imprimir'
+
+      const url = this.info.urlPrint
       const api = '/imprimir'
 
+      console.log(this.info.urlPrint)
+
       // voucher transbank
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     texto: voucher
-      //   })
-      //   console.log('Impresión enviada con éxito - transbank', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      try {
+        const response = await axios.post(url + api, {
+          texto: voucher
+        })
+        console.log('Impresión enviada con éxito - transbank', response.data)
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -144,24 +151,23 @@ export default {
 
         boletosTexto += boletoTexto
 
-        // try {
-        //   const response = await axios.post(url + api, {
-        //     texto: boletoTexto
-        //   })
-        //   console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
-        // } catch (error) {
-        //   console.error(`Error al imprimir boleto ${t.boleto}`, error)
-        // }
+        try {
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          })
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+        } catch (error) {
+          console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        }
       }
 
-      const previewWindow = window.open('', '_blank')
-
-      previewWindow.document.write(`
-           <pre style="font-size:14px; white-space:pre-wrap;">
-          ${voucher}${boletosTexto}</pre>
-      `)
-
-      previewWindow.document.close()
+      // ver boleta en browser
+      // const previewWindow = window.open('', '_blank')
+      // previewWindow.document.write(`
+      //      <pre style="font-size:14px; white-space:pre-wrap;">
+      //     ${voucher}${boletosTexto}</pre>
+      // `)
+      // previewWindow.document.close()
 
       console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
