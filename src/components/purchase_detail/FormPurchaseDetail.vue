@@ -226,8 +226,8 @@ export default {
       this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
 
       const ipServer = localStorage.getItem('ipServer')
-      // const url = `https://${ipServer}:3000`
-      const url = "https://192.168.88.246:3000"
+      const url = `https://${ipServer}:3000`
+      // const url = "https://192.168.88.246:3000"
       const api = '/api/payment'
 
 
