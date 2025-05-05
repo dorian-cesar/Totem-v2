@@ -305,11 +305,9 @@ export default {
             '                              \n' +
             '                              \n' +
             '------------ TERMINOS Y CONDICIONES ---------\n' +
-            'Este comprobante no es un pasaje\n' +
-            'valido. Por favor acerquese a una de\n' +
-            'nuestras sucursales con su Cedula de\n' +
-            'Identidad o Pasaporte para imprimir el\n' +
-            'pasaje para el Servicio proporcionado.\n' +
+            'GRACIAS POR SU COMPRA\n' +
+            'COPIA CLIENTE\n' +
+            'BOLETO VALIDO PARA PASAJE EN BUS\n' +
             '---------------------------------------------\n'
 
           const response = await axios.post(url + api, {

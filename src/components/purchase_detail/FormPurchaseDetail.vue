@@ -167,7 +167,7 @@ export default {
     //     const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
     //     this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
     //       const ipServer = localStorage.getItem('ipServer')
-    //       totemName = ipServer
+    //       const totemName = ipServer
     //     const bookingData = {
     //       numTotem: totemName,
     //       rut: rut,
@@ -229,7 +229,6 @@ export default {
       const url = `https://${ipServer}:3000`
       // const url = "https://192.168.88.246:3000"
       const api = '/api/payment'
-
 
       this.isErrorTerminarTransaccionPOS(false)
 

@@ -63,6 +63,7 @@ export default {
         '            TARJETA DE CREDITO            \n' +
         '         INTEGRACIONES TRANSBANK          \n' +
         '              PULLMAN S.A.                \n' +
+        '  Nicasio Retamales 71, Estacion Central  \n' +
         `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
         `              ${codigo_unico}             \n` +
@@ -146,11 +147,9 @@ export default {
         '                              \n' +
         '                              \n' +
         '------------ TERMINOS Y CONDICIONES ---------\n' +
-        'Este comprobante no es un pasaje\n' +
-        'valido. Por favor acerquese a una de\n' +
-        'nuestras sucursales con su Cedula de\n' +
-        'Identidad o Pasaporte para imprimir el\n' +
-        'pasaje para el Servicio proporcionado.\n' +
+        '            GRACIAS POR SU COMPRA\n' +
+        '                COPIA CLIENTE\n' +
+        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
         '---------------------------------------------\n'
 
         boletosTexto += boletoTexto
@@ -212,32 +211,33 @@ export default {
       // let tickets = [{ codigo: codigoUnico }]
 
       const voucher =
-        '           COMPROBANTE DE VENTA           \n' +
-        '              PAGO EN CUOTAS              \n' +
-        '            TARJETA DE CREDITO            \n' +
-        '         INTEGRACIONES TRANSBANK          \n' +
-        '              PULLMAN S.A.                \n' +
-        `              ${commerce_code}            \n` +
-        '                Santiago                  \n' +
-        `             ${codigo_unico}              \n` +
-        '     FECHA       HORA        TERMINAL     \n' +
-        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
-        '                                             \n' +
-        `    NUMERO DE TARJETA                     \n` +
-        `    ******${card_number}                   \n` +
-        `    TIPO DE TARJETA               ${card_type}\n` +
-        `    TOTAL:                        $${amount}\n` +
-        `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
-        `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
-        `    MONTO CUOTA:                  $${monto_cuota}\n` +
-        `    TASA DE INTERES:  ${comentario_cuota}\n` +
-        `    NUMERO DE BOLETA:             ${account_number}\n` +
-        `    NUMERO DE OPERACION:          ${operation_number}\n` +
-        `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
-        '                                             \n' +
-        '          GRACIAS POR SU COMPRA           \n' +
-        '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
-        '                                             \n'
+      '           COMPROBANTE DE VENTA           \n' +
+      '              PAGO EN CUOTAS              \n' +
+      '            TARJETA DE CREDITO            \n' +
+      '         INTEGRACIONES TRANSBANK          \n' +
+      '              PULLMAN S.A.                \n' +
+      '  Nicasio Retamales 71, Estacion Central  \n' +
+      `              ${commerce_code}            \n` +
+      '                Santiago                  \n' +
+      `              ${codigo_unico}             \n` +
+      '     FECHA       HORA        TERMINAL     \n' +
+      `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+      '                                             \n' +
+      `    NUMERO DE TARJETA                     \n` +
+      `    ******${card_number}                   \n` +
+      `    TIPO DE TARJETA               ${card_type}\n` +
+      `    TOTAL:                        $${amount}\n` +
+      `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
+      `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
+      `    MONTO CUOTA:                  $${monto_cuota}\n` +
+      `    TASA DE INTERES:  ${comentario_cuota}\n` +
+      `    NUMERO DE BOLETA:             ${account_number}\n` +
+      `    NUMERO DE OPERACION:          ${operation_number}\n` +
+      `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
+      '                                             \n' +
+      '          GRACIAS POR SU COMPRA           \n' +
+      '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
+      '                                             \n'
 
       console.log(
         '+ methods:imprimirVoucher',
