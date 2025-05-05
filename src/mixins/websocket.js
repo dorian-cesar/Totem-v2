@@ -62,7 +62,7 @@ export default {
         '              PAGO EN CUOTAS              \n' +
         '            TARJETA DE CREDITO            \n' +
         '         INTEGRACIONES TRANSBANK          \n' +
-        '              PULLMAN S.A.              \n' +
+        '              PULLMAN S.A.                \n' +
         `              ${commerce_code}            \n` +
         '                Santiago                  \n' +
         `              ${codigo_unico}             \n` +
@@ -146,7 +146,14 @@ export default {
           ` HORA DE VIAJE:     ${t.hora}\n` +
           ` TOTAL:             $${t.total}\n` +
           '                              \n' +
-          '                              \n'
+          '                              \n' +
+          '--------------- TÉRMINOS Y CONDICIONES --------------\n' +
+          'Este comprobante no es un pasaje\n' +
+          'válido. Por favor acérquese a una de\n' +
+          'nuestras sucursales con su Cédula de\n' +
+          'Identidad o Pasaporte para imprimir el\n' +
+          'pasaje para el Servicio señalado.\n' +
+          '------------------------------------------------------\n'
 
         boletosTexto += boletoTexto
 

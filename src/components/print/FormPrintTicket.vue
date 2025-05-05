@@ -166,7 +166,7 @@ export default {
 
               const bookingData = {
                 numTotem: this.info.totemName,
-                rut: '1',
+                rut: 'Reimpreso',
                 origen: response_origen,
                 destino: response_destino,
                 fecha_viaje: response_fecha,
@@ -218,7 +218,7 @@ export default {
           this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
           const bookingData = {
             numTotem: this.info.totemName,
-            rut: '1',
+            rut: 'Reimpreso',
             origen: '1',
             destino: '1',
             fecha_viaje: '1',
@@ -276,44 +276,50 @@ export default {
         })
       }
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
-      const url = this.info.urlPrint
+      const url = 'https://192.168.88.246:3000'
       const api = '/imprimir'
+
+      // const url = this.info.urlPrint
+      // const api = '/imprimir'
 
       try {
         for (const t of tickets) {
           let boletoTexto =
-            '--------------- BOLETO PULLMAN --------------\n' +
-            ` BOLETO:            ${t.boleto}\n` +
-            ` SERVICIO:          ${t.servicio}\n` +
-            ` RUTA: ${t.ruta}                 \n` +
-            ` PISO:              ${t.piso}\n` +
-            ` ASIENTO:           ${t.asiento}\n` +
-            ` ORIGEN:            ${t.origen}\n` +
-            ` DESTINO:           ${t.destino}\n` +
-            ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
-            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-            ` HORA DE VIAJE:     ${t.hora}\n` +
-            ` TOTAL:             $${t.total}\n` +
-            '                              \n' +
-            '                              \n'
+          '--------------- BOLETO PULLMAN --------------\n' +
+          ` BOLETO:            ${t.boleto}\n` +
+          ` SERVICIO:          ${t.servicio}\n` +
+          ` RUTA: ${t.ruta}                 \n` +
+          ` PISO:              ${t.piso}\n` +
+          ` ASIENTO:           ${t.asiento}\n` +
+          ` ORIGEN:            ${t.origen}\n` +
+          ` DESTINO:           ${t.destino}\n` +
+          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+          ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+          ` HORA DE VIAJE:     ${t.hora}\n` +
+          ` TOTAL:             $${t.total}\n` +
+          '                              \n' +
+          '                              \n' +
+          '------------ TERMINOS Y CONDICIONES ---------\n' +
+          'Este comprobante no es un pasaje\n' +
+          'valido. Por favor acerquese a una de\n' +
+          'nuestras sucursales con su Cedula de\n' +
+          'Identidad o Pasaporte para imprimir el\n' +
+          'pasaje para el Servicio señalado.\n' +
+          '---------------------------------------------\n'
 
-          // const response = await axios.post(url + api, {
-          //   texto: boletoTexto
-          // })
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          })
 
-          const previewWindow = window.open('', '_blank')
+          // ver boleto en browser
+          // const previewWindow = window.open('', '_blank')
+          // previewWindow.document.write(`
+          //  <pre style="font-size:14px; white-space:pre-wrap;">
+          // ${boletoTexto}</pre>
+          // `)
+          // previewWindow.document.close()
 
-          previewWindow.document.write(`
-           <pre style="font-size:14px; white-space:pre-wrap;">
-          ${boletoTexto}</pre>
-          `)
-
-          previewWindow.document.close()
-
-          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {

@@ -99,9 +99,6 @@ export default {
                   console.error('Error al guardar en DB, tentative booking: ', error)
                 })
             }
-            // this.axios.post('https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php', {
-            //   bookingData,
-            // })
             if (
               typeof data.response !== 'undefined' &&
               typeof data.response.code !== 'undefined' &&
