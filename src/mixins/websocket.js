@@ -150,7 +150,7 @@ export default {
         'valido. Por favor acerquese a una de\n' +
         'nuestras sucursales con su Cedula de\n' +
         'Identidad o Pasaporte para imprimir el\n' +
-        'pasaje para el Servicio señalado.\n' +
+        'pasaje para el Servicio proporcionado.\n' +
         '---------------------------------------------\n'
 
         boletosTexto += boletoTexto

@@ -15,7 +15,7 @@
                     placeholder="Ingrese su código de reserva"
                     data-layout="normal"
                     class="w-100"
-                    style="background-color: azure"
+                    style="background-color: azure; text-transform: uppercase;"
                     v-model="codeReprint"
                   />
                   <!-- disabled="disabled" -->
@@ -224,11 +224,11 @@ export default {
           const bookingData = {
             numTotem: totemName,
             rut: 'Reimpreso',
-            origen: '1',
-            destino: '1',
-            fecha_viaje: '1',
-            hora_viaje: '1',
-            asiento: '1',
+            origen: 'N/A',
+            destino: 'N/A',
+            fecha_viaje: 'N/A',
+            hora_viaje: 'N/A',
+            asiento: 'N/A',
             codigo_reserva: '',
             estado_boleto: 'Error al obtener los datos de la reserva. Reimpresión fallida',
             codigo_confirmacion: '',
@@ -309,7 +309,7 @@ export default {
             'valido. Por favor acerquese a una de\n' +
             'nuestras sucursales con su Cedula de\n' +
             'Identidad o Pasaporte para imprimir el\n' +
-            'pasaje para el Servicio señalado.\n' +
+            'pasaje para el Servicio proporcionado.\n' +
             '---------------------------------------------\n'
 
           const response = await axios.post(url + api, {
