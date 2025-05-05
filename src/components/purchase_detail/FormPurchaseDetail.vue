@@ -242,7 +242,7 @@ export default {
           //inicializar variables
           const rut = localStorage.getItem('rut')
           const ipServer = localStorage.getItem('ipServer')
-          totemName = ipServer
+          const totemName = ipServer
           const bookingData = {
             numTotem: totemName,
             rut: rut,
@@ -591,7 +591,7 @@ export default {
               const rawTime = this.dataPOS.realTime
               const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
               const ipServer = localStorage.getItem('ipServer')
-              totemName = ipServer
+              const totemName = ipServer
 
               const bookingData = {
                 numTotem: totemName,
@@ -629,7 +629,7 @@ export default {
             console.error(error)
             total_processed += 1
             const ipServer = localStorage.getItem('ipServer')
-            totemName = ipServer
+            const totemName = ipServer
 
             const bookingData = {
               numTotem: totemName,

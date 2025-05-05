@@ -165,7 +165,7 @@ export default {
               this.rePrint()
 
               const ipServer = localStorage.getItem('ipServer')
-              totemName = ipServer
+              const totemName = ipServer
 
               const bookingData = {
                 numTotem: totemName,
@@ -220,7 +220,7 @@ export default {
           console.error(error)
           this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
           const ipServer = localStorage.getItem('ipServer')
-          totemName = ipServer
+          const totemName = ipServer
           const bookingData = {
             numTotem: totemName,
             rut: 'Reimpreso',

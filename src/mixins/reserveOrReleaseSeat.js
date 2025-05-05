@@ -68,7 +68,7 @@ export default {
             const hasTicketDetails = data && data.result && data.result.ticket_details
 
             const ipServer = localStorage.getItem('ipServer')
-            totemName = ipServer
+            const totemName = ipServer
 
             const bookingData = {
               numTotem: totemName,
