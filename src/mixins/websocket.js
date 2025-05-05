@@ -117,8 +117,6 @@ export default {
       const url = this.info.urlPrint
       const api = '/imprimir'
 
-      console.log(this.info.urlPrint)
-
       // voucher transbank
       try {
         const response = await axios.post(url + api, {
@@ -250,7 +248,10 @@ export default {
         tickets
       )
 
-      const url = 'https://192.168.88.246:3000'
+      // const url = 'https://192.168.88.246:3000'
+      // const api = '/imprimir'
+
+      const url = this.info.urlPrint
       const api = '/imprimir'
 
       try {
