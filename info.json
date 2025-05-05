@@ -4,7 +4,6 @@
   "urlPrint": "http://localhost:3000",
   "urlLogs": "http://192.168.88.254/backend-log-totem-transbank/api.php",
   "urlLogs": "https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php",
-  "urlLogs2": "http://192.168.88.254/backend-log-totem-transbank/api.php",
-  "port": ""
+  "urlLogs2": "http://192.168.88.254/backend-log-totem-transbank/api.php"
 }
 

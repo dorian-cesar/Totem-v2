@@ -276,7 +276,10 @@ export default {
         })
       }
 
-      const url = this.info.urlServer
+      // const url = 'https://192.168.88.246:3000'
+      // const api = '/imprimir'
+
+      const url = this.info.urlPrint
       const api = '/imprimir'
 
       try {
