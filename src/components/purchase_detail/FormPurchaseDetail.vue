@@ -223,7 +223,8 @@ export default {
       clearTimeout(this.timeClose) //<- Borrar variable de tiempo de espera
       this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
 
-      const url = this.info.urlServer
+      const ipServer = localStorage.getItem('ipServer')
+      const url = `https://${ipServer}:3000`
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)

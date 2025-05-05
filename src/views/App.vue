@@ -14,6 +14,7 @@
 import Logo from '@/components/Logo.vue'
 import axios from 'axios'
 import infoData from '../../info.json'
+
 export default {
   name: 'App',
   components: { Logo },
@@ -29,9 +30,8 @@ export default {
       .get(this.info.urlGetIp)
       .then((resIp) => {
         const ip = resIp.data.ip
-
-        this.info.urlServer = `https://${ip}:3000`
-        console.log('info actualizada:', this.info)
+        localStorage.setItem('ipServer', ip)
+        console.log('IP del servidor guardada:', ip)
       })
       .catch((error) => {
         console.error('Error al obtener IP desde el backend:', error)
