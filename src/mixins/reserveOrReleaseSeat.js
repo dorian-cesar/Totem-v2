@@ -67,8 +67,11 @@ export default {
 
             const hasTicketDetails = data && data.result && data.result.ticket_details
 
+            const ipServer = localStorage.getItem('ipServer')
+            totemName = ipServer
+
             const bookingData = {
-              numTotem: this.info.totemName,
+              numTotem: totemName,
               rut: rut,
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
@@ -168,3 +171,4 @@ export default {
     }
   }
 }
+

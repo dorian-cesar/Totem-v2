@@ -166,8 +166,10 @@ export default {
     //     const rawTime = this.dataPOS.realTime
     //     const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
     //     this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
+    //       const ipServer = localStorage.getItem('ipServer')
+    //       totemName = ipServer
     //     const bookingData = {
-    //       numTotem: this.info.totemName,
+    //       numTotem: totemName,
     //       rut: rut,
     //       origen: this.$store.state.TravelSelection.nameDepartureCity,
     //       destino: this.$store.state.TravelSelection.nameArrivalCity,
@@ -239,8 +241,10 @@ export default {
           console.log('successful: ', response.data.data.successful)
           //inicializar variables
           const rut = localStorage.getItem('rut')
+          const ipServer = localStorage.getItem('ipServer')
+          totemName = ipServer
           const bookingData = {
-            numTotem: this.info.totemName,
+            numTotem: totemName,
             rut: rut,
             origen: this.$store.state.TravelSelection.nameDepartureCity,
             destino: this.$store.state.TravelSelection.nameArrivalCity,
@@ -586,9 +590,11 @@ export default {
               const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
               const rawTime = this.dataPOS.realTime
               const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
+              const ipServer = localStorage.getItem('ipServer')
+              totemName = ipServer
 
               const bookingData = {
-                numTotem: this.info.totemName,
+                numTotem: totemName,
                 rut: rut,
                 origen: this.$store.state.TravelSelection.nameDepartureCity,
                 destino: response_ticket.destino,
@@ -622,9 +628,11 @@ export default {
           .catch((error) => {
             console.error(error)
             total_processed += 1
+            const ipServer = localStorage.getItem('ipServer')
+            totemName = ipServer
 
             const bookingData = {
-              numTotem: this.info.totemName,
+              numTotem: totemName,
               rut: rut,
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,

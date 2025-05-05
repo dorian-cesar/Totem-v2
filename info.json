@@ -1,5 +1,4 @@
 {
-  "totemName": "1",
   "urlGetIp": "https://localhost:3000/get_ip",
   "urlPrint": "https://localhost:3000",
   "urlLogs": "https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php"
