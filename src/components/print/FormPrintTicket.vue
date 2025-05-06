@@ -15,7 +15,7 @@
                     placeholder="Ingrese su código de reserva"
                     data-layout="normal"
                     class="w-100 input-codigo"
-                    style="background-color: azure;"
+                    style="background-color: azure"
                     v-model="codeReprint"
                   />
                   <!-- disabled="disabled" -->
@@ -108,121 +108,137 @@ export default {
       // const proxy = "https://gds.kupos.com"
       // const API_KEY = 'TSSDFPAPI30103014'
       let api = ''
-      api = `/gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=${API_KEY}`
+      api = `gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=${API_KEY}`
 
       this.texto = 'Imprimiendo boleto, por favor espere...'
 
       await this.axios
-        .get([proxy, api].join('/'))
+        .get([proxy, api].join('/'), {
+          validateStatus: function (status) {
+            return status >= 200 && status < 500 // acepta error 400 como válido
+          }
+        })
         .then(({ data }) => {
-          if (typeof data === 'object') {
-            if (
-              typeof data.result !== 'undefined' &&
-              typeof data.result.ticket_details !== 'undefined' &&
-              data.result.ticket_details !== null
-            ) {
-              let ticketsGeneradosFormatted = {
-                boletos: [],
-                estado: true
-              }
-
-              let ticket_info = data.result.ticket_details[0]
-              let response_boleto = `${ticket_info.pnr_number}  -  ${ticket_info.operator_pnr}`
-              let response_codigo = ticket_info.operator_reservation_id
-              let response_servicio = ticket_info.bus_type
-              let response_ruta = ticket_info.origin + ' / ' + ticket_info.destination
-              let response_piso =
-                ticket_info.seat_fare_details[0].seat_detail.floor_no !== ''
-                  ? ticket_info.seat_fare_details[0].seat_detail.floor_no
-                  : '1'
-              let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
-              let response_fecha = ticket_info.travel_date
-              let response_hora = ticket_info.boarding_point_details.dep_time
-              let response_origen = ticket_info.boarding_point_details.landmark
-              let response_destino = ticket_info.destination
-              let issued_on = new Date()
-              issued_on = issued_on.toLocaleString('es-CL', { hour12: false })
-              let response_fecha_compra = issued_on
-              let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
-              let response_ticket = {
-                boleto: response_boleto,
-                codigo: response_codigo.toString(),
-                rut: '',
-                servicio: response_servicio,
-                ruta: response_ruta,
-                piso: response_piso,
-                asiento: response_asiento,
-                fecha: response_fecha,
-                hora: response_hora,
-                origen: response_origen,
-                destino: response_destino,
-                fecha_compra: response_fecha_compra,
-                total: response_total.toString(),
-                tipo_cliente: 'PULLMAN PASS'
-              }
-              ticketsGeneradosFormatted.boletos.push(response_ticket)
-              this.tickets_reprint = ticketsGeneradosFormatted
-              this.rePrint()
-
-              const ipServer = localStorage.getItem('ipServer')
-              const totemName = ipServer
-
-              const bookingData = {
-                numTotem: totemName,
-                rut: 'Reimpreso',
-                origen: response_origen,
-                destino: response_destino,
-                fecha_viaje: response_fecha,
-                hora_viaje: response_hora,
-                asiento: response_asiento,
-                codigo_reserva: ticket_info.operator_pnr,
-                estado_boleto: 'Reimpreso',
-                codigo_confirmacion: '',
-                codigo_transaccion: '',
-                estado_transaccion: 'Pago realizado',
-                numero_transaccion: '',
-                fecha_transaccion: '',
-                hora_transaccion: '',
-                total_transaccion: ''
-              }
-
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Guardado exitoso en DB (rePrint)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, rePrint: ', error)
-                })
-            } else {
-              this.texto =
-                'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
-              bookingData.estado_boleto = 'Reimpresión fallida'
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Error guardado en DB (rePrint)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, rePrint: ', error)
-                })
-              setTimeout(() => {
-                this.texto = ''
-              }, 10000)
+          if (data && data.result && data.result.ticket_details && data.result.ticket_details !== null) {
+            let ticketsGeneradosFormatted = {
+              boletos: [],
+              estado: true
             }
+
+            let ticket_info = data.result.ticket_details[0]
+            let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
+            let response_codigo = ticket_info.operator_reservation_id
+            let response_servicio = ticket_info.bus_type
+            let response_ruta = ticket_info.origin + ' / ' + ticket_info.destination
+            let response_piso =
+              ticket_info.seat_fare_details[0].seat_detail.floor_no !== ''
+                ? ticket_info.seat_fare_details[0].seat_detail.floor_no
+                : '1'
+            let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
+            let response_fecha = ticket_info.travel_date
+            let response_hora = ticket_info.boarding_point_details.dep_time
+            let response_origen = ticket_info.boarding_point_details.landmark
+            let response_destino = ticket_info.destination
+            let issued_on = new Date().toLocaleString('es-CL', { hour12: false })
+            let response_fecha_compra = issued_on
+            let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
+
+            let response_ticket = {
+              boleto: response_boleto,
+              codigo: response_codigo.toString(),
+              rut: '',
+              servicio: response_servicio,
+              ruta: response_ruta,
+              piso: response_piso,
+              asiento: response_asiento,
+              fecha: response_fecha,
+              hora: response_hora,
+              origen: response_origen,
+              destino: response_destino,
+              fecha_compra: response_fecha_compra,
+              total: response_total.toString(),
+              tipo_cliente: 'PULLMAN PASS'
+            }
+
+            ticketsGeneradosFormatted.boletos.push(response_ticket)
+            this.tickets_reprint = ticketsGeneradosFormatted
+            this.rePrint()
+
+            let bookingData = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: 'Reimpreso',
+              origen: response_origen,
+              destino: response_destino,
+              fecha_viaje: response_fecha,
+              hora_viaje: response_hora,
+              asiento: response_asiento,
+              codigo_reserva: ticket_info.operator_pnr,
+              estado_boleto: 'Reimpreso',
+              codigo_confirmacion: '',
+              codigo_transaccion: '',
+              estado_transaccion: 'Pago realizado',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
+
+            this.axios
+              .post(this.info.urlLogs, {
+                bookingData: bookingData
+              })
+              .then(function () {
+                console.log('Guardado exitoso en DB (rePrint)')
+              })
+              .catch(function (error) {
+                console.error('Error al guardar en DB, rePrint: ', error)
+              })
+          } else {
+            this.texto =
+              'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
+
+            let bookingData = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: 'Reimpreso',
+              origen: 'N/A',
+              destino: 'N/A',
+              fecha_viaje: 'N/A',
+              hora_viaje: 'N/A',
+              asiento: 'N/A',
+              codigo_reserva: this.codeReprint,
+              estado_boleto: 'Reimpresión fallida',
+              codigo_confirmacion: '',
+              codigo_transaccion: '',
+              estado_transaccion: 'Intento de reimpresión',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
+
+            this.axios
+              .post(this.info.urlLogs, {
+                bookingData: bookingData
+              })
+              .then(function () {
+                console.log('Error guardado en DB (rePrint)')
+              })
+              .catch(function (error) {
+                console.error('Error al guardar en DB, rePrint: ', error)
+              })
+
+            let self = this
+            setTimeout(function () {
+              self.texto = ''
+            }, 10000)
           }
         })
         .catch((error) => {
           console.error(error)
           this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
-          const ipServer = localStorage.getItem('ipServer')
-          const totemName = ipServer
-          const bookingData = {
-            numTotem: totemName,
+
+          let bookingData = {
+            numTotem: localStorage.getItem('ipServer'),
             rut: 'Reimpreso',
             origen: 'N/A',
             destino: 'N/A',
@@ -230,7 +246,7 @@ export default {
             hora_viaje: 'N/A',
             asiento: 'N/A',
             codigo_reserva: '',
-            estado_boleto: 'Error al obtener los datos de la reserva. Reimpresión fallida',
+            estado_boleto: 'Error al obtener los datos de la reserva',
             codigo_confirmacion: '',
             codigo_transaccion: '',
             estado_transaccion: 'Intento de reimpresión',
@@ -239,21 +255,23 @@ export default {
             hora_transaccion: '',
             total_transaccion: ''
           }
+
           this.axios
             .post(this.info.urlLogs, {
-              bookingData
+              bookingData: bookingData
             })
-            .then(() => {
+            .then(function () {
               console.log('Error guardado en DB (rePrint)')
             })
-            .catch((error) => {
+            .catch(function (error) {
               console.error('Error al guardar en DB, rePrint: ', error)
             })
-          setTimeout(() => {
-            this.texto = ''
+
+          let self = this
+          setTimeout(function () {
+            self.texto = ''
           }, 10000)
         })
-        .finally(() => {})
     },
 
     // imprime el boleto
