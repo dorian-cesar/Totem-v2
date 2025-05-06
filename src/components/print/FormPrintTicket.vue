@@ -308,25 +308,25 @@ export default {
       try {
         for (const t of tickets) {
           let boletoTexto =
-            '--------------- BOLETO PULLMAN --------------\n' +
-            ` BOLETO:            ${t.boleto}\n` +
-            ` SERVICIO:          ${t.servicio}\n` +
-            ` RUTA: ${t.ruta}                 \n` +
-            ` PISO:              ${t.piso}\n` +
-            ` ASIENTO:           ${t.asiento}\n` +
-            ` ORIGEN:            ${t.origen}\n` +
-            ` DESTINO:           ${t.destino}\n` +
-            ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
-            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-            ` HORA DE VIAJE:     ${t.hora}\n` +
-            ` TOTAL:             $${t.total}\n` +
-            '                              \n' +
-            '                              \n' +
-            '------------ TERMINOS Y CONDICIONES ---------\n' +
-            'GRACIAS POR SU COMPRA\n' +
-            'COPIA CLIENTE\n' +
-            'BOLETO VALIDO PARA PASAJE EN BUS\n' +
-            '---------------------------------------------\n'
+        '--------------- BOLETO PULLMAN --------------\n' +
+        ` BOLETO:            ${t.boleto}\n` +
+        ` SERVICIO:          ${t.servicio}\n` +
+        ` RUTA: ${t.ruta}                 \n` +
+        ` PISO:              ${t.piso}\n` +
+        ` ASIENTO:           ${t.asiento}\n` +
+        ` ORIGEN:            ${t.origen}\n` +
+        ` DESTINO:           ${t.destino}\n` +
+        ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+        ` HORA DE VIAJE:     ${t.hora}\n` +
+        ` TOTAL:             $${t.total}\n` +
+        '                              \n' +
+        '                              \n' +
+        '------------ TERMINOS Y CONDICIONES ---------\n' +
+        '            GRACIAS POR SU COMPRA\n' +
+        '                COPIA CLIENTE\n' +
+        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
+        '---------------------------------------------\n'
 
           const response = await axios.post(url + api, {
             texto: boletoTexto
