@@ -133,11 +133,11 @@ export default {
     searchBusService: async function () {
       try {
         // api dev
-        const proxy = 'https://newstg3-gdsbus.kupos.cl'
-        const API_KEY = 'TSXFQYAPI25766888'
+        // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        // const proxy = "https://gds.kupos.com"
-        // const API_KEY = "TSSDFPAPI30103014"
+        const proxy = "https://gds.kupos.com"
+        const API_KEY = "TSSDFPAPI30103014"
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
         //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
@@ -151,34 +151,6 @@ export default {
         if (!response.data || !response.data.result || !response.data.result.bus_layout) {
           throw new Error('La respuesta de la API no contiene los datos esperados.')
         }
-        // búsqueda de planilla
-        //        const requestOne = this.axios.post([proxy, api1].join("/"), {
-        //          idServicio: this.idServicio,
-        //          tipoBusPiso1:  this.tipoBusPiso1,
-        //          tipoBusPiso2:  this.tipoBusPiso2,
-        //          fechaServicio:  this.fechaServicio,
-        //          integrador:  this.integrador,
-        //        })
-        //
-        //        // búsqueda de planilla vertical
-        //        const requestTwo = this.axios.post([proxy, api2].join("/"), {
-        //          idServicio: this.idServicio,
-        //          tipoBusPiso1: this.tipoBusPiso1,
-        //          tipoBusPiso2: this.tipoBusPiso2,
-        //          fechaServicio: this.fechaServicio,
-        //          idOrigen: this.idOrigen,
-        //          idDestino: this.idDestino,
-        //          integrador: this.integrador,
-        //          clasePiso1: this.idClaseBusPisoUno,
-        //	        clasePiso2: this.idClaseBusPisoDos
-        //        })
-
-        //         let responseOne, responseTwo
-        //         for( let times = 0, isEmpty = true; times < 10 && isEmpty; times++ ){
-        //           [responseOne, responseTwo] = await this.axios.all([ requestOne, requestTwo])
-        //
-        //           isEmpty = (Object.keys(responseOne.data).length === 0 || Object.keys(responseTwo.data).length === 0)
-        //         }
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
         layout_available.shift()

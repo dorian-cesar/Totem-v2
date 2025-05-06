@@ -129,11 +129,11 @@ export default {
       this.propsListCaptionOrigin.totalList = ''
 
       // api dev
-      const proxy = "https://newstg3-gdsbus.kupos.cl"
-      const API_KEY = "TSXFQYAPI25766888"
+      // const proxy = "https://newstg3-gdsbus.kupos.cl"
+      // const API_KEY = "TSXFQYAPI25766888"
       // api kupos
-      // const proxy = "https://gds.kupos.com"
-      // const API_KEY = "TSSDFPAPI30103014"
+      const proxy = "https://gds.kupos.com"
+      const API_KEY = "TSSDFPAPI30103014"
 
       const date = this.changeFormatDate2(this.getDepartureDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeDepartureCity()}/${this.getCodeArrivalCity()}/${date}.json?api_key=${API_KEY}`
@@ -171,20 +171,11 @@ export default {
       // console.log(results[0])
       // console.log(results[1])
       results.shift();
-//         this.propsListBusDeparture.schedules = results.filter((e) => {
-//           const
-//             [date, month, year ] = e[35].split('-'),
-//             [hour, minutes] = e[9].horaSalida.split(':')
-
-//           const departureTime = new Date(year,month-1,date, hour , minutes)
-
-//           if(departureTime >= validTime){ return  e }
-//         })
 
       this.propsListBusDeparture.schedules = []
       for (let result of results) {
-        // cambiar a 'Pullman Costa'
-        if (result[3] === 'Turbo-kupos-stg1') {
+        // cambiar a 'Turbo-kupos-stg1' para api dev
+        if (result[3] === 'Pullman Costa') {
           let boarding = result[22].split(',')
           let boarding_terminalsText = []
           let boarding_terminalsHTML = []
@@ -236,11 +227,11 @@ export default {
       this.propsListCaptionDestination.totalList = ''
 
       // api dev
-      const proxy = "https://newstg3-gdsbus.kupos.cl"
-      const API_KEY = "TSXFQYAPI25766888"
+      // const proxy = "https://newstg3-gdsbus.kupos.cl"
+      // const API_KEY = "TSXFQYAPI25766888"
       // api kupos
-      // const proxy = "https://gds.kupos.com"
-      // const API_KEY = "TSSDFPAPI30103014"
+      const proxy = "https://gds.kupos.com"
+      const API_KEY = "TSSDFPAPI30103014"
       const date = this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeArrivalCity()}/${this.getCodeDepartureCity()}/${date}.json?api_key=${API_KEY}`
       const body = {
@@ -262,8 +253,8 @@ export default {
 
       this.propsListBusDestination.schedules = [];
       for (let result of results) {
-        // cambiar a 'Pullman Costa'
-        if (result[3] === 'Turbo-kupos-stg1') {
+        // cambiar a 'Turbo-kupos-stg1' para api dev
+        if (result[3] === 'Pullman Costa') {
           let boarding = result[22].split(',')
           let boarding_terminalsText = []
           let boarding_terminalsHTML = []

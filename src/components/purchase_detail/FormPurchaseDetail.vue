@@ -116,107 +116,6 @@ export default {
       this.setTotalAmount = total
     },
 
-    //simulacion POS
-    // pagarPOS() {
-    //   console.log('- methods:pagar', this.propsPersonalInformation.tickets)
-    //   console.log('- methods:pagar', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
-    //   this.$bvModal.show('modal-payment-control')
-    //   clearTimeout(this.timeClose)
-    //   this.timeChangeEstatus = false
-    //   const simulatePOSResponse = true // true = éxito, false = fallo
-    //   if (simulatePOSResponse !== undefined) {
-    //     console.log(`[SIMULACIÓN] Respuesta del POS: ${simulatePOSResponse ? 'ÉXITO' : 'FALLO'}`)
-    //     const simulatedPOSResponse = {
-    //       data: {
-    //         data: {
-    //           successful: simulatePOSResponse,
-    //           responseMessage: simulatePOSResponse ? 'Pago aprobado' : 'Transacción rechazada (simulado)',
-    //           commerceCode: '597055555532',
-    //           terminalId: '12345678',
-    //           last4Digits: Math.floor(1000 + Math.random() * 9000).toString(),
-    //           cardType: 'VISA',
-    //           accountNumber: '---',
-    //           shareType: 'SIN CUOTA',
-    //           sharesNumber: '0',
-    //           sharesAmount: '0',
-    //           sharesTypeComment: '---',
-    //           ...(simulatePOSResponse && {
-    //             ticket: 'SIM' + Math.floor(Math.random() * 1000000),
-    //             operationNumber: Math.floor(Math.random() * 100000).toString(),
-    //             realDate:
-    //               new Date().getDate().toString().padStart(2, '0') +
-    //               (new Date().getMonth() + 1).toString().padStart(2, '0') +
-    //               new Date().getFullYear().toString().slice(-2),
-    //             realTime:
-    //               new Date().getHours().toString().padStart(2, '0') +
-    //               new Date().getMinutes().toString().padStart(2, '0') +
-    //               new Date().getSeconds().toString().padStart(2, '0'),
-    //             amount: this.propsPersonalInformation.total.replace('.', ''),
-    //             authorizationCode: Math.floor(100000 + Math.random() * 900000).toString()
-    //           })
-    //         }
-    //       }
-    //     }
-    //     const rut = localStorage.getItem('rut')
-    //     console.log('Pago procesado (simulado):', simulatedPOSResponse.data)
-    //     this.dataPOS = simulatedPOSResponse.data.data
-    //     // formatear fecha y hora para DB
-    //     const rawDate = this.dataPOS.realDate
-    //     const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
-    //     const rawTime = this.dataPOS.realTime
-    //     const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-    //     this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
-    //       const ipServer = localStorage.getItem('ipServer')
-    //       const totemName = ipServer
-    //     const bookingData = {
-    //       numTotem: totemName,
-    //       rut: rut,
-    //       origen: this.$store.state.TravelSelection.nameDepartureCity,
-    //       destino: this.$store.state.TravelSelection.nameArrivalCity,
-    //       fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-    //       hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-    //       asiento: this.propsPersonalInformation.tickets[0].seat,
-    //       codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-    //       estado_boleto: 'Reservado',
-    //       codigo_transaccion: simulatePOSResponse ? this.dataPOS.ticket : '',
-    //       estado_transaccion: simulatePOSResponse ? 'Pago realizado' : 'Pago fallido',
-    //       numero_transaccion: simulatePOSResponse ? this.dataPOS.operationNumber : '',
-    //       fecha_transaccion: simulatePOSResponse ? formattedDate : '',
-    //       hora_transaccion: simulatePOSResponse ? formattedTime : '',
-    //       total_transaccion: simulatePOSResponse
-    //         ? this.dataPOS.amount
-    //         : this.propsPersonalInformation.total.replace('.', '')
-    //     }
-    //     this.axios
-    //       .post(this.info.urlLogs, { bookingData })
-    //       .then(() => {
-    //         console.log('Guardado exitoso en DB pagarPOS simulado')
-    //         console.log('Datos para DB pagarPOS: ', bookingData)
-    //       })
-    //       .catch((error) => {
-    //         console.error('Error al guardar en DB, pagarPOS: ', error)
-    //       })
-    //     if (simulatePOSResponse) {
-    //       setTimeout(() => {
-    //         this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
-    //       }, 2000)
-    //       this.isErrorPOS = false
-    //       this.ballotNumberPOS = Number(this.dataPOS.authorizationCode)
-    //       this.paymentPOS = this.dataPOS
-    //       this.amountPOS = this.dataPOS.amount
-    //       this.endTransactionPOS(true)
-    //     } else {
-    //       this.propsPaymentControl.msgError = simulatedPOSResponse.data.data.responseMessage
-    //       this.isErrorPOS = true
-    //       this.isErrorTerminarTransaccionPOS(true)
-    //     }
-    //     this.timeClose = setTimeout(() => {
-    //       this.timeChangeEstatus = true
-    //     }, 150 * 1000)
-    //     return
-    //   }
-    // },
-
     //inicio del proceso de pago
     pagarPOS() {
       console.log('- methods:pagar', this.propsPersonalInformation.tickets)
@@ -415,11 +314,7 @@ export default {
       console.log('ballotNumberPOS', this.ballotNumberPOS)
       for (let ticket of this.propsPersonalInformation.tickets) {
         valuePOST += parseInt(ticket.precio.replace('.', ''))
-        // ballotNumberPOST = parseInt(ticket.operatorPnr)
-        // console.log('operatorPnr', ticket.operatorPnr)
-        // this.transaccionPOS = {
-        //   codigo: ballotNumberPOST
-        // }
+
         const itemCarrito = {
           codigoTransaccion: this.ballotNumberPOS,
           fechaPasada: ticket.fechaServicio,
@@ -472,37 +367,6 @@ export default {
       )
     },
 
-    //realizar el pago en el POS
-    // pagarPOS() {
-    //   this.axios.post(
-    //     'https://s1.ntic.cl/totem-costa-handler/index.php',
-    //     {
-    //       type: 'pagarPOS',
-    //       data: {
-    //         valuePOS: this.valuePOS,
-    //         ballotNumberPOS: this.ballotNumberPOS
-    //       },
-    //       name: this.info.totemName
-    //     }
-    //   )
-    //   console.log("- methods:pagarPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
-    // Método en mixins
-    // this.valuePOS = 50
-    // this.axios.post(
-    //   'http://192.168.88.254/api/payment',
-    //   {
-    //     "amount": this.valuePOS,  // Monto en pesos (ej. $10.000)
-    //     "ticketNumber": this.ballotNumberPOS,  // Número de boleta/ticket
-    //     // "printVoucher": true,  // Si deseas imprimir voucher
-    //     // "sendMessages": true  // Si deseas recibir mensajes intermedios
-    //   }
-    // )
-    // this.sendNewSale(this.valuePOS, this.ballotNumberPOS)
-
-    // TODO: Eliminar en producción
-    // console.log("- methods:guardarTransaccionPOS", "valuePOS = " + this.valuePOS, "ballotNumberPOS = " + this.ballotNumberPOS, "-> methods:sendNewSale")
-    // this.guardarTransaccionPOS()
-    // },
     // Imprimir voucher + boletos
     imprimir() {
       // Imprimir Voucher
@@ -533,11 +397,11 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        const proxy = 'https://newstg3-gdsbus.kupos.cl'
-        const API_KEY = 'TSXFQYAPI25766888'
+        // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        // const proxy = "https://gds.kupos.com"
-        // const API_KEY = 'TSSDFPAPI30103014'
+        const proxy = "https://gds.kupos.com"
+        const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
@@ -754,24 +618,7 @@ export default {
         )
       }
     },
-    // //error en TerminarTransaccionPOS API Pullman (2)
-    // isErrorTerminarTransaccionPOS: function (val) {
-    //   console.log(
-    //     "- watch:isErrorTerminarTransaccionPOS",
-    //     "isErrorTerminarTransaccionPOS = " + val
-    //   );
-    //   if (val) {
-    //     // Mostrar mensajes de error en la pantalla modal
-    //     this.propsPaymentControl.isChangeStatus = true;
-    //     this.propsPaymentAtendedorControl.isChangeStatus = true;
-    //     console.log(
-    //       "+ watch:isErrorGuardarTransaccion",
-    //       "! mostrar mensaje error",
-    //       "propsPaymentControl.isChangeStatus = " +
-    //       this.propsPaymentControl.isChangeStatus
-    //     );
-    //   }
-    // },
+
     //ocurre cuando se presiona un botón el la pantalla modal
     nameActionModal: function () {
       console.log('- watch:nameActionModal', '-> clearTimeout')
@@ -854,32 +701,7 @@ export default {
         // this.pagarPOS(); //<- Realizar el pago en el POS
       }
     },
-    // //fin de transacción del POS
-    // endTransactionPOS: function (val) {
-    //   console.log("- watch:endTransactionPOS", "endTransactionPOS = " + val);
-    //   if (val) {
-    //     // Verifico si hay error en la transacción de pago
-    //     if (this.isErrorPOS) {
-    //       //<- hay error
-    //       this.propsPaymentControl.isChangeStatus = true;
-    //       this.propsPaymentAtendedorControl.isChangeStatus = true;
-    //       console.log(
-    //         "+ watch:endTransactionPOS",
-    //         "isErrorPOS =" + this.isErrorPOS,
-    //         "propsPaymentControl.isChangeStatus = " +
-    //         this.propsPaymentControl.isChangeStatus
-    //       );
-    //     } else {
-    //       //<- No hay error
-    //       console.log(
-    //         "+ watch:endTransactionPOS",
-    //         "isErrorPOS =" + this.isErrorPOS,
-    //         "-> guardarTransaccionPOS"
-    //       );
-    //       this.guardarTransaccionPOS();
-    //     }
-    //   }
-    // },
+
     //terminó la generación de boletos
     loadingTerminarTransaccionPOS: function (val) {
       console.log(

@@ -163,23 +163,6 @@ export default {
       return floor === 0 ? this.service.servicioPrimerPiso : this.service.servicioSegundoPiso
     },
 
-    // setRef(seatNro) {
-    //   const isSeat = !Number.isNaN(seatNro)
-    //   return isSeat ? `seat-${seatNro}`: ''
-    // },
-
-    // Asignar n si no es número y determinar el número real según el piso
-//     fixNumOfSeatForFloor(num, floor) {
-//       let numNew
-//       if (isNaN(num) || null == num) {
-//         numNew = 'n' //si no es número le asigna n no importa el piso
-//       } else {// si es número verifica el piso
-//         numNew = (1 === floor && !this.isCorrelativo()) // si el número es del segundo piso le suma 20
-//           ? (parseInt(num) + 20).toString()
-//           : num
-//       }
-//       return numNew
-//     },
     getStatusToSeat(num, floor) {
       let status = ''
       if (isNaN(num)) status = 'busy'
@@ -200,12 +183,6 @@ export default {
       }
     },
 
-    // Determinar si el segundo piso tiene números correlativos al primero
-//    isCorrelativo() {
-//      const ultimoPiso1 = this.availableSeats.filter(o => o.floor === 0).length
-//      return ((parseInt(this.availableSeats[ultimoPiso1 - 1].seat) + 1).toString() === this.availableSeats[ultimoPiso1].seat)
-//        ? true : false
-//    },
     // Mensaje de error
     async showMsgBoxError() {
       await this.$bvModal.msgBoxOk('Se presentó un error al reservar el asiento, debe elegir otro.', {
