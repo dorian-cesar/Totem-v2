@@ -55,7 +55,7 @@ export default {
   methods: {
     checkServerStatus() {
       axios
-        .get(this.info.urlGetIp)
+        .get(this.info.urlGetIp, { timeout: 5000 })
         .then((res) => {
           const monitorIp = res.data.ip
           console.log('IP del servidor obtenida:', monitorIp)
@@ -66,7 +66,7 @@ export default {
             return
           }
           axios
-            .get(`https://${monitorIp}:3000/monitor`)
+            .get(`https://${monitorIp}:3000/monitor`, { timeout: 5000 })
             .then((response) => {
               console.log('Estado del servidor:', response.data)
               const isAvailable = response.data.server === true
