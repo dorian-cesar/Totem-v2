@@ -55,21 +55,32 @@ export default {
   methods: {
     checkServerStatus() {
       axios
-        .get(this.info.urlGetIp)
+        .get(this.info.urlGetIp, { timeout: 5000 })
         .then((res) => {
           const monitorIp = res.data.ip
-          console.log('IP del servidor:', monitorIp)
-          
-          return axios.get(`https://${monitorIp}:3000/monitor`)
-        })
-        .then((response) => {
-          console.log('Estado del servidor:', response.data)
-          const isAvailable = response.data.server === true
-          this.serverAvailable = isAvailable
-          this.loading = !isAvailable
+          console.log('IP del servidor obtenida:', monitorIp)
+          if (!monitorIp) {
+            console.error('No se pudo obtener la IP del servidor')
+            this.serverAvailable = false
+            this.loading = true
+            return
+          }
+          axios
+            .get(`https://${monitorIp}:3000/monitor`, { timeout: 3000 })
+            .then((response) => {
+              console.log('Estado del servidor:', response.data)
+              const isAvailable = response.data.server === true
+              this.serverAvailable = isAvailable
+              this.loading = !isAvailable
+            })
+            .catch((error) => {
+              console.error('Error al verificar el estado del servidor:', error)
+              this.serverAvailable = false
+              this.loading = true
+            })
         })
         .catch((error) => {
-          console.error('Error en el chequeo del estado del servidor:', error)
+          console.error('Error al obtener IP desde el backend:', error)
           this.serverAvailable = false
           this.loading = true
         })
@@ -77,7 +88,7 @@ export default {
   },
   mounted() {
     this.checkServerStatus()
-    this.monitorInterval = setInterval(this.checkServerStatus, 10000) // tiempo entre check a server POS
+    this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre check a server POS
   },
   beforeDestroy() {
     if (this.monitorInterval) {
