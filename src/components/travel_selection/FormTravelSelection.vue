@@ -171,8 +171,8 @@ export default {
   },
   computed: {
     isDisable: function () {
-      return !(this.isDepartureCity() && this.isArrivalCity() && this.rutEsValido)
-      // return !(this.isDepartureCity() && this.isArrivalCity())
+      // return !(this.isDepartureCity() && this.isArrivalCity() && this.rutEsValido)
+      return !(this.isDepartureCity() && this.isArrivalCity())
     }
   }
 }
