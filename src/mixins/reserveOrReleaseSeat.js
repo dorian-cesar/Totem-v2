@@ -44,7 +44,7 @@ export default {
         no_of_seats: param.no_of_seats,
         travel_date: param.travel_date,
         travel_time: param.travel_time,
-        rut: rut
+        // rut: rut
         // codigo_reserva: param
         // data de api antigua
         // customer_company_gst: {
@@ -68,11 +68,8 @@ export default {
 
             const hasTicketDetails = data && data.result && data.result.ticket_details
 
-            const ipServer = localStorage.getItem('ipServer')
-            const totemName = ipServer
-
             const bookingData = {
-              numTotem: totemName,
+              numTotem: localStorage.getItem('ipServer'),
               rut: rut,
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
@@ -131,10 +128,10 @@ export default {
               } else {
                 this.statusReservation = false
                 console.log('no ticket', data)
-                setTimeout(() => {
-                  this.$router.push('/travelselection')
-                  window.location.reload()
-                }, 3000)
+                // setTimeout(() => {
+                //   this.$router.push('/travelselection')
+                //   window.location.reload()
+                // }, 3000)
               }
             } else {
               this.statusReservation = false
@@ -150,10 +147,10 @@ export default {
                 .catch((error) => {
                   console.error('Error al guardar en DB, tentative_booking :', error)
                 })
-              setTimeout(() => {
-                this.$router.push('/travelselection')
-                window.location.reload()
-              }, 3000)
+              // setTimeout(() => {
+              //   this.$router.push('/travelselection')
+              //   window.location.reload()
+              // }, 3000)
             }
           }
         })
@@ -163,10 +160,10 @@ export default {
           this.codeReservation = ''
           // console.log('no result', data)
           console.log('no result')
-          setTimeout(() => {
-            this.$router.push('/travelselection')
-            window.location.reload()
-          }, 3000)
+          // setTimeout(() => {
+          //   this.$router.push('/travelselection')
+          //   window.location.reload()
+          // }, 3000)
         })
         .finally(() => (this.isLoadingReservation = false))
     }
