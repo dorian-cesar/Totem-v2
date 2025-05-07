@@ -66,7 +66,7 @@ export default {
             return
           }
           axios
-            .get(`https://${monitorIp}:3000/monitor`, { timeout: 5000 })
+            .get(`https://${monitorIp}:3000/monitor`, { timeout: 3000 })
             .then((response) => {
               console.log('Estado del servidor:', response.data)
               const isAvailable = response.data.server === true
