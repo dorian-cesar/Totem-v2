@@ -52,7 +52,7 @@
 </template>
 <script>
 import WebSocket from '@/mixins/websocket.js'
-import SimpleKeyboard from 'simple-keyboard'
+// import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
 import info from '../../../info.json'
 import axios from 'axios'
@@ -127,7 +127,7 @@ export default {
 
             let ticket_info = data.result.ticket_details[0]
             // let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
-            let response_boleto = ticket_info.ticket_number
+            let response_boleto = ticket_info.pnr_number
             let response_codigo_reserva = ticket_info.operator_pnr
             let response_codigo = ticket_info.operator_reservation_id
             let response_servicio = ticket_info.bus_type
@@ -333,17 +333,17 @@ export default {
         '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
         '---------------------------------------------\n'
 
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          })
+          // const response = await axios.post(url + api, {
+          //   texto: boletoTexto
+          // })
 
           // ver boleto en browser
-          // const previewWindow = window.open('', '_blank')
-          // previewWindow.document.write(`
-          //  <pre style="font-size:14px; white-space:pre-wrap;">
-          // ${boletoTexto}</pre>
-          // `)
-          // previewWindow.document.close()
+          const previewWindow = window.open('', '_blank')
+          previewWindow.document.write(`
+           <pre style="font-size:14px; white-space:pre-wrap;">
+          ${boletoTexto}</pre>
+          `)
+          previewWindow.document.close()
 
           console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
