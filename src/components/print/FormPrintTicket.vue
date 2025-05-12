@@ -175,7 +175,7 @@ export default {
               fecha_viaje: response_fecha,
               hora_viaje: response_hora,
               asiento: response_asiento,
-              codigo_reserva: ticket_info.operator_pnr,
+              codigo_reserva: response_boleto,
               estado_boleto: 'Reimpreso',
               codigo_confirmacion: '',
               codigo_transaccion: '',
