@@ -188,7 +188,7 @@ export default {
           }
           boarding_terminalsText = boarding_terminalsText.join(' / ')
           boarding_terminalsHTML = boarding_terminalsHTML.join('')
-          console.log("result", result)
+          // console.log("result", result)
           const r = {
             idServicio: result[0],
             operador: result[3],
