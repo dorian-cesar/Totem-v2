@@ -130,10 +130,10 @@ export default {
               } else {
                 this.statusReservation = false
                 console.log('no ticket', data)
-                setTimeout(() => {
-                  this.$router.push('/travelselection')
-                  window.location.reload()
-                }, 3000)
+                // setTimeout(() => {
+                //   this.$router.push('/travelselection')
+                //   window.location.reload()
+                // }, 3000)
               }
             } else {
               this.statusReservation = false
@@ -149,10 +149,10 @@ export default {
                 .catch((error) => {
                   console.error('Error al guardar en DB, tentative_booking :', error)
                 })
-              setTimeout(() => {
-                this.$router.push('/travelselection')
-                window.location.reload()
-              }, 3000)
+              // setTimeout(() => {
+              //   this.$router.push('/travelselection')
+              //   window.location.reload()
+              // }, 3000)
             }
           }
         })
@@ -162,10 +162,10 @@ export default {
           this.codeReservation = ''
           // console.log('no result', data)
           console.log('no result')
-          setTimeout(() => {
-            this.$router.push('/travelselection')
-            window.location.reload()
-          }, 3000)
+          // setTimeout(() => {
+          //   this.$router.push('/travelselection')
+          //   window.location.reload()
+          // }, 3000)
         })
         .finally(() => (this.isLoadingReservation = false))
     }
