@@ -50,7 +50,7 @@ export default {
         bus_type: param.bus_type,
         route_id: param.route_id
       }
-      console.log(JSON.stringify(formatParams, null, 2))
+      // console.log(JSON.stringify(formatParams, null, 2))
       await this.axios
         .post([proxy, api].join('/'), formatParams, {
           headers: {

@@ -146,7 +146,7 @@ export default {
         ` TOTAL:             $${t.total}\n` +
         '                              \n' +
         '                              \n' +
-        '------------ TERMINOS Y CONDICIONES ---------\n' +
+        '----------- TERMINOS Y CONDICIONES ---------\n' +
         '            GRACIAS POR SU COMPRA\n' +
         '                COPIA CLIENTE\n' +
         '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
