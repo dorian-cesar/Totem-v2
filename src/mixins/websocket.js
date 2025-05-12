@@ -111,12 +111,11 @@ export default {
         })
 
         const bookingDetailsURL = `${proxy}/gds/api/booking_details.json?${params.toString()}`
-        console.log('bookingDetailsURL:', bookingDetailsURL)
 
         let operator_pnr = null
         try {
           const response = await axios.get(bookingDetailsURL)
-          console.log('response booking_details:', response.data)
+          // console.log('response booking_details:', response.data)
           operator_pnr = response.data.result.ticket_details[0].operator_pnr
           console.log('response operator_pnr:', operator_pnr)
         } catch (error) {
