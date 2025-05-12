@@ -92,7 +92,6 @@ export default {
       // let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
-        console.log('boleto', boleto)
         // --- API booking_details ---
         const isDev = false // Cambia esto a false para usar producción
 
