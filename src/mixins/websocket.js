@@ -1,5 +1,5 @@
 import axios from 'axios'
-import info from "../../info.json";
+import info from '../../info.json'
 
 export default {
   data() {
@@ -93,9 +93,40 @@ export default {
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
         console.log('boleto', boleto)
+        // --- API booking_details ---
+        const isDev = true // Cambia esto a false para usar producción
+
+        const proxy = isDev
+          ? 'https://newstg3-gdsbus.kupos.cl' // API desarrollo
+          : 'https://gds.kupos.com' // API producción
+
+        const API_KEY = isDev
+          ? 'TSXFQYAPI25766888' // Dev key
+          : 'TSSDFPAPI30103014' // Prod key
+
+        const params = new URLSearchParams({
+          region: 'chile',
+          pnr_number: boleto.boleto,
+          api_key: API_KEY
+        })
+
+        const bookingDetailsURL = `${proxy}/gds/api/booking_details.json?${params.toString()}`
+        console.log('bookingDetailsURL:', bookingDetailsURL)
+
+        let operator_pnr = null
+        try {
+          const response = await axios.get(bookingDetailsURL)
+          console.log('response booking_details:', response.data)
+          operator_pnr = response.data.result.ticket_details[0].operator_pnr
+          console.log('response operator_pnr:', operator_pnr)
+        } catch (error) {
+          console.error('Error al obtener booking_details:', error)
+        }
+
         tickets.push({
           boleto: boleto.boleto,
           codigo: boleto.codigo,
+          codigo_reserva: operator_pnr,
           rut: '', //<- No se indica Rut en los boletos
           servicio: boleto.servicio,
           // ruta: this.buscarRuta(boleto.codigoTerminalOrigen, boleto.codigoTerminalDestino),
@@ -133,25 +164,26 @@ export default {
       let boletosTexto = ''
       for (const t of tickets) {
         let boletoTexto =
-        '--------------- BOLETO PULLMAN --------------\n' +
-        ` BOLETO:            ${t.boleto}\n` +
-        ` SERVICIO:          ${t.servicio}\n` +
-        ` RUTA: ${t.ruta}                 \n` +
-        ` PISO:              ${t.piso}\n` +
-        ` ASIENTO:           ${t.asiento}\n` +
-        ` ORIGEN:            ${t.origen}\n` +
-        ` DESTINO:           ${t.destino}\n` +
-        ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
-        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-        ` HORA DE VIAJE:     ${t.hora}\n` +
-        ` TOTAL:             $${t.total}\n` +
-        '                              \n' +
-        '                              \n' +
-        '----------- TERMINOS Y CONDICIONES ---------\n' +
-        '            GRACIAS POR SU COMPRA\n' +
-        '                COPIA CLIENTE\n' +
-        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
-        '---------------------------------------------\n'
+          '--------------- BOLETO PULLMAN --------------\n' +
+          ` BOLETO:            ${t.codigo_reserva}\n` +
+          ` CODIGO DE RESERVA: ${t.boleto}\n` +
+          ` SERVICIO:          ${t.servicio}\n` +
+          ` RUTA: ${t.ruta}                 \n` +
+          ` PISO:              ${t.piso}\n` +
+          ` ASIENTO:           ${t.asiento}\n` +
+          ` ORIGEN:            ${t.origen}\n` +
+          ` DESTINO:           ${t.destino}\n` +
+          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+          ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+          ` HORA DE VIAJE:     ${t.hora}\n` +
+          ` TOTAL:             $${t.total}\n` +
+          '                              \n' +
+          '                              \n' +
+          '----------- TERMINOS Y CONDICIONES ---------\n' +
+          '            GRACIAS POR SU COMPRA\n' +
+          '                COPIA CLIENTE\n' +
+          '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
+          '---------------------------------------------\n'
 
         boletosTexto += boletoTexto
 
@@ -212,33 +244,33 @@ export default {
       // let tickets = [{ codigo: codigoUnico }]
 
       const voucher =
-      '           COMPROBANTE DE VENTA           \n' +
-      '              PAGO EN CUOTAS              \n' +
-      '            TARJETA DE CREDITO            \n' +
-      '         INTEGRACIONES TRANSBANK          \n' +
-      '              PULLMAN S.A.                \n' +
-      '  Nicasio Retamales 71, Estacion Central  \n' +
-      `              ${commerce_code}            \n` +
-      '                Santiago                  \n' +
-      `              ${codigo_unico}             \n` +
-      '     FECHA       HORA        TERMINAL     \n' +
-      `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
-      '                                             \n' +
-      `    NUMERO DE TARJETA                     \n` +
-      `    ******${card_number}                   \n` +
-      `    TIPO DE TARJETA               ${card_type}\n` +
-      `    TOTAL:                        $${amount}\n` +
-      `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
-      `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
-      `    MONTO CUOTA:                  $${monto_cuota}\n` +
-      `    TASA DE INTERES:  ${comentario_cuota}\n` +
-      `    NUMERO DE BOLETA:             ${account_number}\n` +
-      `    NUMERO DE OPERACION:          ${operation_number}\n` +
-      `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
-      '                                             \n' +
-      '          GRACIAS POR SU COMPRA           \n' +
-      '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
-      '                                             \n'
+        '           COMPROBANTE DE VENTA           \n' +
+        '              PAGO EN CUOTAS              \n' +
+        '            TARJETA DE CREDITO            \n' +
+        '         INTEGRACIONES TRANSBANK          \n' +
+        '              PULLMAN S.A.                \n' +
+        '  Nicasio Retamales 71, Estacion Central  \n' +
+        `              ${commerce_code}            \n` +
+        '                Santiago                  \n' +
+        `              ${codigo_unico}             \n` +
+        '     FECHA       HORA        TERMINAL     \n' +
+        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+        '                                             \n' +
+        `    NUMERO DE TARJETA                     \n` +
+        `    ******${card_number}                   \n` +
+        `    TIPO DE TARJETA               ${card_type}\n` +
+        `    TOTAL:                        $${amount}\n` +
+        `    NUMERO DE CUOTAS:             ${numero_cuota}\n` +
+        `    TIPO DE CUOTAS:               ${tipo_cuota}\n` +
+        `    MONTO CUOTA:                  $${monto_cuota}\n` +
+        `    TASA DE INTERES:  ${comentario_cuota}\n` +
+        `    NUMERO DE BOLETA:             ${account_number}\n` +
+        `    NUMERO DE OPERACION:          ${operation_number}\n` +
+        `    CODIGO DE AUTORIZACION:       ${auth_code}\n` +
+        '                                             \n' +
+        '          GRACIAS POR SU COMPRA           \n' +
+        '  ACEPTO PAGAR SEGUN CONTRATO CON EMISOR  \n' +
+        '                                             \n'
 
       console.log(
         '+ methods:imprimirVoucher',

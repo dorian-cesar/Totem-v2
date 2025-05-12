@@ -8,7 +8,7 @@
               <b-row>
                 <b-col class="">
                   <p class="text-primary pb-2 font-weight-bolder s-custom-font">
-                    Ingrese su código de reserva (ej: KNT123456)
+                    Ingrese su código de reserva (ej: TS2301150405100000000)
                   </p>
                   <input
                     type="text"
@@ -127,7 +127,8 @@ export default {
 
             let ticket_info = data.result.ticket_details[0]
             // let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
-            let response_boleto = ticket_info.operator_pnr
+            let response_boleto = ticket_info.ticket_number
+            let response_codigo_reserva = ticket_info.operator_pnr
             let response_codigo = ticket_info.operator_reservation_id
             let response_servicio = ticket_info.bus_type
             let response_ruta = ticket_info.origin + ' / ' + ticket_info.destination
@@ -147,6 +148,7 @@ export default {
             let response_ticket = {
               boleto: response_boleto,
               codigo: response_codigo.toString(),
+              codigo_reserva: response_codigo_reserva.toString(),
               rut: '',
               servicio: response_servicio,
               ruta: response_ruta,
@@ -285,6 +287,7 @@ export default {
         tickets.push({
           boleto: boleto.boleto,
           codigo: boleto.codigo,
+          codigo_reserva: boleto.codigo_reserva,
           rut: '',
           servicio: boleto.servicio,
           ruta: `${boleto.origen} ${boleto.hora} - ${boleto.destino} ${boleto.fecha}`,
@@ -310,7 +313,8 @@ export default {
         for (const t of tickets) {
           let boletoTexto =
         '--------------- BOLETO PULLMAN --------------\n' +
-        ` BOLETO:            ${t.boleto}\n` +
+        ` BOLETO:            ${t.codigo_reserva}\n` +
+        ` CODIGO DE RESERVA: ${t.boleto}\n` +
         ` SERVICIO:          ${t.servicio}\n` +
         ` RUTA: ${t.ruta}                 \n` +
         ` PISO:              ${t.piso}\n` +
