@@ -216,7 +216,7 @@ export default {
             idClaseBusPisoDos: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
             ruta: result[2],
             tipoBus: result[8],
-            costo: result[15],
+            costo: result[15].split(',')[0],
             rutaId: result[7]
           }
           this.propsListBusDeparture.schedules.push(r)
@@ -298,7 +298,7 @@ export default {
             idClaseBusPisoDos: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
             ruta: result[2],
             tipoBus: result[8],
-            costo: result[15],
+            costo: result[15].split(',')[0],
             rutaId: result[7]
           }
 
