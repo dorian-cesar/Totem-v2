@@ -8,7 +8,7 @@
               <b-row>
                 <b-col class="">
                   <p class="text-primary pb-2 font-weight-bolder s-custom-font">
-                    Ingrese su código de reserva (ej: TS2301150405100000000)
+                    Ingrese su código de reserva (ej: KNT123456)
                   </p>
                   <input
                     type="text"
@@ -126,7 +126,8 @@ export default {
             }
 
             let ticket_info = data.result.ticket_details[0]
-            let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
+            // let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
+            let response_boleto = ticket_info.operator_pnr
             let response_codigo = ticket_info.operator_reservation_id
             let response_servicio = ticket_info.bus_type
             let response_ruta = ticket_info.origin + ' / ' + ticket_info.destination
