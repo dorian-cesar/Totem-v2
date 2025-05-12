@@ -44,57 +44,57 @@ import info from '../../../info.json'
 export default {
   name: 'BuyPrintInfo',
   data: () => ({
-    loading: true,
-    serverAvailable: false,
+    loading: false, // true
+    serverAvailable: true, // false
     BtnBuyTicket,
     BtnPrintTicket,
     BtnGetInfo,
     info,
     monitorInterval: null
   }),
-  methods: {
-    checkServerStatus() {
-      axios
-        .get(this.info.urlGetIp, { timeout: 2500 })
-        .then((res) => {
-          const monitorIp = res.data.ip
-          console.log('IP del servidor obtenida:', monitorIp)
-          if (!monitorIp) {
-            console.error('No se pudo obtener la IP del servidor')
-            this.serverAvailable = false
-            this.loading = true
-            return
-          }
-          axios
-            .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
-            .then((response) => {
-              console.log('Estado del servidor:', response.data)
-              const isAvailable = response.data.server === true
-              this.serverAvailable = isAvailable
-              this.loading = !isAvailable
-            })
-            .catch((error) => {
-              console.error('Error al verificar el estado del servidor:', error)
-              this.serverAvailable = false
-              this.loading = true
-            })
-        })
-        .catch((error) => {
-          console.error('Error al obtener IP desde el backend:', error)
-          this.serverAvailable = false
-          this.loading = true
-        })
-    }
-  },
-  mounted() {
-    this.checkServerStatus()
-    this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
-  },
-  beforeDestroy() {
-    if (this.monitorInterval) {
-      clearInterval(this.monitorInterval)
-    }
-  }
+  // methods: {
+  //   checkServerStatus() {
+  //     axios
+  //       .get(this.info.urlGetIp, { timeout: 2500 })
+  //       .then((res) => {
+  //         const monitorIp = res.data.ip
+  //         console.log('IP del servidor obtenida:', monitorIp)
+  //         if (!monitorIp) {
+  //           console.error('No se pudo obtener la IP del servidor')
+  //           this.serverAvailable = false
+  //           this.loading = true
+  //           return
+  //         }
+  //         axios
+  //           .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
+  //           .then((response) => {
+  //             console.log('Estado del servidor:', response.data)
+  //             const isAvailable = response.data.server === true
+  //             this.serverAvailable = isAvailable
+  //             this.loading = !isAvailable
+  //           })
+  //           .catch((error) => {
+  //             console.error('Error al verificar el estado del servidor:', error)
+  //             this.serverAvailable = false
+  //             this.loading = true
+  //           })
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error al obtener IP desde el backend:', error)
+  //         this.serverAvailable = false
+  //         this.loading = true
+  //       })
+  //   }
+  // },
+  // mounted() {
+  //   this.checkServerStatus()
+  //   this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
+  // },
+  // beforeDestroy() {
+  //   if (this.monitorInterval) {
+  //     clearInterval(this.monitorInterval)
+  //   }
+  // }
 }
 </script>
 

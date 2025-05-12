@@ -15,7 +15,11 @@
         boarding_at: boarding_at,
         origen: idOrigen,
         destino: idDestino,
-        integrador
+        integrador,
+        available_seats: asientosDisponibles,
+        cost: costo,
+        bus_type: tipoBus,
+        route_id: rutaId
       }"
       :service="{
         tarifaPrimerPisoInternet,
@@ -72,7 +76,10 @@ export default {
     tarifaPrimerPisoInternet: { type: String, required: true },
     tarifaSegundoPisoInternet: { type: String, required: true },
     servicioPrimerPiso: { type: String, required: true },
-    servicioSegundoPiso: { type: String, required: true }
+    servicioSegundoPiso: { type: String, required: true },
+    costo: { type: String, required: true },
+    tipoBus: { type: String, required: true, default: () => '' },
+    rutaId: { type: Number, required: true, default: () => '' }
   },
   methods: {
     // Arreglar los datos para dibujar los asientos del bus
@@ -136,8 +143,8 @@ export default {
         // const proxy = 'https://newstg3-gdsbus.kupos.cl'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        const proxy = "https://gds.kupos.com"
-        const API_KEY = "TSSDFPAPI30103014"
+        const proxy = 'https://gds.kupos.com'
+        const API_KEY = 'TSSDFPAPI30103014'
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
         //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
@@ -312,3 +319,4 @@ export default {
   }
 }
 </script>
+

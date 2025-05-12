@@ -188,6 +188,7 @@ export default {
           }
           boarding_terminalsText = boarding_terminalsText.join(' / ')
           boarding_terminalsHTML = boarding_terminalsHTML.join('')
+          // console.log("result", result)
           const r = {
             idServicio: result[0],
             operador: result[3],
@@ -214,8 +215,12 @@ export default {
             idClaseBusPisoUno: result[15].split(':')[0],
             idClaseBusPisoDos: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
             ruta: result[2],
+            tipoBus: result[8],
+            costo: result[15],
+            rutaId: result[7]
           }
           this.propsListBusDeparture.schedules.push(r)
+          console.log("r", r)
         }
       }
       // console.log("propsListBusDeparture.schedules", this.propsListBusDeparture.schedules)
@@ -292,6 +297,9 @@ export default {
             idClaseBusPisoUno: result[15].split(':')[0],
             idClaseBusPisoDos: result[8].includes('2+1') ? result[15].split(':')[0] : 0,
             ruta: result[2],
+            tipoBus: result[8],
+            costo: result[15],
+            rutaId: result[7]
           }
 
           this.propsListBusDestination.schedules.push(r)

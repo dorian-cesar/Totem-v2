@@ -35,6 +35,7 @@ export default {
 
       // console.log('param', param)
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
+      console.log("parametros de tentative: ", param)
       const formatParams = {
         book_ticket: param.book_ticket,
         // seat_number: param.book_ticket.seat_detail[0].seat_number,
@@ -43,17 +44,13 @@ export default {
         boarding_at: param.boarding_at,
         no_of_seats: param.no_of_seats,
         travel_date: param.travel_date,
-        travel_time: param.travel_time,
-        // rut: rut
-        // codigo_reserva: param
-        // data de api antigua
-        // customer_company_gst: {
-        //   name: "Pullman",
-        //   gst_id: "T123DT",
-        //   address: "TEST"
-        // }
+        // travel_time: param.travel_time,
+        available_seats: param.available_seats,
+        cost: param.cost,
+        bus_type: param.bus_type,
+        route_id: param.route_id
       }
-      // console.log(JSON.stringify(formatParams, null, 2))
+      console.log(JSON.stringify(formatParams, null, 2))
       await this.axios
         .post([proxy, api].join('/'), formatParams, {
           headers: {
@@ -73,8 +70,8 @@ export default {
               rut: rut,
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
-              fecha_viaje: formatParams.travel_date,
-              hora_viaje: formatParams.travel_time,
+              fecha_viaje: param.fecha,
+              hora_viaje: param.horaSalida,
               asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
               codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
               estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',

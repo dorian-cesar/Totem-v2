@@ -202,6 +202,7 @@ export default {
 
     //cuando se selecciona un asiento
     async changeStatusSeat({state, num}) {
+      // console.log('params changeStatusSeat', this.param)
       this.seatNum = num
       this.param.asiento = num
 
@@ -238,6 +239,10 @@ export default {
         this.param.no_of_seats = 1
         this.param.travel_date = this.param.fecha
         this.param.travel_time = this.param.horaSalida
+        this.param.cost
+        this.param.bus_type
+        this.param.route_id
+
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
         console.log('DinamicBus: add', this.param)

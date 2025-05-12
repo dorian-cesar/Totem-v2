@@ -182,12 +182,19 @@
         // integrador
         const integrador = this.$parent.$parent.param.integrador
 
-        // servicio
         const servicio = this.$parent.$parent.param.servicio
 
         const codeReservation = this.$parent.$parent.codeReservation
 
         const operatorPnr = this.$parent.$parent.operatorPnr
+
+        // const available_seats = this.$parent.$parent.available_seats
+
+        // const cost = this.$parent.$parent.cost
+
+        // const bus_type = this.$parent.$parent.bus_type
+
+        // const route_id = this.$parent.$parent.route_id
 
         const rut = localStorage.getItem('rut')
 
@@ -219,7 +226,11 @@
           piso: piso,
           integrador: integrador,
           codeReservation,
-          operatorPnr
+          operatorPnr,
+          // available_seats,
+          // cost,
+          // bus_type,
+          // route_id
         }])
 
       },
