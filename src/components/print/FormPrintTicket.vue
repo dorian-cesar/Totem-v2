@@ -127,7 +127,7 @@ export default {
 
             let ticket_info = data.result.ticket_details[0]
             // let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
-            let response_boleto = ticket_info.ticket_number
+            let response_boleto = ticket_info.pnr_number
             let response_codigo_reserva = ticket_info.operator_pnr
             let response_codigo = ticket_info.operator_reservation_id
             let response_servicio = ticket_info.bus_type
