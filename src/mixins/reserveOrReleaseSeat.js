@@ -35,7 +35,7 @@ export default {
 
       // console.log('param', param)
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
-      console.log("parametros de tentative: ", param)
+      // console.log("parametros de tentative: ", param)
       const formatParams = {
         book_ticket: param.book_ticket,
         // seat_number: param.book_ticket.seat_detail[0].seat_number,
@@ -125,10 +125,10 @@ export default {
               } else {
                 this.statusReservation = false
                 console.log('no ticket', data)
-                // setTimeout(() => {
-                //   this.$router.push('/travelselection')
-                //   window.location.reload()
-                // }, 3000)
+                setTimeout(() => {
+                  this.$router.push('/travelselection')
+                  window.location.reload()
+                }, 3000)
               }
             } else {
               this.statusReservation = false
@@ -144,10 +144,10 @@ export default {
                 .catch((error) => {
                   console.error('Error al guardar en DB, tentative_booking :', error)
                 })
-              // setTimeout(() => {
-              //   this.$router.push('/travelselection')
-              //   window.location.reload()
-              // }, 3000)
+              setTimeout(() => {
+                this.$router.push('/travelselection')
+                window.location.reload()
+              }, 3000)
             }
           }
         })
@@ -157,10 +157,10 @@ export default {
           this.codeReservation = ''
           // console.log('no result', data)
           console.log('no result')
-          // setTimeout(() => {
-          //   this.$router.push('/travelselection')
-          //   window.location.reload()
-          // }, 3000)
+          setTimeout(() => {
+            this.$router.push('/travelselection')
+            window.location.reload()
+          }, 3000)
         })
         .finally(() => (this.isLoadingReservation = false))
     }

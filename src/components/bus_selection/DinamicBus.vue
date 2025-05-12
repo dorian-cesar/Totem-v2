@@ -236,7 +236,7 @@ export default {
         this.param.origin_id = this.param.origen
         this.param.destination_id = this.param.destino
         this.param.boarding_at = this.param.boarding_at
-        this.param.no_of_seats = 1
+        this.param.no_of_seats = "1"
         this.param.travel_date = this.param.fecha
         this.param.travel_time = this.param.horaSalida
         this.param.cost
