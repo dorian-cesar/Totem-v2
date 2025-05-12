@@ -173,7 +173,7 @@ export default {
           ` ASIENTO:           ${t.asiento}\n` +
           ` ORIGEN:            ${t.origen}\n` +
           ` DESTINO:           ${t.destino}\n` +
-          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
+          // ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
           ` FECHA COMPRA:      ${t.fecha_compra}\n` +
           ` HORA DE VIAJE:     ${t.hora}\n` +
           ` TOTAL:             $${t.total}\n` +
