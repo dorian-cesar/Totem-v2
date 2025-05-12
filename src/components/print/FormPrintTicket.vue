@@ -338,14 +338,15 @@ export default {
           // })
 
           // ver boleto en browser
-          const previewWindow = window.open('', '_blank')
-          previewWindow.document.write(`
-           <pre style="font-size:14px; white-space:pre-wrap;">
-          ${boletoTexto}</pre>
-          `)
-          previewWindow.document.close()
+          // const previewWindow = window.open('', '_blank')
+          // previewWindow.document.write(`
+          //  <pre style="font-size:14px; white-space:pre-wrap;">
+          // ${boletoTexto}</pre>
+          // `)
+          // previewWindow.document.close()
 
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+          console.log('+ methods:reimprimir','tickets {}', boletoTexto, '-> /imprimir')
+          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {
