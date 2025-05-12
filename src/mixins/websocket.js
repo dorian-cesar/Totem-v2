@@ -92,6 +92,7 @@ export default {
       // let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
+        console.log('boleto', boleto)
         tickets.push({
           boleto: boleto.boleto,
           codigo: boleto.codigo,
