@@ -141,7 +141,10 @@
                   tarifaPrimerPisoInternet: bus.tarifaPrimerPisoInternet || '',
                   tarifaSegundoPisoInternet: bus.tarifaSegundoPisoInternet || '',
                   servicioPrimerPiso: bus.servicioPrimerPiso || '',
-                  servicioSegundoPiso: bus.servicioSegundoPiso || ''
+                  servicioSegundoPiso: bus.servicioSegundoPiso || '',
+                  costo: bus.costo || '',
+                  tipoBus: bus.tipoBus || '',
+                  rutaId: bus.rutaId || ''
                 }"
               />
             </b-col>
