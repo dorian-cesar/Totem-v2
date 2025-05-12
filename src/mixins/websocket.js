@@ -151,14 +151,14 @@ export default {
       const api = '/imprimir'
 
       // voucher transbank
-      try {
-        const response = await axios.post(url + api, {
-          texto: voucher
-        })
-        console.log('Impresión enviada con éxito - transbank', response.data)
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
+      // try {
+      //   const response = await axios.post(url + api, {
+      //     texto: voucher
+      //   })
+      //   console.log('Impresión enviada con éxito - transbank', response.data)
+      // } catch (error) {
+      //   console.error('Error al enviar los datos de impresión', error)
+      // }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -173,7 +173,6 @@ export default {
           ` ASIENTO:           ${t.asiento}\n` +
           ` ORIGEN:            ${t.origen}\n` +
           ` DESTINO:           ${t.destino}\n` +
-          ` TIPO CLIENTE:      ${t.tipo_cliente}\n` +
           ` FECHA COMPRA:      ${t.fecha_compra}\n` +
           ` HORA DE VIAJE:     ${t.hora}\n` +
           ` TOTAL:             $${t.total}\n` +
@@ -187,14 +186,14 @@ export default {
 
         boletosTexto += boletoTexto
 
-        try {
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          })
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
-        } catch (error) {
-          console.error(`Error al imprimir boleto ${t.boleto}`, error)
-        }
+        // try {
+        //   const response = await axios.post(url + api, {
+        //     texto: boletoTexto
+        //   })
+        //   console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+        // } catch (error) {
+        //   console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        // }
       }
 
       // ver boleta en browser
