@@ -413,7 +413,7 @@ export default {
             console.log('confirm_booking', data)
             if (typeof data === 'object') {
               let ticket_info = data.result.ticket_details
-              let response_boleto = ticket_info.operator_pnr
+              let response_boleto = ticket_info.ticket_number
               let response_codigo = ticket_info.operator_reservation_id
               let response_servicio = ticket_info.seat_fare_details[0].seat_detail.seat_type
               let response_ruta = ticket_info.service_number
