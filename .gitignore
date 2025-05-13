@@ -8,7 +8,6 @@ yarn-error.log*
 selenium-debug.log
 package-lock.json
 yarn.lock
-curl.txt
 view-json.json
 DB-totem.js
 # Editor directories and files
