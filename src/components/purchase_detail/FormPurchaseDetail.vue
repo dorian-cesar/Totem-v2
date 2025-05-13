@@ -140,12 +140,9 @@ export default {
           console.log('Pago procesado:', response.data)
           console.log('successful: ', response.data.data.successful)
           //inicializar variables
-          const rut = localStorage.getItem('rut')
-          const ipServer = localStorage.getItem('ipServer')
-          const totemName = ipServer
           const bookingData = {
-            numTotem: totemName,
-            rut: rut,
+            numTotem: localStorage.getItem('ipServer'),
+            rut: localStorage.getItem('rut'),
             origen: this.$store.state.TravelSelection.nameDepartureCity,
             destino: this.$store.state.TravelSelection.nameArrivalCity,
             fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -433,7 +430,7 @@ export default {
               let response_ticket = {
                 boleto: response_boleto.toString(),
                 codigo: response_codigo.toString(),
-                rut: rut,
+                rut: localStorage.getItem('rut'),
                 servicio: response_servicio,
                 ruta: response_ruta,
                 piso: response_piso,
@@ -448,19 +445,16 @@ export default {
               }
 
               ticketsGeneradosFormatted.boletos.push(response_ticket)
-              const rut = localStorage.getItem('rut')
 
               // formatear fecha y hora para DB
               const rawDate = this.dataPOS.realDate
               const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
               const rawTime = this.dataPOS.realTime
               const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-              const ipServer = localStorage.getItem('ipServer')
-              const totemName = ipServer
 
               const bookingData = {
-                numTotem: totemName,
-                rut: rut,
+                numTotem: localStorage.getItem('ipServer'),
+                rut: localStorage.getItem('rut'),
                 origen: this.$store.state.TravelSelection.nameDepartureCity,
                 destino: response_ticket.destino,
                 fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -493,12 +487,10 @@ export default {
           .catch((error) => {
             console.error(error)
             total_processed += 1
-            const ipServer = localStorage.getItem('ipServer')
-            const totemName = ipServer
 
             const bookingData = {
-              numTotem: totemName,
-              rut: rut,
+              numTotem: localStorage.getItem('ipServer'),
+              rut: localStorage.getItem('rut'),
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
               fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
