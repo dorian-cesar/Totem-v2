@@ -77,6 +77,7 @@
   .v-select {
     font-size: 42px;
     width: 830px;
+    border-radius: 10px;
   }
   .v-select .v-text-field.v-text-field--solo .v-input__control { max-height: 18px; }
 

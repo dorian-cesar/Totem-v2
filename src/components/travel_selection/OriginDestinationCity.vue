@@ -33,7 +33,7 @@
             v-model="rut"
             @input="rut = formatearRut(rut)"
             @blur="validarRut"
-            style="height: 68px; font-size: 40px; color: black; background-color: azure;"
+            style="height: 68px; font-size: 40px; color: black; background-color: azure; border-radius: 10px;"
             autocomplete="off"
           />
         </b-form-group>
