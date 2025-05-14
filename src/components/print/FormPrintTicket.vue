@@ -42,7 +42,7 @@
         </b-col>
         <!-- Right Button -->
         <b-col cols="6" class="container-fluid text-right">
-          <b-button class="custom-button btn-lg btn-info button-radius" @click="getBookingDetails">
+          <b-button class="custom-button btn-lg btn-info button-radius" @click="getOperatorPnr">
             <h2>IMPRIMIR</h2>
           </b-button>
         </b-col>
@@ -118,20 +118,24 @@ export default {
         }
         this.datosBoleto = data.codigo_reserva
         console.log('Datos del boleto:', data)
-        return this.datosBoleto
+        await this.getBookingDetails(this.datosBoleto)
       } catch (error) {
         console.error('Error en GET código de reserva:', error)
-        this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
+        this.texto = 'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
         setTimeout(() => {
           this.texto = ''
         }, 10000)
       }
     },
 
-    getBookingDetails: async function () {
+    getBookingDetails: async function (numeroBoleto) {
+      // api dev
       const proxy = 'https://newstg3-gdsbus.kupos.cl'
       const API_KEY = 'TSXFQYAPI25766888'
-      let api = 'gds/api/booking_details.json?region=chile&pnr_number=' + this.datosBoleto + '&api_key=' + API_KEY
+      // api kupos
+      // const proxy = "https://gds.kupos.com"
+      // const API_KEY = 'TSSDFPAPI30103014'
+      let api = 'gds/api/booking_details.json?region=chile&pnr_number=' + numeroBoleto + '&api_key=' + API_KEY
 
       this.texto = 'Imprimiendo boleto, por favor espere...'
 
