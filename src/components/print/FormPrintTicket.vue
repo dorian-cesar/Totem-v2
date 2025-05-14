@@ -8,11 +8,11 @@
               <b-row>
                 <b-col class="">
                   <p class="text-primary pb-2 font-weight-bolder s-custom-font">
-                    Ingrese su código de reserva (ej: TS2301150405100000000)
+                    Ingrese su boleto (ej: 1234567)
                   </p>
                   <input
                     type="text"
-                    placeholder="Ingrese su código de reserva"
+                    placeholder="Ingrese su número de boleto"
                     data-layout="normal"
                     class="w-100 input-codigo"
                     style="background-color: azure"
@@ -42,7 +42,7 @@
         </b-col>
         <!-- Right Button -->
         <b-col cols="6" class="container-fluid text-right">
-          <b-button class="custom-button btn-lg btn-info button-radius" @click="getBookingDetails">
+          <b-button class="custom-button btn-lg btn-info button-radius" @click="getOperatorPnr">
             <h2>IMPRIMIR</h2>
           </b-button>
         </b-col>
@@ -52,7 +52,7 @@
 </template>
 <script>
 import WebSocket from '@/mixins/websocket.js'
-import SimpleKeyboard from 'simple-keyboard'
+// import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
 import info from '../../../info.json'
 import axios from 'axios'
@@ -100,22 +100,49 @@ export default {
         }
       }
     },
-    getBookingDetails: async function () {
+
+    async getOperatorPnr() {
+      const numeroBoleto = this.codeReprint
+      try {
+        const response = await axios.get(
+          'https://log-totem.dev-wit.com/api_boletos/api_boletos.php?numero_boleto=' + numeroBoleto
+        )
+        const data = response.data
+        if (!data || !data.codigo_reserva) {
+          this.texto =
+            'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
+          setTimeout(() => {
+            this.texto = ''
+          }, 10000)
+          return
+        }
+        this.datosBoleto = data.codigo_reserva
+        console.log('Datos del boleto:', data)
+        await this.getBookingDetails(this.datosBoleto)
+      } catch (error) {
+        console.error('Error en GET código de reserva:', error)
+        this.texto = 'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
+        setTimeout(() => {
+          this.texto = ''
+        }, 10000)
+      }
+    },
+
+    getBookingDetails: async function (numeroBoleto) {
       // api dev
       // const proxy = 'https://newstg3-gdsbus.kupos.cl'
       // const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       const proxy = "https://gds.kupos.com"
       const API_KEY = 'TSSDFPAPI30103014'
-      let api = ''
-      api = `gds/api/booking_details.json?region=chile&pnr_number=${this.codeReprint}&api_key=${API_KEY}`
+      let api = 'gds/api/booking_details.json?region=chile&pnr_number=' + numeroBoleto + '&api_key=' + API_KEY
 
       this.texto = 'Imprimiendo boleto, por favor espere...'
 
       await this.axios
-        .get([proxy, api].join('/'), {
+        .get(proxy + '/' + api, {
           validateStatus: function (status) {
-            return status >= 200 && status < 500 // acepta error 400 como válido
+            return status >= 200 && status < 500
           }
         })
         .then(({ data }) => {
@@ -126,16 +153,23 @@ export default {
             }
 
             let ticket_info = data.result.ticket_details[0]
-            // let response_boleto = ticket_info.pnr_number + '  -  ' + ticket_info.operator_pnr
+
             let response_boleto = ticket_info.pnr_number
             let response_codigo_reserva = ticket_info.operator_pnr
             let response_codigo = ticket_info.operator_reservation_id
             let response_servicio = ticket_info.bus_type
             let response_ruta = ticket_info.origin + ' / ' + ticket_info.destination
-            let response_piso =
+
+            let pisoInfo = '1'
+            if (
+              ticket_info.seat_fare_details &&
+              ticket_info.seat_fare_details.length > 0 &&
+              ticket_info.seat_fare_details[0].seat_detail &&
               ticket_info.seat_fare_details[0].seat_detail.floor_no !== ''
-                ? ticket_info.seat_fare_details[0].seat_detail.floor_no
-                : '1'
+            ) {
+              pisoInfo = ticket_info.seat_fare_details[0].seat_detail.floor_no
+            }
+
             let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
             let response_fecha = ticket_info.travel_date
             let response_hora = ticket_info.boarding_point_details.dep_time
@@ -152,7 +186,7 @@ export default {
               rut: '',
               servicio: response_servicio,
               ruta: response_ruta,
-              piso: response_piso,
+              piso: pisoInfo,
               asiento: response_asiento,
               fecha: response_fecha,
               hora: response_hora,
@@ -176,6 +210,7 @@ export default {
               hora_viaje: response_hora,
               asiento: response_asiento,
               codigo_reserva: response_boleto,
+              numero_boleto: response_codigo_reserva,
               estado_boleto: 'Reimpreso',
               codigo_transaccion: '',
               estado_transaccion: 'Pago realizado',
@@ -207,7 +242,8 @@ export default {
               fecha_viaje: 'N/A',
               hora_viaje: 'N/A',
               asiento: 'N/A',
-              codigo_reserva: this.codeReprint,
+              codigo_reserva: 'N/A',
+              numero_boleto: this.codeReprint,
               estado_boleto: 'Reimpresión fallida',
               codigo_transaccion: '',
               estado_transaccion: 'Intento de reimpresión',
@@ -246,7 +282,8 @@ export default {
             fecha_viaje: 'N/A',
             hora_viaje: 'N/A',
             asiento: 'N/A',
-            codigo_reserva: '',
+            codigo_reserva: 'N/A',
+            numero_boleto: 'N/A',
             estado_boleto: 'Error al obtener los datos de la reserva',
             codigo_transaccion: '',
             estado_transaccion: 'Intento de reimpresión',
@@ -309,29 +346,29 @@ export default {
       try {
         for (const t of tickets) {
           let boletoTexto =
-        '--------------- BOLETO PULLMAN --------------\n' +
-        ` BOLETO:            ${t.codigo_reserva}\n` +
-        ` CODIGO DE RESERVA: ${t.boleto}\n` +
-        ` SERVICIO:          ${t.servicio}\n` +
-        ` RUTA: ${t.ruta}                 \n` +
-        ` PISO:              ${t.piso}\n` +
-        ` ASIENTO:           ${t.asiento}\n` +
-        ` ORIGEN:            ${t.origen}\n` +
-        ` DESTINO:           ${t.destino}\n` +
-        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-        ` HORA DE VIAJE:     ${t.hora}\n` +
-        ` TOTAL:             $${t.total}\n` +
-        '                              \n' +
-        '                              \n' +
-        '----------- TERMINOS Y CONDICIONES ---------\n' +
-        '            GRACIAS POR SU COMPRA\n' +
-        '                COPIA CLIENTE\n' +
-        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
-        '---------------------------------------------\n'
+            '--------------- BOLETO PULLMAN --------------\n' +
+            ` BOLETO:            ${t.codigo_reserva}\n` +
+            ` CODIGO DE RESERVA: ${t.boleto}\n` +
+            ` SERVICIO:          ${t.servicio}\n` +
+            ` RUTA: ${t.ruta}                 \n` +
+            ` PISO:              ${t.piso}\n` +
+            ` ASIENTO:           ${t.asiento}\n` +
+            ` ORIGEN:            ${t.origen}\n` +
+            ` DESTINO:           ${t.destino}\n` +
+            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+            ` HORA DE VIAJE:     ${t.hora}\n` +
+            ` TOTAL:             $${t.total}\n` +
+            '                              \n' +
+            '                              \n' +
+            '----------- TERMINOS Y CONDICIONES ---------\n' +
+            '            GRACIAS POR SU COMPRA\n' +
+            '                COPIA CLIENTE\n' +
+            '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
+            '---------------------------------------------\n'
 
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          })
+          // const response = await axios.post(url + api, {
+          //   texto: boletoTexto
+          // })
 
           // ver boleto en browser
           // const previewWindow = window.open('', '_blank')
@@ -341,7 +378,8 @@ export default {
           // `)
           // previewWindow.document.close()
 
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+          console.log('+ methods:reimprimir', 'tickets {}', boletoTexto, '-> /imprimir')
+          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {
