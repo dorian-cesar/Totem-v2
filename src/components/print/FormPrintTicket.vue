@@ -172,7 +172,7 @@ export default {
 
             let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
             let response_fecha = ticket_info.travel_date
-            let response_hora = ticket_info.boarding_point_details.dep_time
+            let response_hora = new Date('1970-01-01 ' + ticket_info.boarding_point_details.dep_time).toTimeString().substring(0, 5);
             let response_origen = ticket_info.boarding_point_details.landmark
             let response_destino = ticket_info.destination
             let issued_on = new Date().toLocaleString('es-CL', { hour12: false })
