@@ -149,7 +149,7 @@ export default {
             hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
             asiento: this.propsPersonalInformation.tickets[0].seat,
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-            numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+            // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
             codigo_confirmacion: '',
             codigo_transaccion: '',
@@ -412,7 +412,7 @@ export default {
             if (typeof data === 'object') {
               let ticket_info = data.result.ticket_details
               let response_boleto = ticket_info.ticket_number
-              let response_codigo = ticket_info.operator_reservation_id
+              let response_codigo = ticket_info.operator_pnr
               let response_servicio = ticket_info.seat_fare_details[0].seat_detail.seat_type
               let response_ruta = ticket_info.service_number
               let response_piso =
@@ -462,7 +462,7 @@ export default {
                 hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
                 asiento: response_ticket.asiento,
                 codigo_reserva: response_ticket.boleto,
-                numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+                numero_boleto: response_ticket.codigo,
                 estado_boleto: 'Confirmado',
                 codigo_confirmacion: '',
                 codigo_transaccion: this.dataPOS.ticket,
@@ -499,7 +499,7 @@ export default {
               hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
               asiento: this.propsPersonalInformation.tickets[0].seat,
               codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-              numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+              // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Confirmación fallida',
               codigo_confirmacion: '',
               codigo_transaccion: this.dataPOS.ticket,
