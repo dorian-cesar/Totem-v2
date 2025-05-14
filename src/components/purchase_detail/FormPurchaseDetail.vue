@@ -151,7 +151,9 @@ export default {
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
             // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
+            id_pos: '',
             codigo_transaccion: '',
+            codigo_autorizacion: '',
             estado_transaccion: '',
             numero_transaccion: '',
             fecha_transaccion: '',
@@ -169,6 +171,8 @@ export default {
             const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
             this.propsPaymentControl.msg = response.data.data.responseMessage
             bookingData.codigo_transaccion = this.dataPOS.ticket
+            bookingData.codigo_autorizacion = this.dataPOS.authorizationCode
+            bookingData.id_pos = this.dataPOS.terminalId
             bookingData.estado_transaccion = 'Pago realizado'
             bookingData.numero_transaccion = this.dataPOS.operationNumber
             bookingData.fecha_transaccion = formattedDate
@@ -464,6 +468,8 @@ export default {
                 numero_boleto: response_ticket.codigo,
                 estado_boleto: 'Confirmado',
                 codigo_transaccion: this.dataPOS.ticket,
+                codigo_autorizacion: this.dataPOS.authorizationCode,
+                id_pos: this.dataPOS.terminalId,
                 estado_transaccion: 'Pago realizado',
                 numero_transaccion: this.dataPOS.operationNumber,
                 fecha_transaccion: formattedDate,
@@ -500,6 +506,8 @@ export default {
               // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Confirmación fallida',
               codigo_transaccion: this.dataPOS.ticket,
+              codigo_autorizacion: this.dataPOS.authorizationCode,
+              id_pos: this.dataPOS.terminalId,
               estado_transaccion: 'Pago realizado',
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,
