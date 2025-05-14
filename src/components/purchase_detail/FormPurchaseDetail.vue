@@ -572,7 +572,7 @@ export default {
               data.result.ticket_details.seat_fare_details[0] &&
               data.result.ticket_details.seat_fare_details[0].seat_detail
             if (!isValidDataStructure) {
-              throw new Error('Estructura de datos del ticket incompleta o inválida')
+              throw new Error('Estructura de datos del ticket incompleta o inválida, ir a catch')
             }
             let ticket_info = data.result.ticket_details
             let response_boleto = ticket_info.ticket_number
