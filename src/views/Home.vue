@@ -1,13 +1,13 @@
 <template>
   <div>
     <buy-print-info/>
-    <b-button
+    <!-- <b-button
       variant="link"
       style="height: 1px"
       class="text-white"
       @click="onClick">
       {{texto}}
-    </b-button>
+    </b-button> -->
 
     <b-modal id="modal-center" centered title="BootstrapVue">
       <p class="my-4">Hacer el Cierre de Caja</p>
