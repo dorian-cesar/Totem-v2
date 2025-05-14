@@ -137,6 +137,7 @@ export default {
             } else {
               this.statusReservation = false
               console.log('no result', data)
+              bookingData.codigo_reserva = 'Reserva fallida'
               console.log('Datos para DB tentative booking:', bookingData)
               this.axios
                 .post(this.info.urlLogs, {
