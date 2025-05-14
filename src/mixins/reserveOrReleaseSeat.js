@@ -78,6 +78,8 @@ export default {
               estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
               codigo_autorizacion: '',
               id_pos: '',
+              tipo_tarjeta: '',
+              tarjeta_marca: '',
               codigo_transaccion: '',
               estado_transaccion: 'Pendiente',
               numero_transaccion: '',
