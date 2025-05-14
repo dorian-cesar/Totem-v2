@@ -8,11 +8,11 @@
               <b-row>
                 <b-col class="">
                   <p class="text-primary pb-2 font-weight-bolder s-custom-font">
-                    Ingrese su código de reserva (ej: TS2301150405100000000)
+                    Ingrese su boleto (ej: 1234567)
                   </p>
                   <input
                     type="text"
-                    placeholder="Ingrese su código de reserva"
+                    placeholder="Ingrese su número de boleto"
                     data-layout="normal"
                     class="w-100 input-codigo"
                     style="background-color: azure"
