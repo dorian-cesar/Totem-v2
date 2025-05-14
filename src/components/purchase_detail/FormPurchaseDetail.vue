@@ -154,6 +154,7 @@ export default {
             id_pos: '',
             codigo_transaccion: '',
             tipo_tarjeta: '',
+            tarjeta_marca: '',
             codigo_autorizacion: '',
             estado_transaccion: '',
             numero_transaccion: '',
@@ -171,6 +172,7 @@ export default {
             const rawTime = this.dataPOS.realTime
             const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
             this.propsPaymentControl.msg = response.data.data.responseMessage
+            bookingData.tarjeta_marca = this.dataPOS.cardBrand
             bookingData.tipo_tarjeta = this.dataPOS.cardType
             bookingData.codigo_transaccion = this.dataPOS.ticket
             bookingData.codigo_autorizacion = this.dataPOS.authorizationCode
@@ -473,6 +475,7 @@ export default {
                 codigo_autorizacion: this.dataPOS.authorizationCode,
                 id_pos: this.dataPOS.terminalId,
                 tipo_tarjeta: this.dataPOS.cardType,
+                tarjeta_marca: this.dataPOS.cardBrand,
                 estado_transaccion: 'Pago realizado',
                 numero_transaccion: this.dataPOS.operationNumber,
                 fecha_transaccion: formattedDate,
@@ -512,6 +515,7 @@ export default {
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
               tipo_tarjeta: this.dataPOS.cardType,
+              tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,

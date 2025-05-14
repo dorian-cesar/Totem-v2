@@ -79,6 +79,7 @@ export default {
               id_pos: '',
               codigo_autorizacion: '',
               tipo_tarjeta: '',
+              tarjeta_marca: '',
               codigo_transaccion: '',
               estado_transaccion: 'Pendiente',
               numero_transaccion: '',
