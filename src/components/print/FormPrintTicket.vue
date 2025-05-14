@@ -121,7 +121,35 @@ export default {
         await this.getBookingDetails(this.datosBoleto)
       } catch (error) {
         console.error('Error en GET código de reserva:', error)
-        this.texto = 'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
+        this.texto = 'No se ha podido obtener el código de reserva. Intente nuevamente más tarde.'
+        let bookingData = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: 'Reimpreso',
+              origen: 'N/A',
+              destino: 'N/A',
+              fecha_viaje: 'N/A',
+              hora_viaje: 'N/A',
+              asiento: 'N/A',
+              codigo_reserva: 'N/A',
+              numero_boleto: this.codeReprint,
+              estado_boleto: 'Reimpresión fallida',
+              codigo_transaccion: '',
+              estado_transaccion: 'Intento de reimpresión',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
+            this.axios
+              .post(this.info.urlLogs, {
+                bookingData: bookingData
+              })
+              .then(function () {
+                console.log('Error guardado en DB (rePrint)')
+              })
+              .catch(function (error) {
+                console.error('Error al guardar en DB, rePrint: ', error)
+              })
         setTimeout(() => {
           this.texto = ''
         }, 10000)
