@@ -76,7 +76,6 @@ export default {
               codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
               // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
               estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
-              codigo_confirmacion: '',
               codigo_transaccion: '',
               estado_transaccion: 'Pendiente',
               numero_transaccion: '',
