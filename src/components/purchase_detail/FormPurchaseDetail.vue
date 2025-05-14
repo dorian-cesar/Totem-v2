@@ -405,7 +405,7 @@ export default {
         // const proxy = 'https://newstg3-gdsbus.kupos.cl'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        const proxy = "https://gds.kupos.com"
+        const proxy = 'https://gds.kupos.com'
         const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
@@ -416,85 +416,93 @@ export default {
           .post([proxy, api].join('/'))
           .then(({ data }) => {
             console.log('confirm_booking', data)
-            if (typeof data === 'object') {
-              let ticket_info = data.result.ticket_details
-              let response_boleto = ticket_info.ticket_number
-              let response_codigo = ticket_info.operator_pnr
-              let response_servicio = ticket_info.seat_fare_details[0].seat_detail.seat_type
-              let response_ruta = ticket_info.service_number
-              let response_piso =
-                ticket_info.seat_fare_details[0].seat_detail.floor_no !== ''
-                  ? ticket_info.seat_fare_details[0].seat_detail.floor_no
-                  : '1'
-              let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
-              let response_fecha = ticket_info.travel_date
-              let response_hora = ticket_info.boarding_point_details.dep_time
-              let response_origen = ticket_info.boarding_point_details.landmark // verificar nombre de terminal
-              let response_destino = ticket_info.destination
-              let issued_on = new Date(ticket_info.issued_on * 1000) // verificar resultado de fecha
-              issued_on = issued_on.toLocaleString('es-CL', { hour12: false })
-              let response_fecha_compra = issued_on
-              let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
-              let response_ticket = {
-                boleto: response_boleto.toString(),
-                codigo: response_codigo.toString(),
-                rut: localStorage.getItem('rut'),
-                servicio: response_servicio,
-                ruta: response_ruta,
-                piso: response_piso,
-                asiento: response_asiento,
-                fecha: response_fecha,
-                hora: response_hora,
-                origen: response_origen,
-                destino: response_destino,
-                fecha_compra: response_fecha_compra,
-                total: response_total.toString(),
-                tipo_cliente: 'PULLMAN PASS'
-              }
-
-              ticketsGeneradosFormatted.boletos.push(response_ticket)
-
-              // formatear fecha y hora para DB
-              const rawDate = this.dataPOS.realDate
-              const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
-              const rawTime = this.dataPOS.realTime
-              const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-
-              const bookingData = {
-                numTotem: localStorage.getItem('ipServer'),
-                rut: localStorage.getItem('rut'),
-                origen: this.$store.state.TravelSelection.nameDepartureCity,
-                destino: response_ticket.destino,
-                fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-                hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-                asiento: response_ticket.asiento,
-                codigo_reserva: response_ticket.boleto,
-                numero_boleto: response_ticket.codigo,
-                estado_boleto: 'Confirmado',
-                codigo_transaccion: this.dataPOS.ticket,
-                codigo_autorizacion: this.dataPOS.authorizationCode,
-                id_pos: this.dataPOS.terminalId,
-                tipo_tarjeta: this.dataPOS.cardType,
-                tarjeta_marca: this.dataPOS.cardBrand,
-                estado_transaccion: 'Pago realizado',
-                numero_transaccion: this.dataPOS.operationNumber,
-                fecha_transaccion: formattedDate,
-                hora_transaccion: formattedTime,
-                total_transaccion: this.dataPOS.amount / this.reservationCodes.length
-              }
-
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Datos para DB confirm_booking: ', bookingData)
-                  console.log('Guardado exitoso en DB (confirm booking)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, confirm_booking: ', error)
-                })
+            const isValidDataStructure =
+              typeof data === 'object' &&
+              data.result &&
+              data.result.ticket_details &&
+              data.result.ticket_details.seat_fare_details &&
+              data.result.ticket_details.seat_fare_details[0] &&
+              data.result.ticket_details.seat_fare_details[0].seat_detail
+            if (!isValidDataStructure) {
+              throw new Error('Estructura de datos del ticket incompleta o inválida, ir a catch')
             }
+            let ticket_info = data.result.ticket_details
+            let response_boleto = ticket_info.ticket_number
+            let response_codigo = ticket_info.operator_pnr
+            let response_servicio = ticket_info.seat_fare_details[0].seat_detail.seat_type
+            let response_ruta = ticket_info.service_number
+            let response_piso =
+              ticket_info.seat_fare_details[0].seat_detail.floor_no !== ''
+                ? ticket_info.seat_fare_details[0].seat_detail.floor_no
+                : '1'
+            let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
+            let response_fecha = ticket_info.travel_date
+            let response_hora = ticket_info.boarding_point_details.dep_time
+            let response_origen = ticket_info.boarding_point_details.landmark // verificar nombre de terminal
+            let response_destino = ticket_info.destination
+            let issued_on = new Date(ticket_info.issued_on * 1000) // verificar resultado de fecha
+            issued_on = issued_on.toLocaleString('es-CL', { hour12: false })
+            let response_fecha_compra = issued_on
+            let response_total = ticket_info.seat_fare_details[0].seat_detail.fare
+            let response_ticket = {
+              boleto: response_boleto.toString(),
+              codigo: response_codigo.toString(),
+              rut: localStorage.getItem('rut'),
+              servicio: response_servicio,
+              ruta: response_ruta,
+              piso: response_piso,
+              asiento: response_asiento,
+              fecha: response_fecha,
+              hora: response_hora,
+              origen: response_origen,
+              destino: response_destino,
+              fecha_compra: response_fecha_compra,
+              total: response_total.toString(),
+              tipo_cliente: 'PULLMAN PASS'
+            }
+
+            ticketsGeneradosFormatted.boletos.push(response_ticket)
+
+            // formatear fecha y hora para DB
+            const rawDate = this.dataPOS.realDate
+            const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
+            const rawTime = this.dataPOS.realTime
+            const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
+
+            const bookingData = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: localStorage.getItem('rut'),
+              origen: this.$store.state.TravelSelection.nameDepartureCity,
+              destino: response_ticket.destino,
+              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+              asiento: response_ticket.asiento,
+              codigo_reserva: response_ticket.boleto,
+              numero_boleto: response_ticket.codigo,
+              estado_boleto: 'Confirmado',
+              codigo_transaccion: this.dataPOS.ticket,
+              codigo_autorizacion: this.dataPOS.authorizationCode,
+              id_pos: this.dataPOS.terminalId,
+              tipo_tarjeta: this.dataPOS.cardType,
+              tarjeta_marca: this.dataPOS.cardBrand,
+              estado_transaccion: 'Pago realizado',
+              numero_transaccion: this.dataPOS.operationNumber,
+              fecha_transaccion: formattedDate,
+              hora_transaccion: formattedTime,
+              total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+            }
+
+            this.axios
+              .post(this.info.urlLogs, {
+                bookingData
+              })
+              .then(() => {
+                console.log('Datos para DB confirm_booking: ', bookingData)
+                console.log('Guardado exitoso en DB (confirm booking)')
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, confirm_booking: ', error)
+              })
           })
           .catch((error) => {
             console.error(error)
