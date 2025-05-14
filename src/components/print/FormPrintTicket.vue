@@ -101,19 +101,38 @@ export default {
       }
     },
 
-    // getOperatorPnr() {
-    // this.codeReprint = this.codeReprint.toUpperCase()
-    // this.codeReprint = this.codeReprint.replace(/[^A-Z0-9]/g, '')
-    // console.log('getOperatorPnr', this.codeReprint)
-    //   if (this.codeReprint.length > 0) {
-    //     this.getBookingDetails()
-    //   } else {
-    //     this.texto = 'Ingrese un código de reserva válido.'
-    //     setTimeout(() => {
-    //       this.texto = ''
-    //     }, 5000)
-    //   }
-    // },
+    async getOperatorPnr() {
+      const numeroBoleto = this.codeReprint
+      if (!numeroBoleto || numeroBoleto.trim().length === 0) {
+        this.texto = 'Ingrese un código de reserva válido.'
+        setTimeout(() => {
+          this.texto = ''
+        }, 5000)
+        return
+      }
+      try {
+        const response = await axios.get(
+          `https://log-totem.dev-wit.com/api_boletos/api_boletos.php?numero_boleto=${numeroBoleto}`
+        )
+        const data = response.data
+        if (!data || Object.keys(data).length === 0) {
+          this.texto = 'No se encontró información para el número de boleto ingresado.'
+          setTimeout(() => {
+            this.texto = ''
+          }, 10000)
+          return
+        }
+        this.datosBoleto = data
+        console.log('Datos del boleto:', data)
+        return data
+      } catch (error) {
+        console.error('Error en GET código de reserva:', error)
+        this.texto = 'Ocurrió un error al buscar el boleto.'
+        setTimeout(() => {
+          this.texto = ''
+        }, 10000)
+      }
+    },
 
     getBookingDetails: async function () {
       // api dev
@@ -327,25 +346,25 @@ export default {
       try {
         for (const t of tickets) {
           let boletoTexto =
-        '--------------- BOLETO PULLMAN --------------\n' +
-        ` BOLETO:            ${t.codigo_reserva}\n` +
-        ` CODIGO DE RESERVA: ${t.boleto}\n` +
-        ` SERVICIO:          ${t.servicio}\n` +
-        ` RUTA: ${t.ruta}                 \n` +
-        ` PISO:              ${t.piso}\n` +
-        ` ASIENTO:           ${t.asiento}\n` +
-        ` ORIGEN:            ${t.origen}\n` +
-        ` DESTINO:           ${t.destino}\n` +
-        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-        ` HORA DE VIAJE:     ${t.hora}\n` +
-        ` TOTAL:             $${t.total}\n` +
-        '                              \n' +
-        '                              \n' +
-        '----------- TERMINOS Y CONDICIONES ---------\n' +
-        '            GRACIAS POR SU COMPRA\n' +
-        '                COPIA CLIENTE\n' +
-        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
-        '---------------------------------------------\n'
+            '--------------- BOLETO PULLMAN --------------\n' +
+            ` BOLETO:            ${t.codigo_reserva}\n` +
+            ` CODIGO DE RESERVA: ${t.boleto}\n` +
+            ` SERVICIO:          ${t.servicio}\n` +
+            ` RUTA: ${t.ruta}                 \n` +
+            ` PISO:              ${t.piso}\n` +
+            ` ASIENTO:           ${t.asiento}\n` +
+            ` ORIGEN:            ${t.origen}\n` +
+            ` DESTINO:           ${t.destino}\n` +
+            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+            ` HORA DE VIAJE:     ${t.hora}\n` +
+            ` TOTAL:             $${t.total}\n` +
+            '                              \n' +
+            '                              \n' +
+            '----------- TERMINOS Y CONDICIONES ---------\n' +
+            '            GRACIAS POR SU COMPRA\n' +
+            '                COPIA CLIENTE\n' +
+            '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
+            '---------------------------------------------\n'
 
           // const response = await axios.post(url + api, {
           //   texto: boletoTexto
@@ -359,7 +378,7 @@ export default {
           // `)
           // previewWindow.document.close()
 
-          console.log('+ methods:reimprimir','tickets {}', boletoTexto, '-> /imprimir')
+          console.log('+ methods:reimprimir', 'tickets {}', boletoTexto, '-> /imprimir')
           // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
