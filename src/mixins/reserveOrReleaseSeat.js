@@ -61,7 +61,7 @@ export default {
         })
         .then(({ data }) => {
           if (typeof data === 'object') {
-            // console.log('data', data)
+            console.log('response de tentative_booking', data)
 
             const hasTicketDetails = data && data.result && data.result.ticket_details
 
