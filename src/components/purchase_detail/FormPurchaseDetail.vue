@@ -226,8 +226,8 @@ export default {
     //   this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
 
     //   const ipServer = localStorage.getItem('ipServer')
-    //   const url = `https://${ipServer}:3000`
-    //   // const url = "https://192.168.88.246:3000"
+    //   // const url = `https://${ipServer}:3000`
+    //   const url = "https://192.168.88.232:3000"
     //   const api = '/api/payment'
 
     //   this.isErrorTerminarTransaccionPOS(false)
@@ -256,6 +256,8 @@ export default {
     //         numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
     //         estado_boleto: 'Reservado',
     //         codigo_transaccion: '',
+    //         codigo_autorizacion: '',
+    //         id_pos: '',
     //         estado_transaccion: '',
     //         numero_transaccion: '',
     //         fecha_transaccion: '',
@@ -272,6 +274,8 @@ export default {
     //         const rawTime = this.dataPOS.realTime
     //         const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
     //         this.propsPaymentControl.msg = response.data.data.responseMessage
+    //         bookingData.codigo_autorizacion = this.dataPOS.authorizationCode
+    //         bookingData.id_pos = this.dataPOS.terminalId
     //         bookingData.codigo_transaccion = this.dataPOS.ticket
     //         bookingData.estado_transaccion = 'Pago realizado'
     //         bookingData.numero_transaccion = this.dataPOS.operationNumber
