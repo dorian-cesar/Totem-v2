@@ -157,7 +157,6 @@ export default {
             }
           }
         }
-        const rut = localStorage.getItem('rut')
         console.log('Pago procesado (simulado):', simulatedPOSResponse.data)
         this.dataPOS = simulatedPOSResponse.data.data
         // formatear fecha y hora para DB
@@ -166,17 +165,16 @@ export default {
         const rawTime = this.dataPOS.realTime
         const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
         this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
-          const ipServer = localStorage.getItem('ipServer')
-          const totemName = ipServer
         const bookingData = {
-          numTotem: totemName,
-          rut: rut,
+          numTotem: localStorage.getItem('ipServer'),
+          rut: localStorage.getItem('rut'),
           origen: this.$store.state.TravelSelection.nameDepartureCity,
           destino: this.$store.state.TravelSelection.nameArrivalCity,
           fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
           hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
           asiento: this.propsPersonalInformation.tickets[0].seat,
           codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+          numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
           estado_boleto: 'Reservado',
           codigo_transaccion: simulatePOSResponse ? this.dataPOS.ticket : '',
           estado_transaccion: simulatePOSResponse ? 'Pago realizado' : 'Pago fallido',
@@ -253,6 +251,7 @@ export default {
     //         hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
     //         asiento: this.propsPersonalInformation.tickets[0].seat,
     //         codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+    //         numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
     //         estado_boleto: 'Reservado',
     //         codigo_confirmacion: '',
     //         codigo_transaccion: '',
@@ -600,6 +599,7 @@ export default {
                 hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
                 asiento: response_ticket.asiento,
                 codigo_reserva: response_ticket.boleto,
+                numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
                 estado_boleto: 'Confirmado',
                 codigo_confirmacion: '',
                 codigo_transaccion: this.dataPOS.ticket,
@@ -636,6 +636,7 @@ export default {
               hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
               asiento: this.propsPersonalInformation.tickets[0].seat,
               codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+              numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Confirmación fallida',
               codigo_confirmacion: '',
               codigo_transaccion: this.dataPOS.ticket,

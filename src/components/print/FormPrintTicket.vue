@@ -100,6 +100,21 @@ export default {
         }
       }
     },
+
+    // getOperatorPnr() {
+    // this.codeReprint = this.codeReprint.toUpperCase()
+    // this.codeReprint = this.codeReprint.replace(/[^A-Z0-9]/g, '')
+    // console.log('getOperatorPnr', this.codeReprint)
+    //   if (this.codeReprint.length > 0) {
+    //     this.getBookingDetails()
+    //   } else {
+    //     this.texto = 'Ingrese un código de reserva válido.'
+    //     setTimeout(() => {
+    //       this.texto = ''
+    //     }, 5000)
+    //   }
+    // },
+
     getBookingDetails: async function () {
       // api dev
       const proxy = 'https://newstg3-gdsbus.kupos.cl'
