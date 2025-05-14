@@ -149,6 +149,7 @@ export default {
             hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
             asiento: this.propsPersonalInformation.tickets[0].seat,
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+            numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
             codigo_confirmacion: '',
             codigo_transaccion: '',
