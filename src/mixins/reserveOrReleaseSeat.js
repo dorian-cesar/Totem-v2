@@ -61,7 +61,7 @@ export default {
         })
         .then(({ data }) => {
           if (typeof data === 'object') {
-            // console.log('data', data)
+            console.log('data', data)
 
             const hasTicketDetails = data && data.result && data.result.ticket_details
 
@@ -74,6 +74,7 @@ export default {
               hora_viaje: param.horaSalida,
               asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
               codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
+              // numero_boleto: ,
               estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
               codigo_confirmacion: '',
               codigo_transaccion: '',
