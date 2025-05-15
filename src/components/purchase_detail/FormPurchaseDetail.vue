@@ -390,7 +390,7 @@ export default {
       let ruta = this.propsPersonalInformation.tickets.find((e) => e.origen === origen && e.destino === destino)
       return ruta.trip
     },
-    //guardar transacción POS
+    //guardar transacción POS - confirm_booking
     guardarTransaccionPOS: async function () {
       this.loadingTerminarTransaccionPOS = false
       let total_processed = 0
