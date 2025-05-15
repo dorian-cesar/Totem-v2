@@ -206,7 +206,7 @@ export default {
                 numfloor: 0,
                 floor: 0,
                 num: '%',
-                type: seat_info[0],
+                type: seat_info[1],
                 status: '%'
               }
             }
