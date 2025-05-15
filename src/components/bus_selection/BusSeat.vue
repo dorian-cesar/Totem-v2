@@ -136,7 +136,173 @@ export default {
       ].find((val) => val.name === value).change
     },
 
-    //buscar distribución y estado de los asientos en el bus
+    //buscar distribución y estado de los asientos en el bus (version anterior)
+  //   searchBusService: async function () {
+  //     try {
+  //       // api dev
+  //       // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+  //       // const API_KEY = 'TSXFQYAPI25766888'
+  //       // api kupos
+  //       const proxy = 'https://gds.kupos.com'
+  //       const API_KEY = 'TSSDFPAPI30103014'
+  //       const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
+  //       //const api1 = "integrador-web/rest/private/venta/planilla"
+  //       //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
+
+  //       const response = await this.axios.get([proxy, api1].join('/'), {
+  //         headers: {
+  //           'content-type': 'application/json'
+  //         }
+  //       })
+
+  //       if (!response.data || !response.data.result || !response.data.result.bus_layout) {
+  //         throw new Error('La respuesta de la API no contiene los datos esperados.')
+  //       }
+  //       let layout = response.data.result.bus_layout.coach_details
+  //       let layout_available = response.data.result.bus_layout.available.split(',')
+  //       layout_available.shift()
+  //       let available_seats = []
+  //       for (let avail of layout_available) {
+  //         let available_seat = avail.split('|')
+  //         let available_seat_parsed = {
+  //           num: available_seat[0],
+  //           price: available_seat[1],
+  //           floor: 0
+  //         }
+  //         available_seats.push(available_seat_parsed)
+  //       }
+
+  //       let rows = layout.split(',').filter((row) => row !== 'DR_IMG|.GY')
+  //       // console.log("Filas después de filtrar:", rows)
+  //       let seats_rows = []
+  //       let seats_rows_plain = []
+  //       let seats_available = []
+
+  //       let seat_null = {
+  //         numfloor: 0,
+  //         floor: 0,
+  //         num: 'blank-seat',
+  //         type: null,
+  //         status: null
+  //       }
+  //       for (let row of rows) {
+  //         let row_seats = row.split('-')
+  //         let seats = []
+  //         let seats_plain = []
+  //         for (let row_seat of row_seats) {
+  //           seats_plain.push(row_seat)
+  //           let seat_info = row_seat.split('|')
+  //           let seat = seat_null
+  //           if (seat_info[0] !== '') {
+  //             seat = {
+  //               numfloor: 0,
+  //               floor: 0,
+  //               num: seat_info[0],
+  //               type: seat_info[1],
+  //               status: 'busy'
+  //             }
+  //           } else if (seat_info[0] !== 'DR_IMG') {
+  //             seat = {
+  //               numfloor: 0,
+  //               floor: 0,
+  //               num: '%',
+  //               type: seat_info[0],
+  //               status: '%'
+  //             }
+  //           }
+  //           seats.push(seat)
+  //           seats_available.push(seat)
+  //         }
+  //         seats_rows.push(seats)
+  //         seats_rows_plain.push(seats_plain)
+  //       }
+
+  //       // logica para determinar los pisos del bus y cuantos asientos tiene
+  //       let floor_available = response.data.result.bus_layout.floor
+  //       let seats_floor_1 = []
+  //       let seats_floor_2 = []
+  //       let floors = []
+  //       if (floor_available !== '') {
+  //         floor_available = floor_available.split('@')
+  //         let floor_1 = floor_available[0]
+  //         let floor_2 = floor_available[1]
+  //         floor_1 = floor_1.split(',')
+  //         floor_2 = floor_2.split(',')
+  //         for (let sr of seats_rows) {
+  //           let row = []
+  //           let floor_activated = false
+  //           for (let s of sr) {
+  //             if (floor_1.includes(s.num) || floor_activated) {
+  //               floor_activated = true
+  //               s.numfloor = 0
+  //               s.floor = 0
+  //               row.push(s)
+  //             }
+  //           }
+  //           seats_floor_1.push(row)
+  //         }
+
+  //         for (let sr of seats_rows) {
+  //           let row = []
+  //           let floor_activated = false
+  //           for (let s of sr) {
+  //             if (floor_2.includes(s.num) || floor_activated) {
+  //               floor_activated = true
+  //               s.numfloor = 1
+  //               s.floor = 1
+  //               row.push(s)
+  //             }
+  //           }
+  //           seats_floor_2.push(row)
+  //         }
+  //         floors = [seats_floor_1, seats_floor_2]
+  //         // console.log(floors)
+  //       } else {
+  //         floors = [seats_rows]
+  //         // console.log(floors)
+  //       }
+  //       // determina las columnas
+  //       let grid_full = []
+
+  //       for (let floor of floors) {
+  //         // Filtra los arrays vacíos en cada piso
+  //         let filtered_floor = floor.filter((row) => row.length > 0)
+
+  //         let row_size = 5
+  //         let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null))
+
+  //         let row_position = 0
+  //         for (let row of filtered_floor) {
+  //           let seat_position = 4
+  //           for (let seat of row) {
+  //             grid_horizontal[seat_position][row_position] = seat
+  //             seat_position--
+  //           }
+  //           row_position++
+  //         }
+
+  //         // Eliminar el índice 0 si todos los asientos son 'seat_null'
+  //         if (grid_horizontal[0].every((seat) => seat === seat_null)) {
+  //           grid_horizontal.shift() // Elimina el primer índice (índice 0)
+  //         }
+
+  //         grid_full.push(grid_horizontal)
+  //       }
+
+  //       // console.log(grid_full);
+
+  //       this.propsDinamicBus.drawSeats = [...grid_full]
+  //       this.propsDinamicBus.availableSeats = [...available_seats]
+
+  //       this.loading = false
+  //     } catch (error) {
+  //       console.error('Error al obtener los datos del servicio del bus:', error)
+  //       this.loading = false
+  //     }
+  //   }
+  // },
+
+  //buscar distribución y estado de los asientos en el bus
     searchBusService: async function () {
       try {
         // api dev
@@ -162,6 +328,7 @@ export default {
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
         layout_available.shift()
+
         let available_seats = []
         for (let avail of layout_available) {
           let available_seat = avail.split('|')
@@ -189,9 +356,11 @@ export default {
         for (let row of rows) {
           let row_seats = row.split('-')
           let seats = []
+
           for (let row_seat of row_seats) {
             let seat_info = row_seat.split('|')
             let seat = seat_null
+
             if (seat_info[0] !== '') {
               seat = {
                 numfloor: 0,
@@ -219,6 +388,7 @@ export default {
         let seats_floor_1 = []
         let seats_floor_2 = []
         let floors = []
+
         if (floor_available !== '') {
           floor_available = floor_available.split('@')
           let floor_1 = floor_available[0].split(',').filter((num) => num && num !== 'DR_IMG')
@@ -232,22 +402,27 @@ export default {
               avail.floor = 1
             }
           }
+
+          // Asignar asientos a cada piso
           for (let sr of seats_rows) {
             let row_floor_1 = []
             let row_floor_2 = []
             let current_floor = null
+
             for (let s of sr) {
               if (floor_1.includes(s.num)) {
                 current_floor = 0
               } else if (floor_2.includes(s.num)) {
                 current_floor = 1
               }
+
               if (current_floor === 0) {
                 row_floor_1.push({ ...s, numfloor: 0, floor: 0 })
               } else if (current_floor === 1) {
                 row_floor_2.push({ ...s, numfloor: 1, floor: 1 })
               }
             }
+
             if (row_floor_1.length > 0) seats_floor_1.push(row_floor_1)
             if (row_floor_2.length > 0) seats_floor_2.push(row_floor_2)
           }
@@ -267,6 +442,7 @@ export default {
               }
             }
           }
+
           updateSeatAvailability(seats_floor_1, available_seats)
           updateSeatAvailability(seats_floor_2, available_seats)
         } else {
@@ -276,6 +452,7 @@ export default {
           for (let row of seats_rows) {
             for (let seat of row) {
               if (!seat.num || seat.num === 'blank-seat') continue
+
               const isAvailable = available_seats.some((avail) => avail.num === seat.num)
               if (isAvailable) {
                 seat.status = 'available'
@@ -283,6 +460,7 @@ export default {
             }
           }
         }
+
         // Determinar las columnas para la visualización
         let grid_full = []
 
@@ -290,6 +468,7 @@ export default {
           let filtered_floor = floor.filter((row) => row.length > 0)
           let row_size = 5
           let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null))
+
           let row_position = 0
           for (let row of filtered_floor) {
             let seat_position = 4
@@ -299,9 +478,11 @@ export default {
             }
             row_position++
           }
+
           if (grid_horizontal[0].every((seat) => seat === seat_null)) {
             grid_horizontal.shift()
           }
+
           grid_full.push(grid_horizontal)
         }
 
