@@ -383,12 +383,12 @@ export default {
             ` ASIENTO:           ${t.asiento}\n` +
             ` ORIGEN:            ${t.origen}\n` +
             ` DESTINO:           ${t.destino}\n` +
-            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+            ` FECHA REIMPRESION: ${t.fecha_compra}\n` +
             ` HORA DE VIAJE:     ${t.hora}\n` +
             ` TOTAL:             $${t.total}\n` +
             '                              \n' +
             '                              \n' +
-            '----------- TERMINOS Y CONDICIONES ---------\n' +
+            '---------- TERMINOS Y CONDICIONES ----------\n' +
             '            GRACIAS POR SU COMPRA\n' +
             '                COPIA CLIENTE\n' +
             '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
