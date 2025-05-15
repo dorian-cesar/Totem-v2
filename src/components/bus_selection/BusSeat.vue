@@ -158,9 +158,11 @@ export default {
         if (!response.data || !response.data.result || !response.data.result.bus_layout) {
           throw new Error('La respuesta de la API no contiene los datos esperados.')
         }
+        // Procesamiento inicial de layout y asientos disponibles
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
         layout_available.shift()
+
         let available_seats = []
         for (let avail of layout_available) {
           let available_seat = avail.split('|')
@@ -172,12 +174,11 @@ export default {
           available_seats.push(available_seat_parsed)
         }
 
+        // Procesamiento de filas y asientos
         let rows = layout.split(',').filter((row) => row !== 'DR_IMG|.GY')
-        // console.log("Filas después de filtrar:", rows)
-        let seats_rows = []
-        let seats_rows_plain = []
-        let seats_available = []
+        console.log('Filas después de filtrar:', rows)
 
+        let seats_rows = []
         let seat_null = {
           numfloor: 0,
           floor: 0,
@@ -185,14 +186,15 @@ export default {
           type: null,
           status: null
         }
+
         for (let row of rows) {
           let row_seats = row.split('-')
           let seats = []
-          let seats_plain = []
+
           for (let row_seat of row_seats) {
-            seats_plain.push(row_seat)
             let seat_info = row_seat.split('|')
             let seat = seat_null
+
             if (seat_info[0] !== '') {
               seat = {
                 numfloor: 0,
@@ -211,63 +213,92 @@ export default {
               }
             }
             seats.push(seat)
-            seats_available.push(seat)
           }
           seats_rows.push(seats)
-          seats_rows_plain.push(seats_plain)
         }
 
-        // logica para determinar los pisos del bus y cuantos asientos tiene
+        // Lógica para determinar pisos del bus
         let floor_available = response.data.result.bus_layout.floor
         let seats_floor_1 = []
         let seats_floor_2 = []
         let floors = []
+
         if (floor_available !== '') {
           floor_available = floor_available.split('@')
-          let floor_1 = floor_available[0]
-          let floor_2 = floor_available[1]
-          floor_1 = floor_1.split(',')
-          floor_2 = floor_2.split(',')
-          for (let sr of seats_rows) {
-            let row = []
-            let floor_activated = false
-            for (let s of sr) {
-              if (floor_1.includes(s.num) || floor_activated) {
-                floor_activated = true
-                s.numfloor = 0
-                s.floor = 0
-                row.push(s)
-              }
+          let floor_1 = floor_available[0].split(',').filter((num) => num && num !== 'DR_IMG')
+          let floor_2 = floor_available[1].split(',').filter((num) => num && num !== 'DR_IMG')
+
+          // Actualizar información de piso en asientos disponibles
+          for (let avail of available_seats) {
+            if (floor_1.includes(avail.num)) {
+              avail.floor = 0
+            } else if (floor_2.includes(avail.num)) {
+              avail.floor = 1
             }
-            seats_floor_1.push(row)
           }
 
           for (let sr of seats_rows) {
-            let row = []
-            let floor_activated = false
+            let row_floor_1 = []
+            let row_floor_2 = []
+            let current_floor = null
+
             for (let s of sr) {
-              if (floor_2.includes(s.num) || floor_activated) {
-                floor_activated = true
-                s.numfloor = 1
-                s.floor = 1
-                row.push(s)
+              if (floor_1.includes(s.num)) {
+                current_floor = 0
+              } else if (floor_2.includes(s.num)) {
+                current_floor = 1
+              }
+
+              if (current_floor === 0) {
+                row_floor_1.push({ ...s, numfloor: 0, floor: 0 })
+              } else if (current_floor === 1) {
+                row_floor_2.push({ ...s, numfloor: 1, floor: 1 })
               }
             }
-            seats_floor_2.push(row)
+
+            if (row_floor_1.length > 0) seats_floor_1.push(row_floor_1)
+            if (row_floor_2.length > 0) seats_floor_2.push(row_floor_2)
           }
+
           floors = [seats_floor_1, seats_floor_2]
-          // console.log(floors)
+
+          // Actualizar disponibilidad después de dividir por pisos
+          const updateSeatAvailability = (floorSeats, availableSeats) => {
+            for (let row of floorSeats) {
+              for (let seat of row) {
+                if (!seat.num || seat.num === 'blank-seat' || seat.num === '%') continue
+
+                const isAvailable = availableSeats.some((avail) => avail.num === seat.num)
+                if (isAvailable) {
+                  seat.status = 'available'
+                }
+              }
+            }
+          }
+
+          updateSeatAvailability(seats_floor_1, available_seats)
+          updateSeatAvailability(seats_floor_2, available_seats)
         } else {
           floors = [seats_rows]
-          // console.log(floors)
+
+          // Actualizar disponibilidad para caso de un solo piso
+          for (let row of seats_rows) {
+            for (let seat of row) {
+              if (!seat.num || seat.num === 'blank-seat') continue
+
+              const isAvailable = available_seats.some((avail) => avail.num === seat.num)
+              if (isAvailable) {
+                seat.status = 'available'
+              }
+            }
+          }
         }
-        // determina las columnas
+
+        // Determinar las columnas para la visualización
         let grid_full = []
 
         for (let floor of floors) {
-          // Filtra los arrays vacíos en cada piso
           let filtered_floor = floor.filter((row) => row.length > 0)
-
           let row_size = 5
           let grid_horizontal = new Array(row_size).fill(0).map(() => new Array(filtered_floor.length).fill(seat_null))
 
@@ -281,19 +312,17 @@ export default {
             row_position++
           }
 
-          // Eliminar el índice 0 si todos los asientos son 'seat_null'
           if (grid_horizontal[0].every((seat) => seat === seat_null)) {
-            grid_horizontal.shift() // Elimina el primer índice (índice 0)
+            grid_horizontal.shift()
           }
 
           grid_full.push(grid_horizontal)
         }
 
-        // console.log(grid_full);
+        console.log('Grid completo generado:', grid_full)
 
         this.propsDinamicBus.drawSeats = [...grid_full]
         this.propsDinamicBus.availableSeats = [...available_seats]
-
         this.loading = false
       } catch (error) {
         console.error('Error al obtener los datos del servicio del bus:', error)
