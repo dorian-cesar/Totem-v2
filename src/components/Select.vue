@@ -75,9 +75,10 @@
 
 <style scoped>
   .v-select {
-    font-size: 42px;
+    font-size: 52px;
     width: 830px;
     border-radius: 10px;
+    min-height: 85px;
   }
   .v-select .v-text-field.v-text-field--solo .v-input__control { max-height: 18px; }
 
