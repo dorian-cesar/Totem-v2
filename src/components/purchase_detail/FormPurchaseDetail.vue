@@ -390,6 +390,29 @@ export default {
       let ruta = this.propsPersonalInformation.tickets.find((e) => e.origen === origen && e.destino === destino)
       return ruta.trip
     },
+
+    async retryAxiosPost(url, data, maxRetries = 3, validateResponse) {
+      let lastError
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`Intento ${attempt}/${maxRetries}`)
+          const response = await this.axios.post(url, data)
+          if (validateResponse) {
+            validateResponse(response.data)
+          }
+          return response
+        } catch (error) {
+          console.warn(`Error en intento ${attempt}: ${error.message}`)
+          lastError = error
+          if (attempt < maxRetries) {
+            await new Promise((r) => setTimeout(r, 3000))
+          }
+        }
+      }
+      throw lastError
+    },
+
     //guardar transacción POS - confirm_booking
     guardarTransaccionPOS: async function () {
       this.loadingTerminarTransaccionPOS = false
@@ -405,15 +428,26 @@ export default {
         // const proxy = 'https://newstg3-gdsbus.kupos.cl'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        const proxy = 'https://gds.kupos.com'
+        const proxy = "https://gds.kupos.com"
         const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
 
         let data_from_api = []
-        await this.axios
-          .post([proxy, api].join('/'))
+        await this.retryAxiosPost([proxy, api].join('/'), null, 3, (data) => {
+          const isValidDataStructure =
+            typeof data === 'object' &&
+            data.result &&
+            data.result.ticket_details &&
+            data.result.ticket_details.seat_fare_details &&
+            data.result.ticket_details.seat_fare_details[0] &&
+            data.result.ticket_details.seat_fare_details[0].seat_detail
+
+          if (!isValidDataStructure) {
+            throw new Error('Estructura de datos del ticket incompleta o inválida, ir a retry')
+          }
+        })
           .then(({ data }) => {
             console.log('confirm_booking', data)
             const isValidDataStructure =
@@ -424,7 +458,7 @@ export default {
               data.result.ticket_details.seat_fare_details[0] &&
               data.result.ticket_details.seat_fare_details[0].seat_detail
             if (!isValidDataStructure) {
-              throw new Error('Estructura de datos del ticket incompleta o inválida, ir a catch')
+              return Promise.reject(new Error('Estructura de datos del ticket incompleta o inválida, ir a retry'))
             }
             let ticket_info = data.result.ticket_details
             let response_boleto = ticket_info.ticket_number
