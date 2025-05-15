@@ -39,7 +39,7 @@
             @keydown.enter="ocultarTeclado"
             @input="rut = formatearRut(rut)"
             @blur="validarRut"
-            style="height: 68px; font-size: 40px; color: black; background-color: azure; border-radius: 10px"
+            style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
             autocomplete="off"
           />
         </b-form-group>
@@ -296,6 +296,13 @@ export default {
   width: 50px;
   margin-bottom: 10px;
   margin-left: 7px;
+}
+
+.vs__dropdown-menu {
+  max-height: 580px !important;
+  font-size: 52px !important;
+  overflow-y: auto;
+  padding: 10px;
 }
 </style>
 
