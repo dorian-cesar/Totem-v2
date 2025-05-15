@@ -5,6 +5,7 @@
       <b-col cols="12">
         <select-input
           v-bind="propsDepartureCity"
+          class="select-dropdown"
           @selectedValue="propsDepartureCity.selected = $event"
           @selectedStatus="action('select-origin', $event)"
           ref="select-origin"
@@ -17,6 +18,7 @@
       <b-col cols="12">
         <select-input
           v-bind="propsArrivalCity"
+          class="select-dropdown"
           @selectedValue="propsArrivalCity.selected = $event"
           @selectedStatus="action('select-arrival', $event)"
           ref="select-arrival"
@@ -286,6 +288,11 @@ export default {
   width: 50px;
   margin-bottom: 10px;
   margin-left: 7px;
+}
+.select-dropdown {
+  max-height: 300px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 </style>
 
