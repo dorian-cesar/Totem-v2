@@ -159,7 +159,7 @@
 import BusSeat from '@/components/bus_selection/BusSeat'
 import {mapActions} from 'vuex'
 import {changeFormatDate} from "../../lib/calculateDays";
-import imgLogo from '@/assets/img/logo_pullman.png'
+import imgLogo from '@/assets/img/logo-pullman-nuevo.svg'
 
 export default {
   name: 'ListBus',
