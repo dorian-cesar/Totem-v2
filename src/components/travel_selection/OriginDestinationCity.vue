@@ -5,7 +5,8 @@
       <b-col cols="12">
         <select-input
           v-bind="propsDepartureCity"
-          class="select-dropdown"
+          type="text"
+          @keydown.enter="ocultarTeclado"
           @selectedValue="propsDepartureCity.selected = $event"
           @selectedStatus="action('select-origin', $event)"
           ref="select-origin"
@@ -18,7 +19,8 @@
       <b-col cols="12">
         <select-input
           v-bind="propsArrivalCity"
-          class="select-dropdown"
+          type="text"
+          @keydown.enter="ocultarTeclado"
           @selectedValue="propsArrivalCity.selected = $event"
           @selectedStatus="action('select-arrival', $event)"
           ref="select-arrival"
@@ -33,9 +35,11 @@
           <b-form-input
             v-bind="propsRut"
             v-model="rut"
+            type="text"
+            @keydown.enter="ocultarTeclado"
             @input="rut = formatearRut(rut)"
             @blur="validarRut"
-            style="height: 68px; font-size: 40px; color: black; background-color: azure; border-radius: 10px;"
+            style="height: 68px; font-size: 40px; color: black; background-color: azure; border-radius: 10px"
             autocomplete="off"
           />
         </b-form-group>
@@ -126,6 +130,10 @@ export default {
       let hash = {}
       let unique = data.filter((o) => (hash[o.value] ? false : (hash[o.value] = true)))
       return unique
+    },
+
+    ocultarTeclado(event) {
+      event.target.blur()
     },
 
     getListDepartureCities: async function () {
@@ -288,11 +296,6 @@ export default {
   width: 50px;
   margin-bottom: 10px;
   margin-left: 7px;
-}
-.select-dropdown {
-  max-height: 300px;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
 }
 </style>
 
