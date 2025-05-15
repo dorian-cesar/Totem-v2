@@ -5,6 +5,8 @@
       <b-col cols="12">
         <select-input
           v-bind="propsDepartureCity"
+          type="text"
+          @keydown.enter="ocultarTeclado"
           @selectedValue="propsDepartureCity.selected = $event"
           @selectedStatus="action('select-origin', $event)"
           ref="select-origin"
@@ -17,6 +19,8 @@
       <b-col cols="12">
         <select-input
           v-bind="propsArrivalCity"
+          type="text"
+          @keydown.enter="ocultarTeclado"
           @selectedValue="propsArrivalCity.selected = $event"
           @selectedStatus="action('select-arrival', $event)"
           ref="select-arrival"
@@ -31,6 +35,8 @@
           <b-form-input
             v-bind="propsRut"
             v-model="rut"
+            type="text"
+            @keydown.enter="ocultarTeclado"
             @input="rut = formatearRut(rut)"
             @blur="validarRut"
             style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
@@ -124,6 +130,10 @@ export default {
       let hash = {}
       let unique = data.filter((o) => (hash[o.value] ? false : (hash[o.value] = true)))
       return unique
+    },
+
+    ocultarTeclado(event) {
+      event.target.blur()
     },
 
     getListDepartureCities: async function () {
