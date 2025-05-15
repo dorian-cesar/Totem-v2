@@ -8,7 +8,7 @@
               <b-row>
                 <b-col class="">
                   <p class="text-primary pb-2 font-weight-bolder s-custom-font">
-                    Ingrese su boleto (ej: 1234567)
+                    Ingrese su boleto (ej: 1234567 - Puede contener letras)
                   </p>
                   <input
                     type="text"
