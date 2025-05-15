@@ -59,3 +59,16 @@
     }
   }
 </script>
+
+<style scoped>
+.btn-primary {
+  background-color: #ff5200;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #c0c0c0;
+  color: white;
+}
+</style>
