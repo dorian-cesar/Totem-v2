@@ -287,5 +287,12 @@ export default {
   margin-bottom: 10px;
   margin-left: 7px;
 }
+
+.vs__dropdown-menu {
+  max-height: 580px !important;
+  font-size: 52px !important;
+  overflow-y: auto;
+  padding: 10px;
+}
 </style>
 
