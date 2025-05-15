@@ -24,10 +24,13 @@
           </b-button>
         </div>
         <!-- Button Get Ticket -->
-        <div class="btn-img">
+        <!-- <div class="btn-img">
           <b-button variant="link" block :disabled="!serverAvailable">
             <b-img :src="BtnGetInfo" fluid alt="Get Info" />
           </b-button>
+        </div> -->
+        <div class="text-center">
+          <b-img :src="ImgLogoBlanco" fluid alt="Logo Pullman" class="logo-blanco"/>
         </div>
       </blockquote>
     </b-card>
@@ -37,7 +40,8 @@
 <script>
 import BtnBuyTicket from '@/assets/img/buy_print_info/btn_buy_ticket.png'
 import BtnPrintTicket from '@/assets/img/buy_print_info/btn_print_ticket_enabled.png'
-import BtnGetInfo from '@/assets/img/buy_print_info/btn_get_info.png'
+// import BtnGetInfo from '@/assets/img/buy_print_info/btn_get_info.png'
+import ImgLogoBlanco from '@/assets/img/buy_print_info/logo-pullman-nuevo-blanco.svg'
 import axios from 'axios'
 import info from '../../../info.json'
 
@@ -48,7 +52,8 @@ export default {
     serverAvailable: false, // false
     BtnBuyTicket,
     BtnPrintTicket,
-    BtnGetInfo,
+    // BtnGetInfo,
+    ImgLogoBlanco,
     info,
     monitorInterval: null
   }),
@@ -105,6 +110,13 @@ export default {
 
 .btn-img {
   margin-top: 190px;
+}
+
+.logo-blanco {
+  margin-top: 230px;
+  width: 45%;
+  height: auto;
+  opacity: 0.2;
 }
 </style>
 
