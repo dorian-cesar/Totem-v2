@@ -383,7 +383,7 @@ export default {
             ` ASIENTO:           ${t.asiento}\n` +
             ` ORIGEN:            ${t.origen}\n` +
             ` DESTINO:           ${t.destino}\n` +
-            ` FECHA REIMPRESION: ${t.fecha_compra}\n` +
+            ` FECHA DE VIAJE:    ${t.fecha}\n` +
             ` HORA DE VIAJE:     ${t.hora}\n` +
             ` TOTAL:             $${t.total}\n` +
             '                              \n' +
