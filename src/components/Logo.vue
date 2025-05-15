@@ -10,7 +10,8 @@
 
 <script>
 // Imagen
-import ImgLogo from '@/assets/img/logo-pullman-contigo.png'
+import ImgLogo from '@/assets/img/logo-pullman-nuevo.svg'
+// import ImgLogo from '@/assets/img/logo-pullman-contigo.png'
 
 export default {
   name: 'Logo',
