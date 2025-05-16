@@ -488,6 +488,9 @@ input {
 .simple-keyboard {
   margin-top: 20px;
 }
+.hg-theme-default {
+  bottom: 350px;
+}
 
 .button-radius {
   border-radius: 60px;
