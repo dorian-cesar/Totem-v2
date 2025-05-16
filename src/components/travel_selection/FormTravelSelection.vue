@@ -8,21 +8,21 @@
         <toolbar-one-way-round-trip @activeDatepicker2="propsDatepicker.statusDatepicker2 = $event" class="pt-5 pb-4" />
         <!-- Icon position + Line  -->
         <!-- Input selects origin and destination -->
-        <origin-destination-city ref="origin-destination-city" @selectAction="selectAction" @selected="setSelected"
-          @rutValido="rutEsValido = $event" />
+        <origin-destination-city
+          ref="origin-destination-city"
+          @selectAction="selectAction"
+          @selected="setSelected"
+          @rutValido="rutEsValido = $event"
+        />
         <!-- Input dates origin destination-->
         <date-one-way-round-trip v-bind="propsDatepicker" />
         <!-- Keyboard-->
-        <br>
-        <!-- <keyboard-touch
-          v-show="isShowKeyBoard "
-          @onKeyPress="onKeyPress"
-        /> -->
+        <br />
+        <keyboard-touch v-show="isShowKeyBoard" @onKeyPress="onKeyPress" />
       </blockquote>
     </b-card>
     <!-- Toolbar button-->
     <toolbar-button-new3 :rbIsDisable="isDisable" @nameButton="clickButton" />
-
   </div>
 </template>
 
@@ -61,7 +61,7 @@ export default {
     nameSelect: '',
     statusKeyPress: false,
     isFirtsOne: true,
-    rutEsValido: false,
+    rutEsValido: false
   }),
   components: {
     TopHeaderCaption,
@@ -76,7 +76,7 @@ export default {
     ...mapGetters('TravelSelection', ['isDepartureCity', 'isArrivalCity']),
 
     clickButton(name) {
-      this.$router.push({ name: ('Left-Button' === name) ? 'Home' : 'BusSelection' })
+      this.$router.push({ name: 'Left-Button' === name ? 'Home' : 'BusSelection' })
     },
     selectAction(val) {
       // console.log('selectAction', val)
@@ -97,7 +97,6 @@ export default {
         this.input = ''
         // console.log('close', val)
       }
-
     },
     /**
      * KeyBoard
@@ -111,9 +110,11 @@ export default {
       switch (key) {
         case '{bksp}': {
           this.borrar()
-          this.openSelect(this.nameSelect, false)
+          if (!this.input || this.input.length === 0) {
+            this.openSelect(this.nameSelect, false)
+            this.isShowKeyBoard = false
+          }
           this.isFirtsOne = true
-          this.isShowKeyBoard = false
           this.statusKeyPress = false
           break
         }
@@ -130,11 +131,7 @@ export default {
       }
     },
     openSelect(name, open) {
-      this
-        .$refs['origin-destination-city']
-        .$refs[name]
-        .$children[0]
-        .open = open
+      this.$refs['origin-destination-city'].$refs[name].$children[0].open = open
     },
     buscar() {
       // console.log('buscar', this.nameSelect)
@@ -143,21 +140,13 @@ export default {
       //     .$refs[this.nameSelect]
       //     .$children[0]
       //     .open = true
-      this
-        .$refs['origin-destination-city']
-        .$refs[this.nameSelect]
-        .$children[0]
-        .search = this.input
+      this.$refs['origin-destination-city'].$refs[this.nameSelect].$children[0].search = this.input
     },
     borrar() {
       // console.log('borrar',this.nameSelect)
-      this.input = ''
+      this.input = this.input.slice(0, -1)
       if (this.nameSelect) {
-        this
-          .$refs['origin-destination-city']
-          .$refs[this.nameSelect]
-          .$children[0]
-          .search = this.input
+        this.$refs['origin-destination-city'].$refs[this.nameSelect].$children[0].search = this.input
         //this.buscar()
       }
     },
@@ -167,7 +156,7 @@ export default {
       this.showKeyBoard(false)
       this.isFirtsOne = true
       this.statusKeyPress = false
-    },
+    }
   },
   computed: {
     isDisable: function () {
@@ -177,3 +166,4 @@ export default {
   }
 }
 </script>
+
