@@ -394,9 +394,9 @@ export default {
             '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
             '---------------------------------------------\n'
 
-          // const response = await axios.post(url + api, {
-          //   texto: boletoTexto
-          // })
+          const response = await axios.post(url + api, {
+            texto: boletoTexto
+          })
 
           // ver boleto en browser
           // const previewWindow = window.open('', '_blank')
