@@ -107,6 +107,22 @@ export default {
     },
     onKeyPress(key) {
       this.statusKeyPress = true
+      if (this.inputTarget) {
+        const currentValue = this.inputTarget.value || ''
+        switch (key) {
+          case '{bksp}':
+            this.inputTarget.value = currentValue.slice(0, -1)
+            break
+          case '{sp}':
+            this.inputTarget.value = currentValue + ' '
+            break
+          default:
+            this.inputTarget.value = currentValue + key
+        }
+        this.inputTarget.dispatchEvent(new Event('input'))
+        this.rut = this.inputTarget.value
+        return
+      }
       switch (key) {
         case '{bksp}': {
           this.borrar()
@@ -152,7 +168,7 @@ export default {
     },
     setSelected(e) {
       // console.log('setSelected')
-      this.borrar()
+      this.input = ''
       this.showKeyBoard(false)
       this.isFirtsOne = true
       this.statusKeyPress = false
