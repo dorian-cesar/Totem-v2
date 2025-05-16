@@ -62,7 +62,7 @@
 
             <b-col cols="2" class="text-left">
               <h6>{{ bus.servicioPrimerPiso }}</h6>
-              <h6>{{ (bus.servicioSegundoPiso) ? bus.servicioSegundoPiso : '' }}</h6>
+              <!-- <h6>{{ (bus.servicioSegundoPiso) ? bus.servicioSegundoPiso : '' }}</h6> -->
             </b-col>
 
             <b-col
@@ -77,7 +77,7 @@
                 :data-price-2="(bus.tarifaSegundoPisoInternet)?bus.tarifaSegundoPisoInternet:''"
               >
                 <h5 class="font-weight-bold">${{ bus.tarifaPrimerPisoInternet }}</h5>
-                <h5 class="font-weight-bold">{{ (bus.tarifaSegundoPisoInternet) ? ['$', bus.tarifaSegundoPisoInternet].join('') : '' }}</h5>
+                <!-- <h5 class="font-weight-bold">{{ (bus.tarifaSegundoPisoInternet) ? ['$', bus.tarifaSegundoPisoInternet].join('') : '' }}</h5> -->
               </span>
             </b-col>
 
