@@ -299,9 +299,10 @@ export default {
 }
 
 .vs__dropdown-menu {
-  max-height: 580px !important;
+  max-height: 500px !important;
   font-size: 52px !important;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 10px;
 }
 </style>
