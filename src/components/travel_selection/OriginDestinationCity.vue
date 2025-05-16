@@ -5,8 +5,6 @@
       <b-col cols="12">
         <select-input
           v-bind="propsDepartureCity"
-          type="text"
-          @keydown.enter="ocultarTeclado"
           @selectedValue="propsDepartureCity.selected = $event"
           @selectedStatus="action('select-origin', $event)"
           ref="select-origin"
@@ -19,8 +17,6 @@
       <b-col cols="12">
         <select-input
           v-bind="propsArrivalCity"
-          type="text"
-          @keydown.enter="ocultarTeclado"
           @selectedValue="propsArrivalCity.selected = $event"
           @selectedStatus="action('select-arrival', $event)"
           ref="select-arrival"
@@ -35,13 +31,30 @@
           <b-form-input
             v-bind="propsRut"
             v-model="rut"
-            type="text"
-            @keydown.enter="ocultarTeclado"
-            @input="rut = formatearRut(rut)"
-            @blur="validarRut"
+            @focus="mostrarTeclado = true"
+            @input="onInputRut"
             style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
             autocomplete="off"
           />
+          <!-- Teclado virtual para rut -->
+          <div v-if="mostrarTeclado" class="teclado-virtual">
+            <div class="fila-teclas">
+              <button v-for="tecla in teclasFila1" :key="tecla" @click="agregarCaracter(tecla)">
+                {{ tecla }}
+              </button>
+            </div>
+            <div class="fila-teclas">
+              <button v-for="tecla in teclasFila2" :key="tecla" @click="agregarCaracter(tecla)">
+                {{ tecla }}
+              </button>
+            </div>
+            <div class="fila-teclas">
+              <button @click="agregarCaracter('K')">K</button>
+              <button @click="agregarCaracter('-')">-</button>
+              <button @click="borrarUltimo()">⌫</button>
+              <button @click="ocultarTeclado()">Cerrar</button>
+            </div>
+          </div>
         </b-form-group>
       </b-col>
     </b-row>
@@ -91,7 +104,10 @@ export default {
       rutValido: '',
       reset: false
     },
-    rut: ''
+    rut: '',
+    mostrarTeclado: false,
+    teclasFila1: ['1', '2', '3', '4', '5'],
+    teclasFila2: ['6', '7', '8', '9', '0']
   }),
   components: { selectInput: Select },
   watch: {
@@ -115,6 +131,15 @@ export default {
         this.setValues()
         this.$emit('selected', true)
       }
+    },
+
+    rut(newRut) {
+      if (newRut) {
+        const rutParaStorage = newRut.replace(/\./g, '')
+        localStorage.setItem('rut', rutParaStorage)
+      } else {
+        localStorage.removeItem('rut')
+      }
     }
   },
   mounted() {
@@ -132,8 +157,23 @@ export default {
       return unique
     },
 
-    ocultarTeclado(event) {
-      event.target.blur()
+    onInputRut() {
+      this.rut = this.formatearRut(this.rut)
+      this.validarRut()
+    },
+
+    agregarCaracter(tecla) {
+      this.rut += tecla
+      this.rut = this.formatearRut(this.rut)
+    },
+
+    borrarUltimo() {
+      this.rut = this.rut.slice(0, -1)
+      this.rut = this.formatearRut(this.rut)
+    },
+
+    ocultarTeclado() {
+      this.mostrarTeclado = false
     },
 
     getListDepartureCities: async function () {
@@ -225,18 +265,18 @@ export default {
     },
 
     async validarRut() {
-      if (!this.rut || this.rut.trim() === '') {
-        await this.showMsgBoxError('Debe ingresar su RUT.')
-        this.rutValido = false
-        return
-      }
+      // if (!this.rut || this.rut.trim() === '') {
+      //   await this.showMsgBoxError('Debe ingresar su RUT.')
+      //   this.rutValido = false
+      //   return
+      // }
       const formattedRut = this.formatearRut(this.rut)
-      const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/
-      if (!rutRegex.test(formattedRut)) {
-        await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.')
-        this.rutValido = false
-        return
-      }
+      // const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/
+      // if (!rutRegex.test(formattedRut)) {
+      //   await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.')
+      //   this.rutValido = false
+      //   return
+      // }
       const rutSinFormato = formattedRut.replace(/\./g, '').replace('-', '')
       const cuerpo = rutSinFormato.slice(0, -1)
       const dvIngresado = rutSinFormato.slice(-1).toUpperCase()
@@ -247,19 +287,19 @@ export default {
         multiplo = multiplo < 7 ? multiplo + 1 : 2
       }
       const resto = 11 - (suma % 11)
-      const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString()
-      if (dvIngresado !== dvEsperado) {
-        await this.showMsgBoxError('El RUT ingresado tiene un dígito verificador incorrecto.')
-        this.rutValido = false
-        return
-      }
+      // const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString()
+      // if (dvIngresado !== dvEsperado) {
+      //   await this.showMsgBoxError('El RUT ingresado tiene un dígito verificador incorrecto.')
+      //   this.rutValido = false
+      //   return
+      // }
       this.rut = formattedRut
       this.rutValido = true
       let rut = formattedRut.replace(/\./g, '').replace('-', '')
       if (rut.length > 1) {
         rut = rut.slice(0, rut.length - 1) + '-' + rut.slice(-1)
       }
-      localStorage.setItem('rut', rut)
+      // localStorage.setItem('rut', rut)
       this.$emit('rutValido', this.rutValido)
     },
     formatearRut(rut) {
@@ -304,6 +344,33 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 10px;
+}
+
+.teclado-virtual {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.fila-teclas {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.teclado-virtual button {
+  font-size: 36px;
+  padding: 15px 25px;
+  border-radius: 10px;
+  background-color: #dbeafe;
+  border: none;
+  color: #111;
+  cursor: pointer;
+}
+
+.teclado-virtual button:hover {
+  background-color: #93c5fd;
 }
 </style>
 
