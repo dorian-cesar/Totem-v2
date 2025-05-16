@@ -52,7 +52,7 @@
 </template>
 <script>
 import WebSocket from '@/mixins/websocket.js'
-// import SimpleKeyboard from 'simple-keyboard'
+import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
 import info from '../../../info.json'
 import axios from 'axios'
@@ -88,7 +88,7 @@ export default {
       this.statusKeyPress = true
       switch (key) {
         case '{bksp}': {
-          this.codeReprint = ''
+          this.codeReprint = this.codeReprint.slice(0, -1)
           break
         }
         case '{sp}': {
@@ -441,27 +441,27 @@ export default {
       }
     }
   },
-  watch: {}
-  // mounted() {
-  //   this.keyboard = new SimpleKeyboard({
-  //     // onChange: this.onChange,
-  //     onKeyPress: this.onKeyPress,
-  //     //layout: layout,
-  //     layoutName: "default",
-  //     layout: {
-  //       default: [
-  //         "1 2 3 4 5 6 7 8 9 0",
-  //         "Q W E R T Y U I O P",
-  //         "A S D F G H J K L Ñ",
-  //         "Z X C V B N M {bksp}"
-  //       ]
-  //     },
-  //     display: {
-  //       '{bksp}': 'Borrar',
-  //       '{sp}': ' '
-  //     }
-  //   });
-  // }
+  watch: {},
+  mounted() {
+    this.keyboard = new SimpleKeyboard({
+      // onChange: this.onChange,
+      onKeyPress: this.onKeyPress,
+      //layout: layout,
+      layoutName: "default",
+      layout: {
+        default: [
+          "1 2 3 4 5 6 7 8 9 0",
+          "Q W E R T Y U I O P",
+          "A S D F G H J K L Ñ",
+          "Z X C V B N M {bksp}"
+        ]
+      },
+      display: {
+        '{bksp}': 'Borrar',
+        '{sp}': ' '
+      }
+    });
+  }
 }
 </script>
 
