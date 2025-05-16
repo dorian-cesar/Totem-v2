@@ -50,7 +50,6 @@
             </div>
             <div class="fila-teclas">
               <button @click="agregarCaracter('K')">K</button>
-              <button @click="agregarCaracter('-')">-</button>
               <button @click="borrarUltimo()">⌫</button>
               <button @click="ocultarTeclado()">Cerrar</button>
             </div>
