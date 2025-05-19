@@ -334,8 +334,8 @@ export default {
 <style>
 .rut-img-class {
   width: 50px;
-  margin-bottom: 10px;
-  margin-left: 7px;
+  padding-bottom: 10px;
+  padding-left: 7px;
 }
 
 .vs__dropdown-menu {
