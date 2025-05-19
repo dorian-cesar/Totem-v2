@@ -361,7 +361,8 @@ export default {
 .teclado-virtual button {
   font-size: 36px;
   padding: 15px 25px;
-  border-radius: 10px;
+  min-width: 85px;
+  border-radius: 15px;
   background-color: #dbeafe;
   border: none;
   color: #111;
