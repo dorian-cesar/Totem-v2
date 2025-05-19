@@ -67,7 +67,7 @@ export default {
 
             const bookingData = {
               numTotem: localStorage.getItem('ipServer'),
-              rut: rut,
+              rut: rut || "empty",
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
               fecha_viaje: param.fecha,

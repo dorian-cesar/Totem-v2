@@ -255,7 +255,7 @@ export default {
     //       const totemName = ipServer
     //       const bookingData = {
     //         numTotem: totemName,
-    //         rut: rut,
+    //         rut: rut || "empty",
     //         origen: this.$store.state.TravelSelection.nameDepartureCity,
     //         destino: this.$store.state.TravelSelection.nameArrivalCity,
     //         fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,

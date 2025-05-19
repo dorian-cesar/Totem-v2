@@ -202,8 +202,7 @@
           trip: trip,
           date: date,
           name: '', // <- name del prepend(Boleto 1, Boleto 2,...)
-          rut: rut,
-          // nuevos
+          rut: rut || "empty",
           servicio: servicio,
           fechaServicio: date,
           horaSalida: hour,
