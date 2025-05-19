@@ -9,7 +9,7 @@ selenium-debug.log
 package-lock.json
 yarn.lock
 view-json.json
-DB-totem.js
+view-js.js
 # Editor directories and files
 .idea
 .vscode
