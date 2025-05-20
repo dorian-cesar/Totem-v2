@@ -22,7 +22,7 @@ export default {
       const proxy = "https://gds.kupos.com"
       const API_KEY = 'TSSDFPAPI30103014'
       let api = ''
-      
+
       const rut = localStorage.getItem('rut')
 
       if ('add' === option)
@@ -50,124 +50,138 @@ export default {
         bus_type: param.bus_type,
         route_id: param.route_id
       }
-      // console.log(JSON.stringify(formatParams, null, 2))
-      await this.axios
-        .post([proxy, api].join('/'), formatParams, {
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+
+      const MAX_RETRIES = 3
+      const RETRY_DELAY_MS = 2000
+
+      let attempt = 0
+      let success = false
+      let data = null
+
+      while (attempt < MAX_RETRIES && !success) {
+        try {
+          console.log(`Intento ${attempt + 1} de ${MAX_RETRIES} - realizando reserva...`)
+          const response = await this.axios.post([proxy, api].join('/'), formatParams, {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
+              'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+            }
+          })
+          data = response.data
+          success = true
+        } catch (error) {
+          attempt++
+          console.warn(`Intento de tentative booking falló, reintentando (${attempt}/${MAX_RETRIES})...`)
+          if (attempt >= MAX_RETRIES) {
+            console.error('Máximos intentos para tentative booking', error)
+            this.statusReservation = false
+            this.codeReservation = ''
+            this.isLoadingReservation = false
+            return
           }
-        })
-        .then(({ data }) => {
-          if (typeof data === 'object') {
-            // console.log('response de tentative_booking', data)
+          await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
+        }
+      }
 
-            const hasTicketDetails = data && data.result && data.result.ticket_details
+      if (typeof data === 'object') {
+        console.log('response de tentative_booking', data)
 
-            const bookingData = {
-              numTotem: localStorage.getItem('ipServer'),
-              rut: rut || 'empty',
-              origen: this.$store.state.TravelSelection.nameDepartureCity,
-              destino: this.$store.state.TravelSelection.nameArrivalCity,
-              fecha_viaje: param.fecha,
-              hora_viaje: param.horaSalida,
-              asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
-              codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
-              // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
-              estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
-              id_pos: '',
-              codigo_autorizacion: '',
-              tipo_tarjeta: '',
-              tarjeta_marca: '',
-              codigo_transaccion: '',
-              estado_transaccion: 'Pendiente',
-              numero_transaccion: '',
-              fecha_transaccion: '',
-              hora_transaccion: '',
-              total_transaccion: ''
-            }
+        const hasTicketDetails = data && data.result && data.result.ticket_details
 
-            console.log('Datos para DB tentative booking:', bookingData)
-            if (hasTicketDetails) {
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Guardado exitoso en DB (tentative booking)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, tentative booking: ', error)
-                })
-            }
-            if (
-              typeof data.response !== 'undefined' &&
-              typeof data.response.code !== 'undefined' &&
-              typeof data.response.code == 500
-            ) {
-              this.statusReservation = false
-              console.log('no ticket', data)
-              console.log('Datos para DB tentative booking:', bookingData)
+        const bookingData = {
+          numTotem: localStorage.getItem('ipServer'),
+          rut: rut || 'empty',
+          origen: this.$store.state.TravelSelection.nameDepartureCity,
+          destino: this.$store.state.TravelSelection.nameArrivalCity,
+          fecha_viaje: param.fecha,
+          hora_viaje: param.horaSalida,
+          asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
+          codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
+          // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
+          estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
+          codigo_autorizacion: '',
+          id_pos: '',
+          tipo_tarjeta: '',
+          tarjeta_marca: '',
+          codigo_transaccion: '',
+          estado_transaccion: 'Pendiente',
+          numero_transaccion: '',
+          fecha_transaccion: '',
+          hora_transaccion: '',
+          total_transaccion: ''
+        }
 
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Error guardado en DB (tentative booking)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, tentative_booking: ', error)
-                })
-            } else if (typeof data.result !== 'undefined') {
-              if (typeof data.result.ticket_details !== 'undefined') {
-                this.statusReservation = true
-                this.codeReservation = data.result.ticket_details.pnr_number || ''
-                this.operatorPnr = data.result.ticket_details.operator_pnr || ''
-                console.log('ok', data)
-              } else {
-                this.statusReservation = false
-                console.log('no ticket', data)
-                setTimeout(() => {
-                  this.$router.push('/travelselection')
-                  window.location.reload()
-                }, 3000)
-              }
-            } else {
-              this.statusReservation = false
-              console.log('no result', data)
-              bookingData.codigo_reserva = 'Reserva fallida'
-              console.log('Datos para DB tentative booking:', bookingData)
-              this.axios
-                .post(this.info.urlLogs, {
-                  bookingData
-                })
-                .then(() => {
-                  console.log('Error guardado en DB (tentative booking)')
-                })
-                .catch((error) => {
-                  console.error('Error al guardar en DB, tentative_booking :', error)
-                })
-              setTimeout(() => {
-                this.$router.push('/travelselection')
-                window.location.reload()
-              }, 3000)
-            }
-          }
-        })
-        .catch((error) => {
-          console.error(error)
+        console.log('Datos para DB tentative booking:', bookingData)
+        if (hasTicketDetails) {
+          this.axios
+            .post(this.info.urlLogs, {
+              bookingData
+            })
+            .then(() => {
+              console.log('Guardado exitoso en DB (tentative booking)')
+            })
+            .catch((error) => {
+              console.error('Error al guardar en DB, tentative booking: ', error)
+            })
+        }
+        if (
+          typeof data.response !== 'undefined' &&
+          typeof data.response.code !== 'undefined' &&
+          typeof data.response.code == 500
+        ) {
           this.statusReservation = false
-          this.codeReservation = ''
-          // console.log('no result', data)
-          console.log('no result')
+          console.log('no ticket', data)
+          console.log('Datos para DB tentative booking:', bookingData)
+
+          this.axios
+            .post(this.info.urlLogs, {
+              bookingData
+            })
+            .then(() => {
+              console.log('Error guardado en DB (tentative booking)')
+            })
+            .catch((error) => {
+              console.error('Error al guardar en DB, tentative_booking: ', error)
+            })
+        } else if (typeof data.result !== 'undefined') {
+          if (typeof data.result.ticket_details !== 'undefined') {
+            this.statusReservation = true
+            this.codeReservation = data.result.ticket_details.pnr_number || ''
+            this.operatorPnr = data.result.ticket_details.operator_pnr || ''
+            console.log('ok', data)
+          } else {
+            this.statusReservation = false
+            console.log('no ticket', data)
+            setTimeout(() => {
+              this.$router.push('/travelselection')
+              window.location.reload()
+            }, 3000)
+          }
+        } else {
+          this.statusReservation = false
+          bookingData.codigo_reserva = 'Reserva fallida'
+          console.log('no result', data)
+
+          console.log('Datos para DB tentative booking:', bookingData)
+          this.axios
+            .post(this.info.urlLogs, {
+              bookingData
+            })
+            .then(() => {
+              console.log('Error guardado en DB (tentative booking)')
+            })
+            .catch((error) => {
+              console.error('Error al guardar en DB, tentative_booking :', error)
+            })
           setTimeout(() => {
             this.$router.push('/travelselection')
             window.location.reload()
           }, 3000)
-        })
-        .finally(() => (this.isLoadingReservation = false))
+        }
+      }
+
+      this.isLoadingReservation = false
     }
   }
 }
