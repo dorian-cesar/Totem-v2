@@ -161,7 +161,8 @@ export default {
         // Procesamiento inicial de layout y asientos disponibles
         let layout = response.data.result.bus_layout.coach_details
         let layout_available = response.data.result.bus_layout.available.split(',')
-        layout_available.shift()
+        // console.log('Asientos disponibles:', layout_available)
+        // layout_available.shift()
 
         let available_seats = []
         for (let avail of layout_available) {
