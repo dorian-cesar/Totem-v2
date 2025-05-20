@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <logo class="p-3" />
-    <p class="version-text text-right pr-5 mb-0 font-weight-bold">2.2.5 Version © WIT 2025</p>
+    <DateAndTime />
     <b-row align-h="center">
       <b-col cols="11">
         <router-view />
@@ -12,12 +12,16 @@
 
 <script>
 import Logo from '@/components/Logo.vue'
+import DateAndTime from '@/components/DateAndTime.vue'
 import axios from 'axios'
 import infoData from '../../info.json'
 
 export default {
   name: 'App',
-  components: { Logo },
+  components: {
+    Logo,
+    DateAndTime
+  },
 
   data() {
     return {
@@ -56,11 +60,5 @@ body {
     'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
 }
 
-.version-text {
-  color: #ffffff;
-  opacity: 0.2;
-}
-
 @import '../assets/style/app';
 </style>
-

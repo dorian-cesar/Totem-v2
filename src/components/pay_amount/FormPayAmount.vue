@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <b-card class="transparent-main">
+  <div class="pt-2">
+    <b-card class="transparent-main" style="border-radius: 10px;">
       <blockquote class="card-blockquote">
         <top-header-caption caption="PAGO REALIZADO" class="pt-2" />
         <!--        <message :amount="getAmount()"/>-->
