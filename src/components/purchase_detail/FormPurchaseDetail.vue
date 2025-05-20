@@ -688,7 +688,7 @@ export default {
           })
           .catch((error) => {
             console.error(error)
-            total_processed += 1
+            // total_processed += 1
 
             const bookingData = {
               numTotem: localStorage.getItem('ipServer'),
