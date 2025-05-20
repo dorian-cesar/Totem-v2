@@ -396,7 +396,7 @@ export default {
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          console.log(`Intento ${attempt}/${maxRetries}`)
+          console.log(`Intento ${attempt} de ${maxRetries} - realizando confirmación...`)
           const response = await this.axios.post(url, data)
           if (validateResponse) {
             validateResponse(response.data)
