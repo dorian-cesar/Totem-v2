@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-3">
+  <div>
     <b-row align-h="center">
       <!-- Datepicker departure date -->
       <b-col cols="5" class="pl-0 pr-5">
