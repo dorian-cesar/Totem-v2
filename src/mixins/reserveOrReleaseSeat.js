@@ -142,6 +142,10 @@ export default {
               .catch((error) => {
                 console.error('Error al guardar en DB, tentative_booking: ', error)
               })
+            setTimeout(() => {
+              this.$router.push('/travelselection')
+              window.location.reload()
+            }, 3000)
             return
           }
           await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
@@ -244,7 +248,6 @@ export default {
           // }, 3000)
         }
       }
-
       this.isLoadingReservation = false
     }
   }
