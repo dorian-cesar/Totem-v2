@@ -175,7 +175,7 @@ export default {
       this.propsListBusDeparture.schedules = []
       for (let result of results) {
         // cambiar a 'Turbo-kupos-stg1' para api dev
-        if (result[3] === 'Pullman Costa') {
+        if (result[47] === 'Pullman Costa') {
           let boarding = result[22].split(',')
           let boarding_terminalsText = []
           let boarding_terminalsHTML = []
@@ -259,7 +259,7 @@ export default {
       this.propsListBusDestination.schedules = [];
       for (let result of results) {
         // cambiar a 'Turbo-kupos-stg1' para api dev
-        if (result[3] === 'Pullman Costa') {
+        if (result[47] === 'Pullman Costa') {
           let boarding = result[22].split(',')
           let boarding_terminalsText = []
           let boarding_terminalsHTML = []
