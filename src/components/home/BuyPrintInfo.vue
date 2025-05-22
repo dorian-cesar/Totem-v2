@@ -94,6 +94,7 @@ export default {
   mounted() {
     // this.checkServerStatus()
     this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
+    localStorage.removeItem('rut');
   },
   beforeDestroy() {
     if (this.monitorInterval) {
