@@ -111,6 +111,9 @@ export default {
       if ('Right-Button' === name) {
         if (this.mostrarIdas === true && this.isRoundTrip) {
           this.mostrarIdas = false
+          const currentLimit = parseInt(localStorage.getItem('SEATS_LIMIT')) || 4
+          const newLimit = currentLimit * 2
+          localStorage.setItem('SEATS_LIMIT', newLimit)
         } else {
           this.$router.push({name: 'PurchaseDetail'})
         }
