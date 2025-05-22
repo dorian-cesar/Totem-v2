@@ -2,38 +2,32 @@
   <div>
     <div class="transparent-main card-custom">
       <!-- Título de la pantalla-->
-      <top-header-caption :caption="getTitulo" class="pt-4"/>
+      <top-header-caption :caption="getTitulo" class="pt-4" />
 
       <div v-show="mostrarIdas">
         <!--- List Caption Origin -->
-        <list-caption v-bind="propsListCaptionOrigin"/>
+        <list-caption v-bind="propsListCaptionOrigin" />
         <!-- Caption headers -->
-        <header-caption/>
-        <div id="listado-origin" class="p-3" style="overflow-y: scroll !important;; max-height: 1200px">
+        <header-caption />
+        <div id="listado-origin" class="p-3" style="overflow-y: scroll !important; max-height: 1200px">
           <!-- List bust -->
-          <list-bus
-            v-bind="propsListBusDeparture"
-            :status="propsListCaptionOrigin.totalList"
-          />
+          <list-bus v-bind="propsListBusDeparture" :status="propsListCaptionOrigin.totalList" />
         </div>
       </div>
 
       <div v-show="!mostrarIdas">
         <!--- List Caption Destination -->
-        <list-caption v-bind="propsListCaptionDestination"/>
+        <list-caption v-bind="propsListCaptionDestination" />
         <!-- Caption headers -->
-        <header-caption/>
+        <header-caption />
         <div id="listado-destination" class="p-3" style="overflow: scroll; max-height: 1200px">
           <!-- List bust -->
-          <list-bus
-            v-bind="propsListBusDestination"
-            :status="propsListCaptionDestination.totalList"
-          />
+          <list-bus v-bind="propsListBusDestination" :status="propsListCaptionDestination.totalList" />
         </div>
       </div>
     </div>
     <!-- Toolbar button-->
-    <toolbar-button-new3 @nameButton="eventClick" :rbIsDisable="isDisable"/>
+    <toolbar-button-new3 @nameButton="eventClick" :rbIsDisable="isDisable" />
   </div>
 </template>
 
@@ -42,9 +36,9 @@ import TopHeaderCaption from '@/components/TopHeaderCaption'
 import ListCaption from '@/components/bus_selection/ListCaption'
 import ListBus from '@/components/bus_selection/ListBus'
 import HeaderCaption from '@/components/bus_selection/HeaderCaption'
-import ToolbarButtonNew3 from "@/components/ToolbarButtonNew3";
-import {mapGetters, mapActions} from 'vuex'
-import {changeFormatDate} from '@/lib/calculateDays'
+import ToolbarButtonNew3 from '@/components/ToolbarButtonNew3'
+import { mapGetters, mapActions } from 'vuex'
+import { changeFormatDate } from '@/lib/calculateDays'
 import formatDate from '@/mixins/formatDate'
 
 export default {
@@ -60,25 +54,25 @@ export default {
     // Props list bus
     propsListBusDeparture: {
       buttonType: 'origin',
-      schedules: [],
+      schedules: []
     },
     propsListBusDestination: {
       buttonType: 'destination',
-      schedules: [],
+      schedules: []
     },
     // Props caption of bus list groups
     propsListCaptionOrigin: {
       nameOrigin: '',
       nameDestination: '',
       travelDate: '',
-      totalList: '',
+      totalList: ''
     },
     propsListCaptionDestination: {
       nameOrigin: '',
       nameDestination: '',
       travelDate: '',
-      totalList: '',
-    },
+      totalList: ''
+    }
   }),
   components: {
     TopHeaderCaption,
@@ -88,22 +82,19 @@ export default {
     ToolbarButtonNew3
   },
   methods: {
-    ...mapGetters(
-      'TravelSelection', [
-        'getDepartureDate',
-        'getReturnDate',
-        'getRoundTrip',
-        'getNameDepartureCity',
-        'getNameArrivalCity',
-      ]
-    ),
-    ...mapGetters(
-      'TravelSelection', [
-        'getCodeDepartureCity',
-        'getCodeArrivalCity',
-        'getDepartureDate',
-        'getReturnDate']
-    ),
+    ...mapGetters('TravelSelection', [
+      'getDepartureDate',
+      'getReturnDate',
+      'getRoundTrip',
+      'getNameDepartureCity',
+      'getNameArrivalCity'
+    ]),
+    ...mapGetters('TravelSelection', [
+      'getCodeDepartureCity',
+      'getCodeArrivalCity',
+      'getDepartureDate',
+      'getReturnDate'
+    ]),
     ...mapActions('BusSelection', ['resetTravelBus']),
     ...mapGetters('BusSelection', ['getCountSeat']),
 
@@ -111,12 +102,15 @@ export default {
       if ('Right-Button' === name) {
         if (this.mostrarIdas === true && this.isRoundTrip) {
           this.mostrarIdas = false
+          const currentLimit = parseInt(localStorage.getItem('SEATS_LIMIT')) || 4
+          const newLimit = currentLimit * 2
+          localStorage.setItem('SEATS_LIMIT', newLimit)
         } else {
-          this.$router.push({name: 'PurchaseDetail'})
+          this.$router.push({ name: 'PurchaseDetail' })
         }
       } else {
         if (this.mostrarIdas === true) {
-          this.$router.push({name: 'TravelSelection'})
+          this.$router.push({ name: 'TravelSelection' })
         } else {
           this.mostrarIdas = true
         }
@@ -129,8 +123,8 @@ export default {
       this.propsListCaptionOrigin.totalList = ''
 
       // api dev
-      const proxy = "https://newstg3-gdsbus.kupos.cl"
-      const API_KEY = "TSXFQYAPI25766888"
+      const proxy = 'https://newstg3-gdsbus.kupos.cl'
+      const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       // const proxy = "https://gds.kupos.com"
       // const API_KEY = "TSSDFPAPI30103014"
@@ -141,11 +135,11 @@ export default {
         origen: this.getCodeDepartureCity(),
         destino: this.getCodeArrivalCity(),
         fecha: this.changeFormatDate2(this.getDepartureDate(), 'yyyymmdd'),
-        hora: "0000",
-        idSistema: ID_SYSTEM,
+        hora: '0000',
+        idSistema: ID_SYSTEM
       }
 
-      const response = await this.axios.get([proxy, api].join("/"), {
+      const response = await this.axios.get([proxy, api].join('/'), {
         headers: {
           'content-type': 'application/json'
         }
@@ -165,12 +159,12 @@ export default {
 
       // filter the list of buses only to show those with a departure time of more than 30 minutes from the current time
 
-      let results = response.data.result;
+      let results = response.data.result
       // console.log(results)
 
       // console.log(results[0])
       // console.log(results[1])
-      results.shift();
+      results.shift()
 
       this.propsListBusDeparture.schedules = []
       for (let result of results) {
@@ -232,8 +226,8 @@ export default {
       this.propsListCaptionDestination.totalList = ''
 
       // api dev
-      const proxy = "https://newstg3-gdsbus.kupos.cl"
-      const API_KEY = "TSXFQYAPI25766888"
+      const proxy = 'https://newstg3-gdsbus.kupos.cl'
+      const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       // const proxy = "https://gds.kupos.com"
       // const API_KEY = "TSSDFPAPI30103014"
@@ -243,20 +237,20 @@ export default {
         origen: this.getCodeDepartureCity(),
         destino: this.getCodeArrivalCity(),
         fecha: this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd'),
-        hora: "0000",
-        idSistema: ID_SYSTEM,
+        hora: '0000',
+        idSistema: ID_SYSTEM
       }
 
-      const response = await this.axios.get([proxy, api].join("/"), {
+      const response = await this.axios.get([proxy, api].join('/'), {
         headers: {
           'content-type': 'application/json'
         }
       })
 
-      let results = response.data.result;
-      results.shift();
+      let results = response.data.result
+      results.shift()
 
-      this.propsListBusDestination.schedules = [];
+      this.propsListBusDestination.schedules = []
       for (let result of results) {
         // cambiar a 'Turbo-kupos-stg1' para api dev
         if (result[47] === 'Turbo-kupos-stg1') {
@@ -311,7 +305,7 @@ export default {
   },
 
   mounted() {
-    this.resetTravelBus();
+    this.resetTravelBus()
 
     this.propsListCaptionOrigin.nameOrigin = this.getNameDepartureCity()
     this.propsListCaptionOrigin.nameDestination = this.getNameArrivalCity()
@@ -321,12 +315,12 @@ export default {
     this.propsListCaptionDestination.nameDestination = this.getNameDepartureCity()
     this.propsListCaptionDestination.travelDate = this.changeFormatDate(this.getReturnDate(), 'dayMonth', false)
 
-    this.isRoundTrip = this.getRoundTrip();
+    this.isRoundTrip = this.getRoundTrip()
 
-    this.getListBusOrigin();
+    this.getListBusOrigin()
 
     if (this.isRoundTrip) {
-      this.getListBusReturn();
+      this.getListBusReturn()
     }
   },
   computed: {
@@ -335,14 +329,10 @@ export default {
     },
 
     getTitulo() {
-      return [
-        'SERVICIOS DE',
-        (this.mostrarIdas) ? 'IDA' : 'VUELTA'
-      ].join(' ')
-    },
-  },
+      return ['SERVICIOS DE', this.mostrarIdas ? 'IDA' : 'VUELTA'].join(' ')
+    }
+  }
 }
-
 </script>
 
 <style scoped>
@@ -353,7 +343,8 @@ export default {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 </style>
+

@@ -28,12 +28,14 @@
   import imgBlankSeat from '@/assets/img/seat/blank_seat.png'
   import {mapActions, mapGetters} from 'vuex'
 
-  const SEATS_LIMIT = 4
+  // const SEATS_LIMIT = 2
+  localStorage.setItem('SEATS_LIMIT', 4);
 
   export default {
     name: 'Seat',
     data() {
       return {
+        SEATS_LIMIT: parseInt(localStorage.getItem('SEATS_LIMIT')) || 4,
         imgFreeSeat,
         imgSelectedSeat,
         imgBusySeat,
@@ -64,11 +66,11 @@
 
       selectSeat() {
         if ('busy' !== this.statusSeat) {
-          if (this.getCountSeat() < SEATS_LIMIT || 'selected' === this.statusSeat) {
+          if (this.getCountSeat() < this.SEATS_LIMIT || 'selected' === this.statusSeat) {
             const state = ('free' === this.statusSeat) ? 'add' : 'delete'
             this.$emit('check', { state, num: this.num })
           } else {
-             this.$bvModal.msgBoxOk(`No puede seleccionar mas de ${SEATS_LIMIT} asientos`, {
+             this.$bvModal.msgBoxOk(`No puede seleccionar más de ${this.SEATS_LIMIT} asientos`, {
               title: 'Información',
               size: 'sm',
               buttonSize: 'lg',
