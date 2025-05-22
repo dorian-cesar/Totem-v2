@@ -28,7 +28,7 @@
   import imgBlankSeat from '@/assets/img/seat/blank_seat.png'
   import {mapActions, mapGetters} from 'vuex'
 
-  const SEATS_LIMIT = 4
+  const SEATS_LIMIT = 10
 
   export default {
     name: 'Seat',
