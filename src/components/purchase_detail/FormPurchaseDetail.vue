@@ -539,22 +539,27 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 3, validateResponse) {
+    async retryAxiosPost(url, data, maxRetries = 3, validateResponse, axiosConfig = {}) {
       let lastError
-
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           console.log(`Intento ${attempt} de ${maxRetries} - realizando confirmación...`)
-          const response = await this.axios.post(url, data)
+          const response = await this.axios.post(url, data, axiosConfig)
           if (validateResponse) {
             validateResponse(response.data)
           }
           return response
         } catch (error) {
+          const isServerDown = !error.response
           console.warn(`Error en intento ${attempt}: ${error.message}`)
+          if (isServerDown) {
+            console.warn(`El servidor no respondió o está caído (sin response)`)
+          } else {
+            console.warn(`Código HTTP recibido: ${error.response && error.response.status}`)
+          }
           lastError = error
           if (attempt < maxRetries) {
-            await new Promise((r) => setTimeout(r, 3000))
+            await new Promise((resolve) => setTimeout(resolve, 3000))
           }
         }
       }
@@ -583,21 +588,11 @@ export default {
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
 
         let data_from_api = []
-        await this.retryAxiosPost([proxy, api].join('/'), null, 3, (data) => {
-          const isValidDataStructure =
-            typeof data === 'object' &&
-            data.result &&
-            data.result.ticket_details &&
-            data.result.ticket_details.seat_fare_details &&
-            data.result.ticket_details.seat_fare_details[0] &&
-            data.result.ticket_details.seat_fare_details[0].seat_detail
-
-          if (!isValidDataStructure) {
-            throw new Error('Estructura de datos del ticket incompleta o inválida, ir a retry')
-          }
-        })
-          .then(({ data }) => {
-            console.log('confirm_booking', data)
+        await this.retryAxiosPost(
+          [proxy, api].join('/'),
+          null,
+          3,
+          (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
               data.result &&
@@ -606,8 +601,13 @@ export default {
               data.result.ticket_details.seat_fare_details[0] &&
               data.result.ticket_details.seat_fare_details[0].seat_detail
             if (!isValidDataStructure) {
-              return Promise.reject(new Error('Estructura de datos del ticket incompleta o inválida, ir a retry'))
+              throw new Error('Estructura de datos del ticket incompleta o inválida, ir a retry')
             }
+          },
+          { timeout: 5000 }
+        )
+          .then(({ data }) => {
+            console.log('confirm_booking', data)
             let ticket_info = data.result.ticket_details
             let response_boleto = ticket_info.ticket_number
             let response_codigo = ticket_info.operator_pnr
