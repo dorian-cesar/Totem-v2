@@ -24,6 +24,7 @@ export default {
       let api = ''
 
       const rut = localStorage.getItem('rut')
+      localStorage.setItem('id_bus', service)
 
       if ('add' === option)
         api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
@@ -84,6 +85,7 @@ export default {
             estado_boleto: `Reserva fallida - Intento: ${attempt}`,
             codigo_autorizacion: '',
             id_pos: '',
+            id_bus: service,
             tipo_tarjeta: '',
             tarjeta_marca: '',
             codigo_transaccion: '',
@@ -123,6 +125,7 @@ export default {
               estado_boleto: 'Reserva fallida - Máximo intentos',
               codigo_autorizacion: '',
               id_pos: '',
+              id_bus: service,
               tipo_tarjeta: '',
               tarjeta_marca: '',
               codigo_transaccion: '',
@@ -170,6 +173,7 @@ export default {
           estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
           codigo_autorizacion: '',
           id_pos: '',
+          id_bus: service,
           tipo_tarjeta: '',
           tarjeta_marca: '',
           codigo_transaccion: '',

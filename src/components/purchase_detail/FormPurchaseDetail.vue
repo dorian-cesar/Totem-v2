@@ -152,6 +152,7 @@ export default {
             // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
             id_pos: '',
+            id_bus: localStorage.getItem('id_bus'),
             codigo_transaccion: '',
             tipo_tarjeta: '',
             tarjeta_marca: '',
@@ -274,38 +275,6 @@ export default {
       }
     },
 
-    //inicio del proceso de pago
-    // pagarAtendedor() {
-    //   console.log("- methods:pagar", this.propsPersonalInformation.tickets)
-    //   console.log(
-    //     "- methods:pagar",
-    //     "! Fijar el tiempo de espera con setTimeout 150*1000",
-    //     "-> checkStatusConn"
-    //   );
-    //   this.$bvModal.show("modal-payment-atendedor-control"); //<- Pantalla modal de espera
-    //   clearTimeout(this.timeClose); //<- Borrar variable de tiempo de espera
-    //   this.timeChangeEstatus = false; //<- Variable de estado del vencimiento del tiempo de espera
-
-    //   this.axios.post(
-    //     'https://s1.ntic.cl/totem-costa-handler/index.php',
-    //     {
-    //       type: 'pagar-atendedor',
-    //       data: {
-    //         tickets: this.propsPersonalInformation.tickets,
-    //       },
-    //       name: this.info.totemName
-    //     }
-    //   )
-    //   this.timeClose = setTimeout(
-    //     function () {
-    //       this.timeChangeEstatus = true; //<- Se acabó el tiempo
-    //     }.bind(this),
-    //     15 * 1000
-    //   ); // <- 100 segundos Tiempo máximo de espera para cambiar el estado del modal
-
-    //   // Comprobar los errores de POS, impresora e internet (3)
-    //   // this.checkStatusConn(); // -> watch errorWebSocket (4)
-    // },
     //guardar transacción en la API de Pullman (1)
     saveTransaction: async function () {
       this.loadingGuardarTransaccion = true
@@ -527,6 +496,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
+              id_bus: localStorage.getItem('id_bus'),
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
@@ -566,6 +536,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
+              id_bus: localStorage.getItem('id_bus'),
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
