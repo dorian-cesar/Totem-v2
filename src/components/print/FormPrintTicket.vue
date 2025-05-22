@@ -29,6 +29,7 @@
               </b-row>
             </b-card-text>
           </b-card>
+          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px;">Si no tiene el número de su boleto, pregunte al operador(a) con su rut.</p>
           <div :class="keyboardClass"></div>
         </b-col>
       </b-row>
