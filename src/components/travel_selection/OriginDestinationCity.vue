@@ -36,6 +36,7 @@
             style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
             autocomplete="off"
           />
+          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px;">Porfavor, ingrese su rut para la reimpresión de su boleto en caso de pérdida.</p>
           <!-- Teclado virtual para rut -->
           <div v-if="mostrarTeclado" class="teclado-virtual">
             <div class="fila-teclas">
