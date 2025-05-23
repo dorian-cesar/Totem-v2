@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <logo class="p-3" />
-    <DateAndTime/>
+    <DateAndTime />
     <b-row align-h="center">
       <b-col cols="11">
         <router-view />
@@ -40,6 +40,26 @@ export default {
       .catch((error) => {
         console.error('Error al obtener IP desde el backend:', error)
       })
+
+    window.addEventListener('touchstart', this.showTouchCircle)
+  },
+  beforeUnmount() {
+    window.removeEventListener('touchstart', this.showTouchCircle)
+  },
+  methods: {
+    showTouchCircle(e) {
+      const touch = e.touches[0]
+      const circle = document.createElement('div')
+      circle.classList.add('touch-circle')
+      circle.style.top = `${touch.clientY - 30}px`
+      circle.style.left = `${touch.clientX - 30}px`
+      document.body.appendChild(circle)
+
+      // Eliminar el círculo tras la animación
+      setTimeout(() => {
+        document.body.removeChild(circle)
+      }, 600)
+    }
   }
 }
 </script>
@@ -58,6 +78,28 @@ body {
 * {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
     'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
+}
+
+.touch-circle {
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  background: rgba(241, 241, 241, 0.4);
+  border: 2px solid #e2e2e2;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fadeOut 0.5s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
 }
 
 @import '../assets/style/app';

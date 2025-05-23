@@ -123,7 +123,7 @@ export default {
       this.$bvModal.show('modal-payment-control')
       clearTimeout(this.timeClose)
       this.timeChangeEstatus = false
-      const simulatePOSResponse = false // true = éxito, false = fallo
+      const simulatePOSResponse = true // true = éxito, false = fallo
       if (simulatePOSResponse !== undefined) {
         console.log(`[SIMULACIÓN] Respuesta del POS: ${simulatePOSResponse ? 'ÉXITO' : 'FALLO'}`)
         const simulatedPOSResponse = {
@@ -690,7 +690,7 @@ export default {
         await this.retryAxiosPost(
           [proxy, api].join('/'),
           null,
-          3,
+          5,
           (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
