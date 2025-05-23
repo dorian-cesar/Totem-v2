@@ -52,8 +52,8 @@ export default {
         route_id: param.route_id
       }
 
-      const MAX_RETRIES = 3
-      const RETRY_DELAY_MS = 2000
+      const MAX_RETRIES = 5
+      const RETRY_DELAY_MS = 3000
 
       let attempt = 0
       let success = false
@@ -62,6 +62,7 @@ export default {
       while (attempt < MAX_RETRIES && !success) {
         try {
           console.log(`Intento ${attempt + 1} de ${MAX_RETRIES} - realizando reserva...`)
+          // console.log('parametros de tentative: ', formatParams)
           const response = await this.axios.post([proxy, api].join('/'), formatParams, {
             headers: {
               'Access-Control-Allow-Origin': '*',

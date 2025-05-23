@@ -602,7 +602,7 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 3, validateResponse, axiosConfig = {}) {
+    async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
       let lastError
 
       const bookingBase = {
