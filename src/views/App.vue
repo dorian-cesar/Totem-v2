@@ -30,6 +30,7 @@ export default {
   },
 
   mounted() {
+    document.addEventListener('contextmenu', e => e.preventDefault());
     axios
       .get(this.info.urlGetIp)
       .then((resIp) => {
@@ -75,6 +76,10 @@ body {
 * {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
     'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
 }
 
 .touch-circle {
