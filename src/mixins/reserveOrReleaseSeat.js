@@ -52,7 +52,7 @@ export default {
         route_id: param.route_id
       }
 
-      const MAX_RETRIES = 5
+      const MAX_RETRIES = 10
       const RETRY_DELAY_MS = 3000
 
       let attempt = 0
