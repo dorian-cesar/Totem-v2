@@ -604,7 +604,6 @@ export default {
 
     async retryAxiosPost(url, data, maxRetries = 10, validateResponse, axiosConfig = {}) {
       let lastError
-
       const bookingBase = {
         numTotem: localStorage.getItem('ipServer'),
         rut: localStorage.getItem('rut') || 'empty',
@@ -626,7 +625,6 @@ export default {
         hora_transaccion: this.dataPOS.realTime,
         total_transaccion: this.dataPOS.amount / this.reservationCodes.length
       }
-
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           console.log(`Intento ${attempt} de ${maxRetries} - realizando confirmación...`)
@@ -634,29 +632,34 @@ export default {
           if (validateResponse) {
             validateResponse(response.data)
           }
+          console.log(`Confirmación exitosa en intento ${attempt}`)
           return response
         } catch (error) {
           lastError = error
           const isServerDown = !error.response
+          console.error('Error completo:', {
+            message: error.message,
+            code: error.code,
+            config: error.config,
+            isAxiosError: error.isAxiosError,
+            response: error.response
+          })
 
           const bookingData = {
             ...bookingBase,
             estado_boleto: `Confirmación fallida - Intento: ${attempt}`
           }
-
           try {
             await this.axios.post(this.info.urlLogs, { bookingData })
             console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
           } catch (logError) {
             console.error(`Error al guardar intento ${attempt} en DB:`, logError)
           }
-
           if (isServerDown) {
             console.warn(`El servidor no respondió o está caído (sin response)`)
           } else {
             console.warn(`Código HTTP recibido: ${error.response && error.response.status}`)
           }
-
           if (attempt < maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, 3000))
           }
@@ -703,7 +706,7 @@ export default {
               throw new Error('Estructura de datos del ticket incompleta o inválida, ir a retry')
             }
           },
-          { timeout: 5000 }
+          { timeout: 10000 }
         )
           .then(({ data }) => {
             console.log('confirm_booking', data)
