@@ -54,15 +54,7 @@
             <div class="fila-teclas">
               <button @click="agregarCaracter('K')">K</button>
               <button @click="agregarCaracter('-')">-</button>
-              <button
-                @mousedown="startBorrar"
-                @mouseup="stopBorrar"
-                @mouseleave="stopBorrar"
-                @touchstart.prevent="startBorrar"
-                @touchend="stopBorrar"
-              >
-                ⌫
-              </button>
+              <button @click="borrarUltimo()">⌫</button>
               <button @click="ocultarTeclado()">Cerrar</button>
             </div>
           </div>
@@ -181,20 +173,10 @@ export default {
     },
 
     borrarUltimo() {
-      this.rut = this.rut.slice(0, -1)
-      this.rut = this.formatearRut(this.rut)
-    },
-    startBorrar() {
-      this.borrarUltimo()
-      this.holdTimeout = setTimeout(() => {
-        this.deleteInterval = setInterval(() => {
-          this.borrarUltimo()
-        }, 150)
-      }, 1000)
-    },
-    stopBorrar() {
-      clearTimeout(this.holdTimeout)
-      clearInterval(this.deleteInterval)
+      if (this.rut.length > 0) {
+        this.rut = this.rut.slice(0, -1)
+        this.rut = this.formatearRut(this.rut)
+      }
     },
 
     ocultarTeclado() {
