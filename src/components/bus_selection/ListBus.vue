@@ -45,6 +45,7 @@
 
             <b-col
               cols="2"
+              class="p-0"
               :ref="['station',buttonType,bus.idServicio, bus.idTerminalOrigen, bus.idTerminalDestino].join('-')"
               :data-hour-departure="bus.horaSalida"
             >
@@ -60,7 +61,7 @@
               <h4><b>{{ bus.horaSalida }}</b></h4>
             </b-col>
 
-            <b-col cols="2" class="text-left">
+            <b-col cols="2">
               <h6>{{ bus.servicioPrimerPiso }}</h6>
               <!-- <h6>{{ (bus.servicioSegundoPiso) ? bus.servicioSegundoPiso : '' }}</h6> -->
             </b-col>
