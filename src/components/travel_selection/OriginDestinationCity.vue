@@ -36,7 +36,9 @@
             style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
             autocomplete="off"
           />
-          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px;">Porfavor, ingrese su rut para la reimpresión de su boleto en caso de pérdida.</p>
+          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px">
+            Porfavor, ingrese su rut para la reimpresión de su boleto en caso de pérdida.
+          </p>
           <!-- Teclado virtual para rut -->
           <div v-if="mostrarTeclado" class="teclado-virtual">
             <div class="fila-teclas">
@@ -51,7 +53,15 @@
             </div>
             <div class="fila-teclas">
               <button @click="agregarCaracter('K')">K</button>
-              <button @click="borrarUltimo()">⌫</button>
+              <button
+                @mousedown="startBorrar"
+                @mouseup="stopBorrar"
+                @mouseleave="stopBorrar"
+                @touchstart.prevent="startBorrar"
+                @touchend="stopBorrar"
+              >
+                ⌫
+              </button>
               <button @click="ocultarTeclado()">Cerrar</button>
             </div>
           </div>
@@ -107,7 +117,9 @@ export default {
     rut: '',
     mostrarTeclado: false,
     teclasFila1: ['1', '2', '3', '4', '5'],
-    teclasFila2: ['6', '7', '8', '9', '0']
+    teclasFila2: ['6', '7', '8', '9', '0'],
+    holdTimeout: null,
+    deleteInterval: null
   }),
   components: { selectInput: Select },
   watch: {
@@ -170,6 +182,21 @@ export default {
     borrarUltimo() {
       this.rut = this.rut.slice(0, -1)
       this.rut = this.formatearRut(this.rut)
+    },
+    startBorrar() {
+      this.borrarUltimo() // borra una vez al inicio
+
+      // inicia un temporizador de espera
+      this.holdTimeout = setTimeout(() => {
+        // luego de 1 segundo, comienza a borrar en intervalos
+        this.deleteInterval = setInterval(() => {
+          this.borrarUltimo()
+        }, 100) // cada 100ms
+      }, 1000) // espera 1 segundo antes de borrar en bucle
+    },
+    stopBorrar() {
+      clearTimeout(this.holdTimeout)
+      clearInterval(this.deleteInterval)
     },
 
     ocultarTeclado() {
@@ -368,10 +395,12 @@ export default {
   border: none;
   color: #111;
   cursor: pointer;
+  transition: background-color 0.1s ease;
 }
 
-.teclado-virtual button:hover {
-  background-color: #93c5fd;
+.teclado-virtual button:active {
+  background-color: #60a5fa;
+  transition: none;
 }
 </style>
 
