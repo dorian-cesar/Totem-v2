@@ -62,7 +62,7 @@ export default {
       while (attempt < MAX_RETRIES && !success) {
         try {
           console.log(`Intento ${attempt + 1} de ${MAX_RETRIES} - realizando reserva...`)
-          // console.log('parametros de tentative: ', formatParams)
+          // console.log(formatParams)
           const response = await this.axios.post([proxy, api].join('/'), formatParams, {
             headers: {
               'Access-Control-Allow-Origin': '*',
