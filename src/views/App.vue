@@ -86,7 +86,7 @@ body {
   position: absolute;
   width: 55px;
   height: 55px;
-  background: rgba(241, 241, 241, 0.4);
+  background: rgba(241, 241, 241, 0.45);
   border: 2px solid #e2e2e2;
   border-radius: 50%;
   pointer-events: none;
