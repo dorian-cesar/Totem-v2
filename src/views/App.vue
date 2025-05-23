@@ -54,8 +54,6 @@ export default {
       circle.style.top = `${touch.clientY - 30}px`
       circle.style.left = `${touch.clientX - 30}px`
       document.body.appendChild(circle)
-
-      // Eliminar el círculo tras la animación
       setTimeout(() => {
         document.body.removeChild(circle)
       }, 600)
@@ -89,6 +87,7 @@ body {
   border-radius: 50%;
   pointer-events: none;
   animation: fadeOut 0.5s ease-out forwards;
+  z-index: 9999;
 }
 
 @keyframes fadeOut {
