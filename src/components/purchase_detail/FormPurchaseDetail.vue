@@ -227,6 +227,38 @@ export default {
             error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
             error.message.includes('ERR_CONNECTION_REFUSED')
           ) {
+            const bookingData = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: localStorage.getItem('rut') || 'empty',
+              origen: this.$store.state.TravelSelection.nameDepartureCity,
+              destino: this.$store.state.TravelSelection.nameArrivalCity,
+              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+              asiento: this.propsPersonalInformation.tickets[0].seat,
+              codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+              // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+              estado_boleto: 'Reservado',
+              id_pos: '',
+              id_bus: localStorage.getItem('id_bus'),
+              codigo_transaccion: '',
+              tipo_tarjeta: '',
+              tarjeta_marca: '',
+              codigo_autorizacion: '',
+              estado_transaccion: 'Error de conexión POS',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
+            this.axios
+              .post(this.info.urlLogs, { bookingData })
+              .then(() => {
+                console.log('Error guardado en DB (pagarPos)')
+                console.log('Datos para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, pagarPOS: ', error)
+              })
             this.propsPaymentControl.msgError = 'No existe conexión con el POS\nPOS desconectado'
           } else {
             this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS'
@@ -362,6 +394,27 @@ export default {
 
     async retryAxiosPost(url, data, maxRetries = 3, validateResponse, axiosConfig = {}) {
       let lastError
+      const bookingBase = {
+        numTotem: localStorage.getItem('ipServer'),
+        rut: localStorage.getItem('rut') || 'empty',
+        origen: this.$store.state.TravelSelection.nameDepartureCity,
+        destino: this.$store.state.TravelSelection.nameArrivalCity,
+        fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+        hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+        asiento: this.propsPersonalInformation.tickets[0].seat,
+        codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+        codigo_transaccion: this.dataPOS.ticket,
+        codigo_autorizacion: this.dataPOS.authorizationCode,
+        id_pos: this.dataPOS.terminalId,
+        id_bus: localStorage.getItem('id_bus'),
+        tipo_tarjeta: this.dataPOS.cardType,
+        tarjeta_marca: this.dataPOS.cardBrand,
+        estado_transaccion: 'Pago realizado',
+        numero_transaccion: this.dataPOS.operationNumber,
+        fecha_transaccion: this.dataPOS.realDate,
+        hora_transaccion: this.dataPOS.realTime,
+        total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+      }
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           console.log(`Intento ${attempt} de ${maxRetries} - realizando confirmación...`)
@@ -371,14 +424,24 @@ export default {
           }
           return response
         } catch (error) {
+          lastError = error
           const isServerDown = !error.response
-          console.warn(`Error en intento ${attempt}: ${error.message}`)
+
+          const bookingData = {
+            ...bookingBase,
+            estado_boleto: `Confirmación fallida - Intento: ${attempt}`
+          }
+          try {
+            await this.axios.post(this.info.urlLogs, { bookingData })
+            console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
+          } catch (logError) {
+            console.error(`Error al guardar intento ${attempt} en DB:`, logError)
+          }
           if (isServerDown) {
             console.warn(`El servidor no respondió o está caído (sin response)`)
           } else {
             console.warn(`Código HTTP recibido: ${error.response && error.response.status}`)
           }
-          lastError = error
           if (attempt < maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, 3000))
           }
