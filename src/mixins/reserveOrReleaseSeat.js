@@ -52,8 +52,8 @@ export default {
         route_id: param.route_id
       }
 
-      const MAX_RETRIES = 3
-      const RETRY_DELAY_MS = 2000
+      const MAX_RETRIES = 5
+      const RETRY_DELAY_MS = 3000
 
       let attempt = 0
       let success = false
