@@ -430,12 +430,24 @@ export default {
             message: error.message,
             code: error.code,
             isAxiosError: error.isAxiosError,
-            response: error.response
+            response: {
+              status: (error.response && error.response.status) || null,
+              data: (error.response && error.response.data) || null
+            }
           })
 
           const bookingData = {
             ...bookingBase,
-            estado_boleto: `Confirmación fallida - Intento: ${attempt}`
+            estado_boleto: `Confirmación fallida - Intento: ${attempt}`,
+            error: {
+              message: error.message,
+              code: error.code,
+              isAxiosError: error.isAxiosError,
+              response: {
+                status: (error.response && error.response.status) || null,
+                data: (error.response && error.response.data) || null
+              }
+            }
           }
           try {
             await this.axios.post(this.info.urlLogs, { bookingData })
@@ -612,7 +624,16 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+              error: {
+                message: error.message,
+                code: error.code,
+                isAxiosError: error.isAxiosError,
+                response: {
+                  status: (error.response && error.response.status) || null,
+                  data: (error.response && error.response.data) || null
+                }
+              }
             }
 
             this.axios
