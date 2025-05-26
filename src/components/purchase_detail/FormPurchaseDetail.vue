@@ -755,9 +755,10 @@ export default {
         this.propsPaymentAtendedorControl.isChangeStatus = false
         //Valores guardarTransaccion
         this.isErrorGuardarTransaccion = false
-        this.loadingGuardarTransaccion = true
+        // this.loadingGuardarTransaccion = true
         //Contador de intentos de pago
         this.countModal++
+        this.pagarPOS()
         console.log('+ watch:nameActionModal', 'nameActionModal = ' + this.nameActionModal, '-> goHome')
       }
       this.nameActionModal = ''
