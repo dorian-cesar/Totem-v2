@@ -602,7 +602,7 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 10, validateResponse, axiosConfig = {}) {
+    async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
       let lastError
       const bookingBase = {
         numTotem: localStorage.getItem('ipServer'),
@@ -640,11 +640,9 @@ export default {
           console.error('Error completo:', {
             message: error.message,
             code: error.code,
-            config: error.config,
             isAxiosError: error.isAxiosError,
             response: error.response
           })
-
           const bookingData = {
             ...bookingBase,
             estado_boleto: `Confirmación fallida - Intento: ${attempt}`
@@ -680,7 +678,7 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        const proxy = 'https://newstg3-gdsbus.kupos.c'
         const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         // const proxy = "https://gds.kupos.com"
@@ -693,7 +691,7 @@ export default {
         await this.retryAxiosPost(
           [proxy, api].join('/'),
           null,
-          10,
+          5,
           (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
