@@ -74,7 +74,7 @@ export default {
         } catch (error) {
           const bookingData = {
             numTotem: localStorage.getItem('ipServer'),
-            rut: localStorage.getItem('rut') || 'empty',
+            rut: localStorage.getItem('rut') || 'Sin RUT',
             origen: this.$store.state.TravelSelection.nameDepartureCity,
             destino: this.$store.state.TravelSelection.nameArrivalCity,
             fecha_viaje: param.fecha,
@@ -114,7 +114,7 @@ export default {
             this.isLoadingReservation = false
             const bookingData = {
               numTotem: localStorage.getItem('ipServer'),
-              rut: rut || 'empty',
+              rut: rut || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
               fecha_viaje: param.fecha,
@@ -162,7 +162,7 @@ export default {
 
         const bookingData = {
           numTotem: localStorage.getItem('ipServer'),
-          rut: rut || 'empty',
+          rut: rut || 'Sin RUT',
           origen: this.$store.state.TravelSelection.nameDepartureCity,
           destino: this.$store.state.TravelSelection.nameArrivalCity,
           fecha_viaje: param.fecha,

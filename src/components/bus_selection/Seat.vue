@@ -211,7 +211,7 @@
           trip: trip,
           date: date,
           name: '', // <- name del prepend(Boleto 1, Boleto 2,...)
-          rut: rut || 'empty', // <- rut del cliente
+          rut: rut || 'Sin RUT', // <- rut del cliente
           // nuevos
           servicio: servicio,
           fechaServicio: date,
