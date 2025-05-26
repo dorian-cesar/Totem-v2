@@ -95,6 +95,7 @@ export default {
     this.checkServerStatus()
     this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
     localStorage.removeItem('rut');
+    localStorage.removeItem('id_bus');
   },
   beforeDestroy() {
     if (this.monitorInterval) {
