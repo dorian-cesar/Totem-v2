@@ -973,7 +973,7 @@ export default {
         this.propsPaymentAtendedorControl.isChangeStatus = false
         //Valores guardarTransaccion
         this.isErrorGuardarTransaccion = false
-        this.loadingGuardarTransaccion = false
+        // this.loadingGuardarTransaccion = true
         //Contador de intentos de pago
         this.countModal++
         this.pagarPOS()
