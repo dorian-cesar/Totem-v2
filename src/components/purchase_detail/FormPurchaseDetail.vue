@@ -392,7 +392,7 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 10, validateResponse, axiosConfig = {}) {
+    async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
       let lastError
       const bookingBase = {
         numTotem: localStorage.getItem('ipServer'),
@@ -426,6 +426,12 @@ export default {
         } catch (error) {
           lastError = error
           const isServerDown = !error.response
+          console.error('Error completo:', {
+            message: error.message,
+            code: error.code,
+            isAxiosError: error.isAxiosError,
+            response: error.response
+          })
 
           const bookingData = {
             ...bookingBase,
@@ -475,7 +481,7 @@ export default {
         await this.retryAxiosPost(
           [proxy, api].join('/'),
           null,
-          10,
+          5,
           (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
