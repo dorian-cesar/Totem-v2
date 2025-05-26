@@ -174,7 +174,7 @@ export default {
         this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
         const bookingData = {
           numTotem: localStorage.getItem('ipServer'),
-          rut: localStorage.getItem('rut') || 'empty',
+          rut: localStorage.getItem('rut') || 'Sin RUT',
           origen: this.$store.state.TravelSelection.nameDepartureCity,
           destino: this.$store.state.TravelSelection.nameArrivalCity,
           fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -219,7 +219,7 @@ export default {
           this.propsPaymentControl.msgError = simulatedPOSResponse.data.data.responseMessage
           const bookingData = {
             numTotem: localStorage.getItem('ipServer'),
-            rut: localStorage.getItem('rut') || 'empty',
+            rut: localStorage.getItem('rut') || 'Sin RUT',
             origen: this.$store.state.TravelSelection.nameDepartureCity,
             destino: this.$store.state.TravelSelection.nameArrivalCity,
             fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -285,7 +285,7 @@ export default {
     //       //inicializar variables
     //       const bookingData = {
     //         numTotem: localStorage.getItem('ipServer'),
-    //         rut: localStorage.getItem('rut') || 'empty',
+    //         rut: localStorage.getItem('rut') || 'Sin RUT',
     //         origen: this.$store.state.TravelSelection.nameDepartureCity,
     //         destino: this.$store.state.TravelSelection.nameArrivalCity,
     //         fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -372,7 +372,7 @@ export default {
     //       ) {
     //         const bookingData = {
     //           numTotem: localStorage.getItem('ipServer'),
-    //           rut: localStorage.getItem('rut') || 'empty',
+    //           rut: localStorage.getItem('rut') || 'Sin RUT',
     //           origen: this.$store.state.TravelSelection.nameDepartureCity,
     //           destino: this.$store.state.TravelSelection.nameArrivalCity,
     //           fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -606,7 +606,7 @@ export default {
       let lastError
       const bookingBase = {
         numTotem: localStorage.getItem('ipServer'),
-        rut: localStorage.getItem('rut') || 'empty',
+        rut: localStorage.getItem('rut') || 'Sin RUT',
         origen: this.$store.state.TravelSelection.nameDepartureCity,
         destino: this.$store.state.TravelSelection.nameArrivalCity,
         fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -742,7 +742,7 @@ export default {
             let response_ticket = {
               boleto: response_boleto.toString(),
               codigo: response_codigo.toString(),
-              rut: localStorage.getItem('rut') || 'empty',
+              rut: localStorage.getItem('rut') || 'Sin RUT',
               servicio: response_servicio,
               ruta: response_ruta,
               piso: response_piso,
@@ -766,7 +766,7 @@ export default {
 
             const bookingData = {
               numTotem: localStorage.getItem('ipServer'),
-              rut: localStorage.getItem('rut') || 'empty',
+              rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: response_ticket.destino,
               fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
@@ -806,7 +806,7 @@ export default {
 
             const bookingData = {
               numTotem: localStorage.getItem('ipServer'),
-              rut: localStorage.getItem('rut') || 'empty',
+              rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
               fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
