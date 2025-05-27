@@ -394,27 +394,7 @@ export default {
 
     async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
       let lastError
-      const bookingBase = {
-        numTotem: localStorage.getItem('ipServer'),
-        rut: localStorage.getItem('rut') || 'Sin RUT',
-        origen: this.$store.state.TravelSelection.nameDepartureCity,
-        destino: this.$store.state.TravelSelection.nameArrivalCity,
-        fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-        hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-        asiento: this.propsPersonalInformation.tickets[0].seat,
-        codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-        codigo_transaccion: this.dataPOS.ticket,
-        codigo_autorizacion: this.dataPOS.authorizationCode,
-        id_pos: this.dataPOS.terminalId,
-        id_bus: localStorage.getItem('id_bus'),
-        tipo_tarjeta: this.dataPOS.cardType,
-        tarjeta_marca: this.dataPOS.cardBrand,
-        estado_transaccion: 'Pago realizado',
-        numero_transaccion: this.dataPOS.operationNumber,
-        fecha_transaccion: this.dataPOS.realDate,
-        hora_transaccion: this.dataPOS.realTime,
-        total_transaccion: this.dataPOS.amount / this.reservationCodes.length
-      }
+
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           console.log(`Intento ${attempt} de ${maxRetries} - realizando confirmación...`)
@@ -422,49 +402,71 @@ export default {
           if (validateResponse) {
             validateResponse(response.data)
           }
+          console.log(`Confirmación exitosa en intento ${attempt}`)
           return response
         } catch (error) {
           lastError = error
           const isServerDown = !error.response
-          console.error('Error completo:', {
-            message: error.message,
-            code: error.code,
-            isAxiosError: error.isAxiosError,
-            response: {
-              status: (error.response && error.response.status) || null,
-              data: (error.response && error.response.data) || null
-            }
-          })
 
-          const bookingData = {
-            ...bookingBase,
-            estado_boleto: `Confirmación fallida - Intento: ${attempt}`,
-            error: {
-              message: error.message,
-              code: error.code,
-              isAxiosError: error.isAxiosError,
-              response: {
-                status: (error.response && error.response.status) || null,
-                data: (error.response && error.response.data) || null
+          for (const ticket of this.propsPersonalInformation.tickets) {
+            const bookingBase = {
+              numTotem: localStorage.getItem('ipServer'),
+              rut: localStorage.getItem('rut') || 'Sin RUT',
+              origen: this.$store.state.TravelSelection.nameDepartureCity,
+              destino: this.$store.state.TravelSelection.nameArrivalCity,
+              fecha_viaje: ticket.fechaServicio,
+              hora_viaje: ticket.horaSalida,
+              asiento: ticket.seat,
+              codigo_reserva: ticket.codeReservation,
+              codigo_transaccion: this.dataPOS.ticket,
+              codigo_autorizacion: this.dataPOS.authorizationCode,
+              id_pos: this.dataPOS.terminalId,
+              id_bus: localStorage.getItem('id_bus'),
+              tipo_tarjeta: this.dataPOS.cardType,
+              tarjeta_marca: this.dataPOS.cardBrand,
+              estado_transaccion: 'Pago realizado',
+              numero_transaccion: this.dataPOS.operationNumber,
+              fecha_transaccion: this.dataPOS.realDate,
+              hora_transaccion: this.dataPOS.realTime,
+              total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+            }
+
+            const bookingData = {
+              ...bookingBase,
+              estado_boleto: `Confirmación fallida - Intento: ${attempt}`,
+              error: {
+                message: error.message,
+                code: error.code,
+                isAxiosError: error.isAxiosError,
+                response: {
+                  status: (error.response && error.response.status) || null,
+                  data: (error.response && error.response.data) || null
+                }
               }
             }
+
+            console.log('bookingData:', bookingData)
+
+            try {
+              await this.axios.post(this.info.urlLogs, { bookingData })
+              console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
+            } catch (logError) {
+              console.error(`Error al guardar intento ${attempt} en DB:`, logError)
+            }
           }
-          try {
-            await this.axios.post(this.info.urlLogs, { bookingData })
-            console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
-          } catch (logError) {
-            console.error(`Error al guardar intento ${attempt} en DB:`, logError)
-          }
+
           if (isServerDown) {
             console.warn(`El servidor no respondió o está caído (sin response)`)
           } else {
             console.warn(`Código HTTP recibido: ${error.response && error.response.status}`)
           }
+
           if (attempt < maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, 3000))
           }
         }
       }
+
       throw lastError
     },
 
@@ -480,14 +482,20 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        // const proxy = 'https://newstg3-gdsbus.kupos.c'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        const proxy = 'https://gds.kupos.com'
+        const proxy = "https://gds.kupos.com"
         const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
+
+        const ticket = this.propsPersonalInformation.tickets.find((t) => t.codeReservation === rc)
+        if (!ticket) {
+          console.error(`No se encontró ticket con código de reserva ${rc}`)
+          continue
+        }
 
         let data_from_api = []
         await this.retryAxiosPost(
@@ -506,20 +514,10 @@ export default {
               throw new Error('Estructura de datos del ticket incompleta o inválida, ir a retry')
             }
           },
-          { timeout: 5000 }
+          { timeout: 10000 }
         )
           .then(({ data }) => {
             console.log('confirm_booking', data)
-            const isValidDataStructure =
-              typeof data === 'object' &&
-              data.result &&
-              data.result.ticket_details &&
-              data.result.ticket_details.seat_fare_details &&
-              data.result.ticket_details.seat_fare_details[0] &&
-              data.result.ticket_details.seat_fare_details[0].seat_detail
-            if (!isValidDataStructure) {
-              return Promise.reject(new Error('Estructura de datos del ticket incompleta o inválida, ir a retry'))
-            }
             let ticket_info = data.result.ticket_details
             let response_boleto = ticket_info.ticket_number
             let response_codigo = ticket_info.operator_pnr
@@ -568,8 +566,8 @@ export default {
               rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: response_ticket.destino,
-              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+              fecha_viaje: ticket.fechaServicio,
+              hora_viaje: ticket.horaSalida,
               asiento: response_ticket.asiento,
               codigo_reserva: response_ticket.boleto,
               numero_boleto: response_ticket.codigo,
@@ -608,10 +606,10 @@ export default {
               rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
               destino: this.$store.state.TravelSelection.nameArrivalCity,
-              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-              asiento: this.propsPersonalInformation.tickets[0].seat,
-              codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+              fecha_viaje: ticket.fechaServicio,
+              hora_viaje: ticket.horaSalida,
+              asiento: ticket.seat,
+              codigo_reserva: ticket.codeReservation,
               // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Confirmación fallida',
               codigo_transaccion: this.dataPOS.ticket,
