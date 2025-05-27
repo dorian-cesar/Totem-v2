@@ -392,7 +392,7 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
+    async retryAxiosPost(url, data, maxRetries = 3, validateResponse, axiosConfig = {}) {
       let lastError
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -501,7 +501,7 @@ export default {
         await this.retryAxiosPost(
           [proxy, api].join('/'),
           null,
-          5,
+          3,
           (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
