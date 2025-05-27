@@ -603,7 +603,7 @@ export default {
       return ruta.trip
     },
 
-    async retryAxiosPost(url, data, maxRetries = 5, validateResponse, axiosConfig = {}) {
+    async retryAxiosPost(url, data, maxRetries = 3, validateResponse, axiosConfig = {}) {
       let lastError
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -693,7 +693,7 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        const proxy = 'https://newstg3-gdsbus.kupos.c'
+        const proxy = 'https://newstg3-gdsbus.kupos.cl'
         const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         // const proxy = "https://gds.kupos.com"
@@ -712,7 +712,7 @@ export default {
         await this.retryAxiosPost(
           [proxy, api].join('/'),
           null,
-          5,
+          3,
           (data) => {
             const isValidDataStructure =
               typeof data === 'object' &&
