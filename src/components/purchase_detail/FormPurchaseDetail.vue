@@ -152,7 +152,7 @@ export default {
             // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
             id_pos: '',
-            id_bus: localStorage.getItem('id_bus'),
+            id_bus: this.propsPersonalInformation.tickets[0].servicio,
             codigo_transaccion: '',
             tipo_tarjeta: '',
             tarjeta_marca: '',
@@ -239,7 +239,7 @@ export default {
               // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Reservado',
               id_pos: '',
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: this.propsPersonalInformation.tickets[0].servicio,
               codigo_transaccion: '',
               tipo_tarjeta: '',
               tarjeta_marca: '',
@@ -421,7 +421,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
@@ -482,7 +482,7 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        // const proxy = 'https://newstg3-gdsbus.kupos.c'
+        // const proxy = 'https://newstg3-gdsbus.kupos.cl'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         const proxy = "https://gds.kupos.com"
@@ -575,7 +575,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
@@ -615,7 +615,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',

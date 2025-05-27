@@ -59,6 +59,8 @@ export default {
       let success = false
       let data = null
 
+      const id_bus = service
+
       while (attempt < MAX_RETRIES && !success) {
         try {
           console.log(`Intento ${attempt + 1} de ${MAX_RETRIES} - realizando reserva...`)
@@ -85,7 +87,7 @@ export default {
             estado_boleto: `Reserva fallida - Intento: ${attempt}`,
             codigo_autorizacion: '',
             id_pos: '',
-            id_bus: localStorage.getItem('id_bus'),
+            id_bus: id_bus,
             tipo_tarjeta: '',
             tarjeta_marca: '',
             codigo_transaccion: '',
@@ -125,7 +127,7 @@ export default {
               estado_boleto: 'Reserva fallida - Máximo intentos',
               codigo_autorizacion: '',
               id_pos: '',
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: id_bus,
               tipo_tarjeta: '',
               tarjeta_marca: '',
               codigo_transaccion: '',
@@ -173,7 +175,7 @@ export default {
           estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
           codigo_autorizacion: '',
           id_pos: '',
-          id_bus: localStorage.getItem('id_bus'),
+          id_bus: id_bus,
           tipo_tarjeta: '',
           tarjeta_marca: '',
           codigo_transaccion: '',
