@@ -159,6 +159,7 @@ export default {
           }
         }
         console.log('Pago procesado (simulado):', simulatedPOSResponse.data)
+        // console.log("personalinfo: ", this.propsPersonalInformation)
         this.dataPOS = simulatedPOSResponse.data.data
         // formatear fecha y hora para DB
         let formattedDate = ''
@@ -186,7 +187,7 @@ export default {
           codigo_transaccion: simulatePOSResponse ? this.dataPOS.ticket : '',
           codigo_autorizacion: simulatePOSResponse ? this.dataPOS.authorizationCode : '',
           id_pos: simulatePOSResponse ? this.dataPOS.terminalId : '',
-          id_bus: localStorage.getItem('id_bus'),
+          id_bus: this.propsPersonalInformation.tickets[0].servicio,
           tipo_tarjeta: simulatePOSResponse ? this.dataPOS.cardType : '',
           tarjeta_marca: simulatePOSResponse ? this.dataPOS.cardBrand : '',
           estado_transaccion: simulatePOSResponse ? 'Pago realizado' : 'Pago fallido',
@@ -229,7 +230,7 @@ export default {
             // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
             id_pos: '',
-            id_bus: localStorage.getItem('id_bus'),
+            id_bus: this.propsPersonalInformation.tickets[0].servicio,
             codigo_transaccion: '',
             tipo_tarjeta: '',
             tarjeta_marca: '',
@@ -295,7 +296,7 @@ export default {
     //         // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
     //         estado_boleto: 'Reservado',
     //         id_pos: '',
-    //         id_bus: localStorage.getItem('id_bus'),
+    //         id_bus: this.propsPersonalInformation.tickets[0].servicio,
     //         codigo_transaccion: '',
     //         tipo_tarjeta: '',
     //         tarjeta_marca: '',
@@ -382,7 +383,7 @@ export default {
     //           // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
     //           estado_boleto: 'Reservado',
     //           id_pos: '',
-    //           id_bus: localStorage.getItem('id_bus'),
+    //           id_bus: this.propsPersonalInformation.tickets[0].servicio,
     //           codigo_transaccion: '',
     //           tipo_tarjeta: '',
     //           tarjeta_marca: '',
@@ -631,7 +632,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
@@ -750,7 +751,7 @@ export default {
               boleto: response_boleto.toString(),
               codigo: response_codigo.toString(),
               rut: localStorage.getItem('rut') || 'Sin RUT',
-              servicio: response_servicio,
+              servicio: response_servicio, 
               ruta: response_ruta,
               piso: response_piso,
               asiento: response_asiento,
@@ -764,6 +765,7 @@ export default {
             }
 
             ticketsGeneradosFormatted.boletos.push(response_ticket)
+            console.log("ticketsGeneradosFormatted: ", ticketsGeneradosFormatted)
 
             // formatear fecha y hora para DB
             const rawDate = this.dataPOS.realDate
@@ -785,7 +787,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',
@@ -825,7 +827,7 @@ export default {
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: ticket.servicio,
               tipo_tarjeta: this.dataPOS.cardType,
               tarjeta_marca: this.dataPOS.cardBrand,
               estado_transaccion: 'Pago realizado',

@@ -49,7 +49,7 @@ export default {
         available_seats: param.available_seats,
         cost: param.cost,
         bus_type: param.bus_type,
-        route_id: param.route_id
+        route_id: param.route_id,
       }
 
       const MAX_RETRIES = 5
@@ -58,6 +58,8 @@ export default {
       let attempt = 0
       let success = false
       let data = null
+
+      const id_bus = service
 
       while (attempt < MAX_RETRIES && !success) {
         try {
@@ -86,7 +88,7 @@ export default {
             estado_boleto: `Reserva fallida - Intento: ${attempt}`,
             codigo_autorizacion: '',
             id_pos: '',
-            id_bus: localStorage.getItem('id_bus'),
+            id_bus: id_bus,
             tipo_tarjeta: '',
             tarjeta_marca: '',
             codigo_transaccion: '',
@@ -126,7 +128,7 @@ export default {
               estado_boleto: 'Reserva fallida - Máximo intentos',
               codigo_autorizacion: '',
               id_pos: '',
-              id_bus: localStorage.getItem('id_bus'),
+              id_bus: id_bus,
               tipo_tarjeta: '',
               tarjeta_marca: '',
               codigo_transaccion: '',
@@ -174,7 +176,7 @@ export default {
           estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
           codigo_autorizacion: '',
           id_pos: '',
-          id_bus: localStorage.getItem('id_bus'),
+          id_bus: id_bus,
           tipo_tarjeta: '',
           tarjeta_marca: '',
           codigo_transaccion: '',
