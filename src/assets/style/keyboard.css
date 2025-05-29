@@ -19,7 +19,7 @@
   overflow: hidden;
   touch-action: manipulation;
   position: fixed;
-  bottom: 115px;
+  bottom: 130px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
