@@ -167,7 +167,7 @@ export default {
       // voucher transbank
       try {
         await this.imprimirRawBT(voucher)
-        await this.delay(1500)
+        await this.delay(5000)
         console.log('Impresión enviada con éxito - transbank')
       } catch (error) {
         console.error('Error al enviar los datos de impresión', error)
@@ -202,7 +202,7 @@ export default {
         // boleto
         try {
           await this.imprimirRawBT(boletoTexto)
-          await this.delay(1500)
+          await this.delay(5000)
           console.log(`Boleto ${t.boleto} enviado con éxito`)
         } catch (error) {
           console.error(`Error al imprimir boleto ${t.boleto}`, error)
