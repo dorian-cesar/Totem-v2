@@ -164,6 +164,7 @@ export default {
         const hasTicketDetails = data && data.result && data.result.ticket_details
 
         const bookingData = {
+          site: this.info.site,
           numTotem: localStorage.getItem('ipServer'),
           rut: rut || 'Sin RUT',
           origen: this.$store.state.TravelSelection.nameDepartureCity,
