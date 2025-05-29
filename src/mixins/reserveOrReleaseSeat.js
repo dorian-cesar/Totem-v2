@@ -49,7 +49,7 @@ export default {
         available_seats: param.available_seats,
         cost: param.cost,
         bus_type: param.bus_type,
-        route_id: param.route_id,
+        route_id: param.route_id
       }
 
       const MAX_RETRIES = 3
@@ -76,6 +76,7 @@ export default {
           success = true
         } catch (error) {
           const bookingData = {
+            sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
             rut: localStorage.getItem('rut') || 'Sin RUT',
             origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -116,6 +117,7 @@ export default {
             this.codeReservation = ''
             this.isLoadingReservation = false
             const bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: rut || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
