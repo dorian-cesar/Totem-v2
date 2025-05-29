@@ -31,13 +31,7 @@ export default {
         })
         const result = response.data
         if (result.rawbt) {
-          const iframe = document.createElement('iframe')
-          iframe.style.display = 'none'
-          iframe.src = result.rawbt
-          document.body.appendChild(iframe)
-          setTimeout(() => {
-            document.body.removeChild(iframe)
-          }, 5000)
+          window.location.href = result.rawbt
         }
       } catch (error) {
         console.error('Error al imprimir - imprimirRawBT: ', error)
