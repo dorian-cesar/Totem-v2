@@ -24,31 +24,24 @@ export default {
 
   methods: {
     // endpoint para imprimir
-    async imprimirRawBT(texto) {
+    async imprimirRawBT(voucher, boleto) {
       try {
         const response = await axios.post(this.info.urlPrint, {
-          content: texto
+          content: voucher,
+          boleto: boleto
         })
         const result = response.data
         if (result.rawbt) {
-          const iframe = document.createElement('iframe')
-          iframe.style.display = 'none'
-          iframe.src = result.rawbt
-          document.body.appendChild(iframe)
-
-          // Eliminar el iframe después de un tiempo para evitar acumulación
-          setTimeout(() => {
-            document.body.removeChild(iframe)
-          }, 5000)
+          window.location.href = result.rawbt
         }
       } catch (error) {
         console.error('Error al imprimir - imprimirRawBT: ', error)
       }
     },
-    // delay para imprimir
-    delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms))
-    },
+    // // delay para imprimir
+    // delay(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms))
+    // },
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
@@ -169,17 +162,14 @@ export default {
         })
       }
 
-      // const url = this.info.urlPrint
-      // const api = '/print'
-
       // voucher transbank
-      try {
-        await this.imprimirRawBT(voucher)
-        // await this.delay(5000)
-        console.log('Impresión enviada con éxito - transbank')
-      } catch (error) {
-        console.error('Error al enviar los datos de impresión', error)
-      }
+      // try {
+      //   await this.imprimirRawBT(voucher)
+      //   // await this.delay(5000)
+      //   console.log('Impresión enviada con éxito - transbank')
+      // } catch (error) {
+      //   console.error('Error al enviar los datos de impresión', error)
+      // }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -209,8 +199,7 @@ export default {
 
         // boleto
         try {
-          await this.imprimirRawBT(boletoTexto)
-          // await this.delay(5000)
+          await this.imprimirRawBT(voucher, boletoTexto)
           console.log(`Boleto ${t.boleto} enviado con éxito`)
         } catch (error) {
           console.error(`Error al imprimir boleto ${t.boleto}`, error)
@@ -306,7 +295,7 @@ export default {
 
       try {
         await this.imprimirRawBT(voucher)
-        await this.delay(5000)
+        // await this.delay(5000)
         console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)

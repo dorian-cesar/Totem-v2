@@ -345,19 +345,19 @@ export default {
     },
 
     // endpoint para imprimir
-    async imprimirRawBT(texto) {
-      try {
-        const response = await axios.post(this.info.urlPrint, {
-          content: texto
-        })
-        const result = response.data
-        if (result.rawbt) {
-          window.location.href = result.rawbt
-        }
-      } catch (error) {
-        console.error('Error al imprimir - imprimirRawBT: ', error)
-      }
-    },
+    // async imprimirRawBT(texto) {
+    //   try {
+    //     const response = await axios.post(this.info.urlPrint, {
+    //       content: texto
+    //     })
+    //     const result = response.data
+    //     if (result.rawbt) {
+    //       window.location.href = result.rawbt
+    //     }
+    //   } catch (error) {
+    //     console.error('Error al imprimir - imprimirRawBT: ', error)
+    //   }
+    // },
 
     // imprime el boleto
     async rePrint() {
