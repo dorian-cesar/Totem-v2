@@ -389,9 +389,6 @@ export default {
         })
       }
 
-      const url = this.info.urlPrint
-      // const api = '/imprimir'
-
       try {
         for (const t of tickets) {
           let boletoTexto =
