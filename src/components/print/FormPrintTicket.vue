@@ -29,7 +29,9 @@
               </b-row>
             </b-card-text>
           </b-card>
-          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px;">Si no tiene el número de su boleto, pregunte al operador(a) con su rut.</p>
+          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px">
+            Si no tiene el número de su boleto, pregunte al operador(a) con su rut.
+          </p>
           <div :class="keyboardClass"></div>
         </b-col>
       </b-row>
@@ -124,33 +126,33 @@ export default {
         console.error('Error en GET código de reserva:', error)
         this.texto = 'No se ha podido obtener el código de reserva. Intente nuevamente más tarde.'
         let bookingData = {
-              numTotem: localStorage.getItem('ipServer'),
-              rut: 'Reimpreso',
-              origen: 'N/A',
-              destino: 'N/A',
-              fecha_viaje: 'N/A',
-              hora_viaje: 'N/A',
-              asiento: 'N/A',
-              codigo_reserva: 'N/A',
-              numero_boleto: this.codeReprint,
-              estado_boleto: 'Reimpresión fallida',
-              codigo_transaccion: '',
-              estado_transaccion: 'Intento de reimpresión',
-              numero_transaccion: '',
-              fecha_transaccion: '',
-              hora_transaccion: '',
-              total_transaccion: ''
-            }
-            this.axios
-              .post(this.info.urlLogs, {
-                bookingData: bookingData
-              })
-              .then(function () {
-                console.log('Error guardado en DB (rePrint)')
-              })
-              .catch(function (error) {
-                console.error('Error al guardar en DB, rePrint: ', error)
-              })
+          numTotem: localStorage.getItem('ipServer'),
+          rut: 'Reimpreso',
+          origen: 'N/A',
+          destino: 'N/A',
+          fecha_viaje: 'N/A',
+          hora_viaje: 'N/A',
+          asiento: 'N/A',
+          codigo_reserva: 'N/A',
+          numero_boleto: this.codeReprint,
+          estado_boleto: 'Reimpresión fallida',
+          codigo_transaccion: '',
+          estado_transaccion: 'Intento de reimpresión',
+          numero_transaccion: '',
+          fecha_transaccion: '',
+          hora_transaccion: '',
+          total_transaccion: ''
+        }
+        this.axios
+          .post(this.info.urlLogs, {
+            bookingData: bookingData
+          })
+          .then(function () {
+            console.log('Error guardado en DB (rePrint)')
+          })
+          .catch(function (error) {
+            console.error('Error al guardar en DB, rePrint: ', error)
+          })
         setTimeout(() => {
           this.texto = ''
         }, 10000)
@@ -201,7 +203,9 @@ export default {
 
             let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
             let response_fecha = ticket_info.travel_date
-            let response_hora = new Date('1970-01-01 ' + ticket_info.boarding_point_details.dep_time).toTimeString().substring(0, 5);
+            let response_hora = new Date('1970-01-01 ' + ticket_info.boarding_point_details.dep_time)
+              .toTimeString()
+              .substring(0, 5)
             let response_origen = ticket_info.boarding_point_details.landmark
             let response_destino = ticket_info.destination
             let issued_on = new Date().toLocaleString('es-CL', { hour12: false })
@@ -340,6 +344,25 @@ export default {
         })
     },
 
+    // endpoint para imprimir
+    async imprimirRawBT(texto) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          content: texto
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirRawBT: ', error)
+      }
+    },
+    // delay para imprimir
+    delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms))
+    },
+
     // imprime el boleto
     async rePrint() {
       this.codeReprint = ''
@@ -366,11 +389,8 @@ export default {
         })
       }
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
       const url = this.info.urlPrint
-      const api = '/imprimir'
+      // const api = '/imprimir'
 
       try {
         for (const t of tickets) {
@@ -395,9 +415,13 @@ export default {
             '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
             '---------------------------------------------\n'
 
-          // const response = await axios.post(url + api, {
-          //   texto: boletoTexto
-          // })
+          try {
+            await this.imprimirRawBT(boletoTexto)
+            await this.delay(1000)
+            console.log('Impresión enviada con éxito - transbank')
+          } catch (error) {
+            console.error('Error al enviar los datos de impresión', error)
+          }
 
           // ver boleto en browser
           // const previewWindow = window.open('', '_blank')
@@ -448,20 +472,15 @@ export default {
       // onChange: this.onChange,
       onKeyPress: this.onKeyPress,
       //layout: layout,
-      layoutName: "default",
+      layoutName: 'default',
       layout: {
-        default: [
-          "1 2 3 4 5 6 7 8 9 0",
-          "Q W E R T Y U I O P",
-          "A S D F G H J K L Ñ",
-          "Z X C V B N M {bksp}"
-        ]
+        default: ['1 2 3 4 5 6 7 8 9 0', 'Q W E R T Y U I O P', 'A S D F G H J K L Ñ', 'Z X C V B N M {bksp}']
       },
       display: {
         '{bksp}': 'Borrar',
         '{sp}': ' '
       }
-    });
+    })
   }
 }
 </script>
