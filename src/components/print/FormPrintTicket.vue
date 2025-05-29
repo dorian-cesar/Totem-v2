@@ -359,9 +359,9 @@ export default {
       }
     },
     // delay para imprimir
-    delay(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms))
-    },
+    // delay(ms) {
+    //   return new Promise((resolve) => setTimeout(resolve, ms))
+    // },
 
     // imprime el boleto
     async rePrint() {
@@ -414,7 +414,7 @@ export default {
 
           try {
             await this.imprimirRawBT(boletoTexto)
-            await this.delay(1000)
+            // await this.delay(1000)
             console.log('Impresión enviada con éxito - transbank')
           } catch (error) {
             console.error('Error al enviar los datos de impresión', error)
