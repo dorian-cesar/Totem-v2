@@ -23,6 +23,21 @@ export default {
   },
 
   methods: {
+    // endpoint para imprimir
+    async imprimirRawBT(texto) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          content: texto
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirRawBT: ', error)
+      }
+    },
+
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
@@ -143,21 +158,16 @@ export default {
         })
       }
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
-      const url = this.info.urlPrint
-      const api = '/imprimir'
+      // const url = this.info.urlPrint
+      // const api = '/print'
 
       // voucher transbank
-      // try {
-      //   const response = await axios.post(url + api, {
-      //     texto: voucher
-      //   })
-      //   console.log('Impresión enviada con éxito - transbank', response.data)
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      try {
+        await this.imprimirRawBT(voucher);
+        console.log('Impresión enviada con éxito - transbank')
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -185,14 +195,13 @@ export default {
 
         boletosTexto += boletoTexto
 
-        // try {
-        //   const response = await axios.post(url + api, {
-        //     texto: boletoTexto
-        //   })
-        //   console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
-        // } catch (error) {
-        //   console.error(`Error al imprimir boleto ${t.boleto}`, error)
-        // }
+        // boleto
+        try {
+          await this.imprimirRawBT(boletoTexto);
+          console.log(`Boleto ${t.boleto} enviado con éxito`)
+        } catch (error) {
+          console.error(`Error al imprimir boleto ${t.boleto}`, error)
+        }
       }
 
       // ver boleta en browser
@@ -279,17 +288,12 @@ export default {
         tickets
       )
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
-      const url = this.info.urlPrint
-      const api = '/imprimir'
+      // const url = this.info.urlPrint
+      // const api = '/print'
 
       try {
-        const response = await axios.post(url + api, {
-          texto: voucher
-        })
-        console.log('Error de impresión enviada con éxito', response.data)
+        await this.imprimirRawBT(voucher);
+        console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)
       }
