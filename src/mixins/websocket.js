@@ -23,6 +23,21 @@ export default {
   },
 
   methods: {
+    // endpoint para imprimir
+    async imprimirRawBT(texto) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          content: texto
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirRawBT: ', error)
+      }
+    },
+
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
@@ -92,8 +107,9 @@ export default {
       // let today = this.today()
       for (let boleto of ticketsValue) {
         // boleto = JSON.parse(boleto)
+        // console.log('boleto', boleto)
         // --- API booking_details ---
-        const isDev = false // Cambia esto a false para usar producción
+        const isDev = true // Cambia esto a false para usar producción
 
         const proxy = isDev
           ? 'https://newstg3-gdsbus.kupos.cl' // API desarrollo
@@ -114,6 +130,7 @@ export default {
         let operator_pnr = null
         try {
           const response = await axios.get(bookingDetailsURL)
+          // console.log('response booking_details:', response.data)
           operator_pnr = response.data.result.ticket_details[0].operator_pnr
           console.log('response operator_pnr:', operator_pnr)
         } catch (error) {
@@ -141,18 +158,13 @@ export default {
         })
       }
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
-      const url = this.info.urlPrint
-      const api = '/imprimir'
+      // const url = this.info.urlPrint
+      // const api = '/print'
 
       // voucher transbank
       try {
-        const response = await axios.post(url + api, {
-          texto: voucher
-        })
-        console.log('Impresión enviada con éxito - transbank', response.data)
+        await this.imprimirRawBT(voucher);
+        console.log('Impresión enviada con éxito - transbank')
       } catch (error) {
         console.error('Error al enviar los datos de impresión', error)
       }
@@ -183,11 +195,10 @@ export default {
 
         boletosTexto += boletoTexto
 
+        // boleto
         try {
-          const response = await axios.post(url + api, {
-            texto: boletoTexto
-          })
-          console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
+          await this.imprimirRawBT(boletoTexto);
+          console.log(`Boleto ${t.boleto} enviado con éxito`)
         } catch (error) {
           console.error(`Error al imprimir boleto ${t.boleto}`, error)
         }
@@ -277,17 +288,12 @@ export default {
         tickets
       )
 
-      // const url = 'https://192.168.88.246:3000'
-      // const api = '/imprimir'
-
-      const url = this.info.urlPrint
-      const api = '/imprimir'
+      // const url = this.info.urlPrint
+      // const api = '/print'
 
       try {
-        const response = await axios.post(url + api, {
-          texto: voucher
-        })
-        console.log('Error de impresión enviada con éxito', response.data)
+        await this.imprimirRawBT(voucher);
+        console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)
       }
