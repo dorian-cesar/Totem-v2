@@ -29,7 +29,9 @@
               </b-row>
             </b-card-text>
           </b-card>
-          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px;">Si no tiene el número de su boleto, pregunte al operador(a) con su rut.</p>
+          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px">
+            Si no tiene el número de su boleto, pregunte al operador(a) con su rut.
+          </p>
           <div :class="keyboardClass"></div>
         </b-col>
       </b-row>
@@ -124,33 +126,34 @@ export default {
         console.error('Error en GET código de reserva:', error)
         this.texto = 'No se ha podido obtener el código de reserva. Intente nuevamente más tarde.'
         let bookingData = {
-              numTotem: localStorage.getItem('ipServer'),
-              rut: 'Reimpreso',
-              origen: 'N/A',
-              destino: 'N/A',
-              fecha_viaje: 'N/A',
-              hora_viaje: 'N/A',
-              asiento: 'N/A',
-              codigo_reserva: 'N/A',
-              numero_boleto: this.codeReprint,
-              estado_boleto: 'Reimpresión fallida',
-              codigo_transaccion: '',
-              estado_transaccion: 'Intento de reimpresión',
-              numero_transaccion: '',
-              fecha_transaccion: '',
-              hora_transaccion: '',
-              total_transaccion: ''
-            }
-            this.axios
-              .post(this.info.urlLogs, {
-                bookingData: bookingData
-              })
-              .then(function () {
-                console.log('Error guardado en DB (rePrint)')
-              })
-              .catch(function (error) {
-                console.error('Error al guardar en DB, rePrint: ', error)
-              })
+          sitio: this.info.sitio,
+          numTotem: localStorage.getItem('ipServer'),
+          rut: 'Reimpreso',
+          origen: 'N/A',
+          destino: 'N/A',
+          fecha_viaje: 'N/A',
+          hora_viaje: 'N/A',
+          asiento: 'N/A',
+          codigo_reserva: 'N/A',
+          numero_boleto: this.codeReprint,
+          estado_boleto: 'Reimpresión fallida',
+          codigo_transaccion: '',
+          estado_transaccion: 'Intento de reimpresión',
+          numero_transaccion: '',
+          fecha_transaccion: '',
+          hora_transaccion: '',
+          total_transaccion: ''
+        }
+        this.axios
+          .post(this.info.urlLogs, {
+            bookingData: bookingData
+          })
+          .then(function () {
+            console.log('Error guardado en DB (rePrint)')
+          })
+          .catch(function (error) {
+            console.error('Error al guardar en DB, rePrint: ', error)
+          })
         setTimeout(() => {
           this.texto = ''
         }, 10000)
@@ -162,7 +165,7 @@ export default {
       // const proxy = 'https://newstg3-gdsbus.kupos.cl'
       // const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
-      const proxy = "https://gds.kupos.com"
+      const proxy = 'https://gds.kupos.com'
       const API_KEY = 'TSSDFPAPI30103014'
       let api = 'gds/api/booking_details.json?region=chile&pnr_number=' + numeroBoleto + '&api_key=' + API_KEY
 
@@ -201,7 +204,9 @@ export default {
 
             let response_asiento = ticket_info.seat_fare_details[0].seat_detail.seat_number
             let response_fecha = ticket_info.travel_date
-            let response_hora = new Date('1970-01-01 ' + ticket_info.boarding_point_details.dep_time).toTimeString().substring(0, 5);
+            let response_hora = new Date('1970-01-01 ' + ticket_info.boarding_point_details.dep_time)
+              .toTimeString()
+              .substring(0, 5)
             let response_origen = ticket_info.boarding_point_details.landmark
             let response_destino = ticket_info.destination
             let issued_on = new Date().toLocaleString('es-CL', { hour12: false })
@@ -231,6 +236,7 @@ export default {
             this.rePrint()
 
             let bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: 'Reimpreso',
               origen: response_origen,
@@ -264,6 +270,7 @@ export default {
               'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
 
             let bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: 'Reimpreso',
               origen: 'N/A',
@@ -304,6 +311,7 @@ export default {
           this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
 
           let bookingData = {
+            sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
             rut: 'Reimpreso',
             origen: 'N/A',
@@ -448,20 +456,15 @@ export default {
       // onChange: this.onChange,
       onKeyPress: this.onKeyPress,
       //layout: layout,
-      layoutName: "default",
+      layoutName: 'default',
       layout: {
-        default: [
-          "1 2 3 4 5 6 7 8 9 0",
-          "Q W E R T Y U I O P",
-          "A S D F G H J K L Ñ",
-          "Z X C V B N M {bksp}"
-        ]
+        default: ['1 2 3 4 5 6 7 8 9 0', 'Q W E R T Y U I O P', 'A S D F G H J K L Ñ', 'Z X C V B N M {bksp}']
       },
       display: {
         '{bksp}': 'Borrar',
         '{sp}': ' '
       }
-    });
+    })
   }
 }
 </script>
