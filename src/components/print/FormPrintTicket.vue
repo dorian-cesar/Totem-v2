@@ -501,7 +501,7 @@ input {
   margin-top: 20px;
 }
 .hg-theme-default {
-  bottom: 400px;
+  bottom: 420px;
 }
 
 .button-radius {
