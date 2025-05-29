@@ -174,6 +174,7 @@ export default {
         }
         this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
         const bookingData = {
+          sitio: this.info.sitio,
           numTotem: localStorage.getItem('ipServer'),
           rut: localStorage.getItem('rut') || 'Sin RUT',
           origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -219,6 +220,7 @@ export default {
         } else {
           this.propsPaymentControl.msgError = simulatedPOSResponse.data.data.responseMessage
           const bookingData = {
+            sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
             rut: localStorage.getItem('rut') || 'Sin RUT',
             origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -285,6 +287,7 @@ export default {
     //       console.log('successful: ', response.data.data.successful)
     //       inicializar variables
     //       const bookingData = {
+    //         sitio: this.info.sitio,
     //         numTotem: localStorage.getItem('ipServer'),
     //         rut: localStorage.getItem('rut') || 'Sin RUT',
     //         origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -372,6 +375,7 @@ export default {
     //         error.message.includes('ERR_CONNECTION_REFUSED')
     //       ) {
     //         const bookingData = {
+    //           sitio: this.info.sitio,
     //           numTotem: localStorage.getItem('ipServer'),
     //           rut: localStorage.getItem('rut') || 'Sin RUT',
     //           origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -621,6 +625,7 @@ export default {
 
           for (const ticket of this.propsPersonalInformation.tickets) {
             const bookingBase = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -774,6 +779,7 @@ export default {
             const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
 
             const bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -814,6 +820,7 @@ export default {
             // total_processed += 1
 
             const bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: localStorage.getItem('rut') || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,

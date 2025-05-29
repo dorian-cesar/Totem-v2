@@ -126,6 +126,7 @@ export default {
         console.error('Error en GET código de reserva:', error)
         this.texto = 'No se ha podido obtener el código de reserva. Intente nuevamente más tarde.'
         let bookingData = {
+          sitio: this.info.sitio,
           numTotem: localStorage.getItem('ipServer'),
           rut: 'Reimpreso',
           origen: 'N/A',
@@ -235,6 +236,7 @@ export default {
             this.rePrint()
 
             let bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: 'Reimpreso',
               origen: response_origen,
@@ -268,6 +270,7 @@ export default {
               'Código de reserva inválido.\nVerifique si el boleto fue escrito correctamente o si su reserva se encuentra confirmada.'
 
             let bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: 'Reimpreso',
               origen: 'N/A',
@@ -308,6 +311,7 @@ export default {
           this.texto = 'Hubo un error al obtener los detalles de la reserva. Intente nuevamente más tarde.'
 
           let bookingData = {
+            sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
             rut: 'Reimpreso',
             origen: 'N/A',
