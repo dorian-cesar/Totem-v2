@@ -75,6 +75,7 @@ export default {
           success = true
         } catch (error) {
           const bookingData = {
+            sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
             rut: localStorage.getItem('rut') || 'Sin RUT',
             origen: this.$store.state.TravelSelection.nameDepartureCity,
@@ -115,6 +116,7 @@ export default {
             this.codeReservation = ''
             this.isLoadingReservation = false
             const bookingData = {
+              sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
               rut: rut || 'Sin RUT',
               origen: this.$store.state.TravelSelection.nameDepartureCity,
