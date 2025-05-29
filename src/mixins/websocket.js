@@ -31,13 +31,22 @@ export default {
         })
         const result = response.data
         if (result.rawbt) {
-          window.location.href = result.rawbt
+          const iframe = document.createElement('iframe')
+          iframe.style.display = 'none'
+          iframe.src = result.rawbt
+          document.body.appendChild(iframe)
+          setTimeout(() => {
+            document.body.removeChild(iframe)
+          }, 5000)
         }
       } catch (error) {
         console.error('Error al imprimir - imprimirRawBT: ', error)
       }
     },
-
+    // delay para imprimir
+    delay(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms))
+    },
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
@@ -163,7 +172,8 @@ export default {
 
       // voucher transbank
       try {
-        await this.imprimirRawBT(voucher);
+        await this.imprimirRawBT(voucher)
+        await this.delay(1000)
         console.log('Impresión enviada con éxito - transbank')
       } catch (error) {
         console.error('Error al enviar los datos de impresión', error)
@@ -197,7 +207,8 @@ export default {
 
         // boleto
         try {
-          await this.imprimirRawBT(boletoTexto);
+          await this.imprimirRawBT(boletoTexto)
+          await this.delay(1000)
           console.log(`Boleto ${t.boleto} enviado con éxito`)
         } catch (error) {
           console.error(`Error al imprimir boleto ${t.boleto}`, error)
@@ -292,7 +303,8 @@ export default {
       // const api = '/print'
 
       try {
-        await this.imprimirRawBT(voucher);
+        await this.imprimirRawBT(voucher)
+        await this.delay(1000)
         console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)
