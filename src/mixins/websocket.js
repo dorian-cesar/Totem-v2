@@ -38,10 +38,20 @@ export default {
         console.error('Error al imprimir - imprimirRawBT: ', error)
       }
     },
-    // // delay para imprimir
-    // delay(ms) {
-    //   return new Promise((resolve) => setTimeout(resolve, ms))
-    // },
+
+    async imprimirErrorRawBT(voucher) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          content: voucher
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirErrorRawBT: ', error)
+      }
+    },
 
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
@@ -78,17 +88,19 @@ export default {
       const comentario_cuota = ballotValue.sharesTypeComment || '---'
 
       const voucher =
-        '           COMPROBANTE DE VENTA           \n' +
-        '              PAGO EN CUOTAS              \n' +
-        '            TARJETA DE CREDITO            \n' +
-        '         INTEGRACIONES TRANSBANK          \n' +
-        '              PULLMAN S.A.                \n' +
-        '  Nicasio Retamales 71, Estacion Central  \n' +
-        `              ${commerce_code}            \n` +
-        '                Santiago                  \n' +
-        `              ${codigo_unico}             \n` +
-        '     FECHA       HORA        TERMINAL     \n' +
-        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+        '                                             \n' +
+        '                                             \n' +
+        '              COMPROBANTE DE VENTA           \n' +
+        '                 PAGO EN CUOTAS              \n' +
+        '               TARJETA DE CREDITO            \n' +
+        '            INTEGRACIONES TRANSBANK          \n' +
+        '                 PULLMAN S.A.                \n' +
+        '     Nicasio Retamales 71, Estacion Central  \n' +
+        `                 ${commerce_code}            \n` +
+        '                   Santiago                  \n' +
+        `                    ${codigo_unico}          \n` +
+        '        FECHA       HORA        TERMINAL     \n' +
+        `        ${transaction_date}    ${transaction_hour}       ${terminal_id}\n` +
         '                                             \n' +
         `    NUMERO DE TARJETA                     \n` +
         `    ******${card_number}                   \n` +
@@ -197,15 +209,6 @@ export default {
           console.error(`Error al imprimir boleto ${t.boleto}`, error)
         }
       }
-
-      // ver boleta en browser
-      // const previewWindow = window.open('', '_blank')
-      // previewWindow.document.write(`
-      //      <pre style="font-size:14px; white-space:pre-wrap;">
-      //     ${voucher}${boletosTexto}</pre>
-      // `)
-      // previewWindow.document.close()
-
       console.log('+ methods:imprimirVoucher', 'voucher', voucher, 'tickets {}', boletosTexto, '-> /imprimir')
     },
 
@@ -245,17 +248,19 @@ export default {
       // let tickets = [{ codigo: codigoUnico }]
 
       const voucher =
-        '           COMPROBANTE DE VENTA           \n' +
-        '              PAGO EN CUOTAS              \n' +
-        '            TARJETA DE CREDITO            \n' +
-        '         INTEGRACIONES TRANSBANK          \n' +
-        '              PULLMAN S.A.                \n' +
-        '  Nicasio Retamales 71, Estacion Central  \n' +
-        `              ${commerce_code}            \n` +
-        '                Santiago                  \n' +
-        `              ${codigo_unico}             \n` +
-        '     FECHA       HORA        TERMINAL     \n' +
-        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+        '                                             \n' +
+        '                                             \n' +
+        '              COMPROBANTE DE VENTA           \n' +
+        '                 PAGO EN CUOTAS              \n' +
+        '               TARJETA DE CREDITO            \n' +
+        '            INTEGRACIONES TRANSBANK          \n' +
+        '                 PULLMAN S.A.                \n' +
+        '     Nicasio Retamales 71, Estacion Central  \n' +
+        `                 ${commerce_code}            \n` +
+        '                   Santiago                  \n' +
+        `                    ${codigo_unico}          \n` +
+        '        FECHA       HORA        TERMINAL     \n' +
+        `        ${transaction_date}    ${transaction_hour}       ${terminal_id}\n` +
         '                                             \n' +
         `    NUMERO DE TARJETA                     \n` +
         `    ******${card_number}                   \n` +
@@ -283,8 +288,7 @@ export default {
       )
 
       try {
-        await this.imprimirRawBT(voucher)
-        // await this.delay(5000)
+        await this.imprimirErrorRawBT(voucher)
         console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)
