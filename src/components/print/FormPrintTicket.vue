@@ -356,9 +356,9 @@ export default {
         })
         const result = response.data
         if (result.rawbt) {
-          // const win = window.open(result.rawbt, '_blank')
-          // win.focus()
-          window.location.href = result.rawbt
+          const win = window.open(result.rawbt, '_blank')
+          win.focus()
+          // window.location.href = result.rawbt
         }
       } catch (error) {
         console.error('Error al imprimir - imprimirRawBT: ', error)
