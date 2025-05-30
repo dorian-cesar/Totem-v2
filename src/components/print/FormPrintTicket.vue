@@ -416,7 +416,7 @@ export default {
 
           try {
             await this.reImprimirRawBT(boletoTexto)
-            console.log('Impresión enviada con éxito - transbank')
+            console.log('Impresión enviada con éxito - reImprimirRawBT')
           } catch (error) {
             console.error('Error al enviar los datos de impresión', error)
           }
