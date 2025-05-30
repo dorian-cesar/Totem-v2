@@ -348,6 +348,20 @@ export default {
         })
     },
 
+    async reImprimirRawBT(texto) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          boleto: texto
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirRawBT: ', error)
+      }
+    },
+
     // imprime el boleto
     async rePrint() {
       this.codeReprint = ''
@@ -398,22 +412,12 @@ export default {
             '---------------------------------------------\n'
 
           try {
-            await this.imprimirRawBT(boletoTexto)
-            console.log('Impresión enviada con éxito')
+            await this.reImprimirRawBT(boletoTexto)
+            console.log('Impresión enviada con éxito - reImprimirRawBT')
           } catch (error) {
             console.error('Error al enviar los datos de impresión', error)
           }
-
-          // ver boleto en browser
-          // const previewWindow = window.open('', '_blank')
-          // previewWindow.document.write(`
-          //  <pre style="font-size:14px; white-space:pre-wrap;">
-          // ${boletoTexto}</pre>
-          // `)
-          // previewWindow.document.close()
-
           console.log('+ methods:reimprimir', 'tickets {}', boletoTexto, '-> /imprimir')
-          // console.log(`Boleto ${t.boleto} enviado con éxito`, response.data)
         }
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {
