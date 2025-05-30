@@ -349,28 +349,37 @@ export default {
     },
 
     // endpoint para imprimir
+    // async reImprimirRawBT(texto) {
+    //   try {
+    //     const response = await axios.post(this.info.urlPrint, {
+    //       boleto: texto
+    //     })
+    //     const result = response.data
+    //     if (result.rawbt) {
+    //       window.location.href = result.rawbt
+    //     }
+    //   } catch (error) {
+    //     console.error('Error al imprimir - imprimirRawBT: ', error)
+    //   }
+    // },
+
     async reImprimirRawBT(texto) {
       try {
         const response = await axios.post(this.info.urlPrint, {
           boleto: texto
         })
+
         const result = response.data
+
         if (result.rawbt) {
-          fetch(result.rawbt)
-            .then((res) => res.text())
-            .then((html) => {
-              const printFrame = document.createElement('iframe')
-              printFrame.style.display = 'none'
-              document.body.appendChild(printFrame)
-              printFrame.contentDocument.write(html)
-              printFrame.contentDocument.close()
-              printFrame.contentWindow.focus()
-              printFrame.contentWindow.print()
-              document.body.removeChild(printFrame)
-            })
+          document.open()
+          document.write(result.rawbt)
+          document.close()
+
+          window.print()
         }
       } catch (error) {
-        console.error('Error al imprimir - reimprimirRawBT: ', error)
+        console.error('Error al imprimir - reImprimirRawBT:', error)
       }
     },
 
@@ -425,7 +434,7 @@ export default {
 
           try {
             await this.reImprimirRawBT(boletoTexto)
-            console.log('Impresión enviada con éxito - reImprimirRawBT')
+            console.log('Impresión enviada con éxito - transbank')
           } catch (error) {
             console.error('Error al enviar los datos de impresión', error)
           }

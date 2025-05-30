@@ -39,36 +39,6 @@ export default {
       }
     },
 
-    // async imprimirRawBT(voucher, boleto) {
-    //   try {
-    //     const response = await axios.post(this.info.urlPrint, {
-    //       content: voucher,
-    //       boleto: boleto
-    //     })
-    //     const result = response.data
-    //     if (result.rawbt) {
-    //       fetch(result.rawbt)
-    //         .then((res) => res.text())
-    //         .then((html) => {
-    //           const printFrame = document.createElement('iframe')
-    //           printFrame.style.display = 'none'
-    //           document.body.appendChild(printFrame)
-    //           printFrame.contentDocument.write(html)
-    //           printFrame.contentDocument.close()
-    //           printFrame.contentWindow.focus()
-    //           printFrame.contentWindow.print()
-    //           document.body.removeChild(printFrame)
-    //         })
-    //     }
-    //   } catch (error) {
-    //     console.error('Error al imprimir - print: ', error)
-    //   }
-    // },
-
-    // // delay para imprimir
-    // delay(ms) {
-    //   return new Promise((resolve) => setTimeout(resolve, ms))
-    // },
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
