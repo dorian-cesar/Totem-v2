@@ -185,6 +185,29 @@ export default {
 
         boletosTexto += boletoTexto
 
+        // import EscPosEncoder from 'escpos-encoder'
+        // import fs from 'fs'
+
+        // // Leer el logo en base64
+        // const logoBase64 = fs.readFileSync('./logo.png', { encoding: 'base64' })
+
+        // // Crear el encoder
+        // const encoder = new EscPosEncoder()
+        // encoder.initialize()
+
+        // // Agregar el logo centrado
+        // encoder
+        //   .align('center')
+        //   .image(Buffer.from(logoBase64, 'base64'), 'd24') // 'd24' es el modo de impresión de imagen
+        //   .newline()
+
+        // // Obtener el buffer
+        // const logoBuffer = encoder.encode()
+
+        // // Convertir el buffer binario a texto compatible para la impresora
+        // const logoTexto = logoBuffer.toString('latin1') // latin1 mantiene bytes "crudos"
+        // boletoTexto = logoTexto + boletoTexto
+
         // try {
         //   const response = await axios.post(url + api, {
         //     texto: boletoTexto
