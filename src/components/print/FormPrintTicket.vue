@@ -356,15 +356,21 @@ export default {
         })
         const result = response.data
         if (result.rawbt) {
-          const iframe = document.createElement('iframe')
-          iframe.style.display = 'none'
-          iframe.src = result.rawbt
-          document.body.appendChild(iframe)
-          // Opcional: quitar iframe después de un tiempo
-          setTimeout(() => document.body.removeChild(iframe), 5000)
+          fetch(result.rawbt)
+            .then((res) => res.text())
+            .then((html) => {
+              const printFrame = document.createElement('iframe')
+              printFrame.style.display = 'none'
+              document.body.appendChild(printFrame)
+              printFrame.contentDocument.write(html)
+              printFrame.contentDocument.close()
+              printFrame.contentWindow.focus()
+              printFrame.contentWindow.print()
+              document.body.removeChild(printFrame)
+            })
         }
       } catch (error) {
-        console.error('Error al imprimir - imprimirRawBT: ', error)
+        console.error('Error al imprimir - reimprimirRawBT: ', error)
       }
     },
 
@@ -419,7 +425,7 @@ export default {
 
           try {
             await this.reImprimirRawBT(boletoTexto)
-            console.log('Impresión enviada con éxito - transbank')
+            console.log('Impresión enviada con éxito - reImprimirRawBT')
           } catch (error) {
             console.error('Error al enviar los datos de impresión', error)
           }
