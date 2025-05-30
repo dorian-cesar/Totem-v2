@@ -32,6 +32,8 @@ export default {
         })
         const result = response.data
         if (result.rawbt) {
+          // const win = window.open(result.rawbt, '_blank')
+          // win.focus()
           window.location.href = result.rawbt
         }
       } catch (error) {
@@ -88,17 +90,19 @@ export default {
       const comentario_cuota = ballotValue.sharesTypeComment || '---'
 
       const voucher =
-        '           COMPROBANTE DE VENTA           \n' +
-        '              PAGO EN CUOTAS              \n' +
-        '            TARJETA DE CREDITO            \n' +
-        '         INTEGRACIONES TRANSBANK          \n' +
-        '              PULLMAN S.A.                \n' +
-        '  Nicasio Retamales 71, Estacion Central  \n' +
-        `              ${commerce_code}            \n` +
-        '                Santiago                  \n' +
-        `              ${codigo_unico}             \n` +
-        '     FECHA       HORA        TERMINAL     \n' +
-        `   ${transaction_date}  ${transaction_hour}      ${terminal_id}\n` +
+        '                                               \n' +
+        '                                               \n' +
+        '                COMPROBANTE DE VENTA           \n' +
+        '                   PAGO EN CUOTAS              \n' +
+        '                 TARJETA DE CREDITO            \n' +
+        '              INTEGRACIONES TRANSBANK          \n' +
+        '                   PULLMAN S.A.                \n' +
+        '       Nicasio Retamales 71, Estacion Central  \n' +
+        `                   ${commerce_code}            \n` +
+        '                     Santiago                  \n' +
+        `                      ${codigo_unico}          \n` +
+        '          FECHA       HORA        TERMINAL     \n' +
+        `        ${transaction_date}     ${transaction_hour}         ${terminal_id}\n` +
         '                                             \n' +
         `    NUMERO DE TARJETA                     \n` +
         `    ******${card_number}                   \n` +
@@ -264,6 +268,8 @@ export default {
       // let tickets = [{ codigo: codigoUnico }]
 
       const voucher =
+        '                                          \n' +
+        '                                          \n' +
         '           COMPROBANTE DE VENTA           \n' +
         '              PAGO EN CUOTAS              \n' +
         '            TARJETA DE CREDITO            \n' +
