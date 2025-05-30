@@ -349,37 +349,17 @@ export default {
     },
 
     // endpoint para imprimir
-    // async reImprimirRawBT(texto) {
-    //   try {
-    //     const response = await axios.post(this.info.urlPrint, {
-    //       boleto: texto
-    //     })
-    //     const result = response.data
-    //     if (result.rawbt) {
-    //       window.location.href = result.rawbt
-    //     }
-    //   } catch (error) {
-    //     console.error('Error al imprimir - imprimirRawBT: ', error)
-    //   }
-    // },
-
     async reImprimirRawBT(texto) {
       try {
         const response = await axios.post(this.info.urlPrint, {
           boleto: texto
         })
-
         const result = response.data
-
         if (result.rawbt) {
-          document.open()
-          document.write(result.rawbt)
-          document.close()
-
-          window.print()
+          window.location.href = result.rawbt
         }
       } catch (error) {
-        console.error('Error al imprimir - reImprimirRawBT:', error)
+        console.error('Error al imprimir - imprimirRawBT: ', error)
       }
     },
 
