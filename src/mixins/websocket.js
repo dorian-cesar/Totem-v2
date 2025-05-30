@@ -39,6 +39,20 @@ export default {
       }
     },
 
+    async imprimirErrorRawBT(voucher) {
+      try {
+        const response = await axios.post(this.info.urlPrint, {
+          content: voucher
+        })
+        const result = response.data
+        if (result.rawbt) {
+          window.location.href = result.rawbt
+        }
+      } catch (error) {
+        console.error('Error al imprimir - imprimirErrorRawBT: ', error)
+      }
+    },
+
     //imprimir voucher
     async imprimirVoucher(ballotValue, ticketsValue, codigoUnico) {
       console.log(
@@ -287,12 +301,8 @@ export default {
         tickets
       )
 
-      // const url = this.info.urlPrint
-      // const api = '/print'
-
       try {
-        await this.imprimirRawBT(voucher)
-        // await this.delay(5000)
+        await this.imprimirErrorRawBT(voucher)
         console.log('Error de impresión enviada con éxito')
       } catch (error) {
         console.error('Error al enviar el error de impresión', error)
