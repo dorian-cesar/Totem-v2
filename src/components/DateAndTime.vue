@@ -6,7 +6,7 @@
         {{ dateTime }}
       </div>
     </div>
-    <p class="version-text mb-0 text-right" style="width: 33%">2.3.0 Version © WIT 2025</p>
+    <p class="version-text mb-0 text-right" style="width: 33%">2.4.0 Version © WIT 2025</p>
   </div>
 </template>
 
@@ -33,7 +33,7 @@ export default {
       const seconds = this.pad(now.getSeconds())
 
       // formato
-      return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`
+      return `${day}/${month}/${year} - ${hours}:${minutes}`
     }
   },
   mounted() {
