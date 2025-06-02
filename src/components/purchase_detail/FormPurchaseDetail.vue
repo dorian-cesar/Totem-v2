@@ -819,50 +819,50 @@ export default {
             console.error(error)
             // total_processed += 1
 
-            const bookingData = {
-              sitio: this.info.sitio,
-              numTotem: localStorage.getItem('ipServer'),
-              rut: localStorage.getItem('rut') || 'Sin RUT',
-              origen: this.$store.state.TravelSelection.nameDepartureCity,
-              destino: this.$store.state.TravelSelection.nameArrivalCity,
-              fecha_viaje: ticket.fechaServicio,
-              hora_viaje: ticket.horaSalida,
-              asiento: ticket.seat,
-              codigo_reserva: ticket.codeReservation,
-              // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
-              estado_boleto: 'Confirmación fallida',
-              codigo_transaccion: this.dataPOS.ticket,
-              codigo_autorizacion: this.dataPOS.authorizationCode,
-              id_pos: this.dataPOS.terminalId,
-              id_bus: ticket.servicio,
-              tipo_tarjeta: this.dataPOS.cardType,
-              tarjeta_marca: this.dataPOS.cardBrand,
-              estado_transaccion: 'Pago realizado',
-              numero_transaccion: this.dataPOS.operationNumber,
-              fecha_transaccion: this.dataPOS.realDate,
-              hora_transaccion: this.dataPOS.realTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
-              error: {
-                message: error.message,
-                code: error.code,
-                isAxiosError: error.isAxiosError,
-                response: {
-                  status: (error.response && error.response.status) || null,
-                  data: (error.response && error.response.data) || null
-                }
-              }
-            }
+            // const bookingData = {
+            //   sitio: this.info.sitio,
+            //   numTotem: localStorage.getItem('ipServer'),
+            //   rut: localStorage.getItem('rut') || 'Sin RUT',
+            //   origen: this.$store.state.TravelSelection.nameDepartureCity,
+            //   destino: this.$store.state.TravelSelection.nameArrivalCity,
+            //   fecha_viaje: ticket.fechaServicio,
+            //   hora_viaje: ticket.horaSalida,
+            //   asiento: ticket.seat,
+            //   codigo_reserva: ticket.codeReservation,
+            //   // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+            //   estado_boleto: 'Confirmación fallida',
+            //   codigo_transaccion: this.dataPOS.ticket,
+            //   codigo_autorizacion: this.dataPOS.authorizationCode,
+            //   id_pos: this.dataPOS.terminalId,
+            //   id_bus: ticket.servicio,
+            //   tipo_tarjeta: this.dataPOS.cardType,
+            //   tarjeta_marca: this.dataPOS.cardBrand,
+            //   estado_transaccion: 'Pago realizado',
+            //   numero_transaccion: this.dataPOS.operationNumber,
+            //   fecha_transaccion: this.dataPOS.realDate,
+            //   hora_transaccion: this.dataPOS.realTime,
+            //   total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+            //   error: {
+            //     message: error.message,
+            //     code: error.code,
+            //     isAxiosError: error.isAxiosError,
+            //     response: {
+            //       status: (error.response && error.response.status) || null,
+            //       data: (error.response && error.response.data) || null
+            //     }
+            //   }
+            // }
 
-            this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
-              .then(() => {
-                console.log('Error guardado en DB (confirm booking)')
-              })
-              .catch((error) => {
-                console.error('Error al guardar en DB, confirm_booking: ', error)
-              })
+            // this.axios
+            //   .post(this.info.urlLogs, {
+            //     bookingData
+            //   })
+            //   .then(() => {
+            //     console.log('Error guardado en DB (confirm booking)')
+            //   })
+            //   .catch((error) => {
+            //     console.error('Error al guardar en DB, confirm_booking: ', error)
+            //   })
           })
           .finally(() => {
             total_processed += 1
