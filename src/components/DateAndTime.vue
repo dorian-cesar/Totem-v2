@@ -33,7 +33,7 @@ export default {
       const seconds = this.pad(now.getSeconds())
 
       // formato
-      return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`
+      return `${day}/${month}/${year} - ${hours}:${minutes}`
     }
   },
   mounted() {
