@@ -32,8 +32,8 @@ export default {
       const minutes = this.pad(now.getMinutes())
       const seconds = this.pad(now.getSeconds())
 
-      // return `${day}/${month}/${year} - ${hours}:${minutes}`
-      return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`
+      // return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`
+      return `${day}/${month}/${year} - ${hours}:${minutes}`
 
     }
   },
