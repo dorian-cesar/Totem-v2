@@ -18,7 +18,7 @@
         <date-one-way-round-trip v-bind="propsDatepicker" />
         <!-- Keyboard-->
         <br />
-        <keyboard-touch v-show="isShowKeyBoard" @onKeyPress="onKeyPress" />
+        <!-- <keyboard-touch v-show="isShowKeyBoard" @onKeyPress="onKeyPress" /> -->
       </blockquote>
     </b-card>
     <!-- Toolbar button-->

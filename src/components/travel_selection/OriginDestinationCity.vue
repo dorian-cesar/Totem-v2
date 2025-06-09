@@ -40,7 +40,7 @@
             Porfavor, ingrese su rut para la reimpresión de su boleto en caso de pérdida.
           </p>
           <!-- Teclado virtual para rut -->
-          <div v-if="mostrarTeclado" class="teclado-virtual">
+          <!-- <div v-if="mostrarTeclado" class="teclado-virtual">
             <div class="fila-teclas">
               <button v-for="tecla in teclasFila1" :key="tecla" @click="agregarCaracter(tecla)">
                 {{ tecla }}
@@ -56,7 +56,7 @@
               <button @click="borrarUltimo()">⌫</button>
               <button @click="ocultarTeclado()">Cerrar</button>
             </div>
-          </div>
+          </div> -->
         </b-form-group>
       </b-col>
     </b-row>
