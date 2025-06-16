@@ -29,7 +29,7 @@ export default {
       if ('add' === option)
         api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
       else if (option === 'delete') {
-        this.isLoadingReservation = false
+        // this.isLoadingReservation = false
         return Promise.resolve()
       } // liberar asiento
       // else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'
