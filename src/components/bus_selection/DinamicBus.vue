@@ -220,7 +220,7 @@ export default {
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
         console.log('DinamicBus: add', this.param)
-        // } else if (state === 'delete') {
+        } else if (state === 'delete') {
         //   this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
         //   this.tmpNumFree = this.propsPassengerCounter.numFree + 1
 
