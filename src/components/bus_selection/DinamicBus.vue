@@ -6,51 +6,27 @@
         <b-overlay :show="isLoadingReservation" rounded="sm">
           <b-row class="text-center">
             <div class="pb-2">
-              <b-card no-body border-variant="info" style="width: 900px;">
+              <b-card no-body border-variant="info" style="width: 900px">
                 <b-row class="p-2">
                   <b-col>
-                    <b-img
-                      :src="imgFreeSeat"
-                      alt="Seat"
-                      class="seat-img"
-                      draggable="false"
-                      width="40"
-                    />
+                    <b-img :src="imgFreeSeat" alt="Seat" class="seat-img" draggable="false" width="40" />
                     <span class="font">Asiento disponible</span>
                   </b-col>
                   <b-col>
-                    <b-img
-                      :src="imgSelectedSeat"
-                      alt="Seat"
-                      class="seat-img"
-                      draggable="false"
-                      width="40"
-                    />
+                    <b-img :src="imgSelectedSeat" alt="Seat" class="seat-img" draggable="false" width="40" />
                     <span class="font">Asiento seleccionado</span>
                   </b-col>
                   <b-col>
-                    <b-img
-                      :src="imgBusySeat"
-                      alt="Seat"
-                      class="seat-img"
-                      draggable="false"
-                      width="40"
-                    />
+                    <b-img :src="imgBusySeat" alt="Seat" class="seat-img" draggable="false" width="40" />
                     <span class="font">Asiento reservado</span>
                   </b-col>
                 </b-row>
               </b-card>
             </div>
-            <div
-              v-for="(drawFloor, indexDrawFloor) in drawSeats"
-              :key="indexDrawFloor"
-              class="pb-2"
-            >
+            <div v-for="(drawFloor, indexDrawFloor) in drawSeats" :key="indexDrawFloor" class="pb-2">
               <b-card
                 border-variant="info"
-                :header="
-                  `PISO ${indexDrawFloor + 1} - ${getTypeByFloor(indexDrawFloor)}`
-                "
+                :header="`PISO ${indexDrawFloor + 1} - ${getTypeByFloor(indexDrawFloor)}`"
                 header-bg-variant="dark"
                 header-text-variant="white"
                 header-class="h5"
@@ -73,28 +49,24 @@
                     <seat
                       v-for="(drawSeat, indexSeat) of drawRow"
                       :key="['seat', indexDrawFloor, indexDrawRow, indexSeat, drawSeat.num].join('-')"
-                      :ref="(-1 === [null, 'X', 'B1', 'B2', '%', 'blank'].indexOf(drawSeat.num))
-                        ? ['seat',((0 === indexDrawFloor)
-                            ? drawSeat.num
-                            : (parseInt(drawSeat.num)).toString())
-                          ].join('-')
-                        : ''"
+                      :ref="
+                        -1 === [null, 'X', 'B1', 'B2', '%', 'blank'].indexOf(drawSeat.num)
+                          ? ['seat', 0 === indexDrawFloor ? drawSeat.num : parseInt(drawSeat.num).toString()].join('-')
+                          : ''
+                      "
                       @check="changeStatusSeat($event)"
-                      v-bind="getValues({num: drawSeat.num, floor:indexDrawFloor})"
+                      v-bind="getValues({ num: drawSeat.num, floor: indexDrawFloor })"
                     />
                   </b-col>
                 </b-card-text>
               </b-card>
-
             </div>
           </b-row>
           <!-- overlay reservar o liberar asiento-->
           <template v-slot:overlay>
             <div class="text-center">
-              <b-spinner variant="primary" class="m-2" style="width: 3rem; height: 3rem;"/>
-              <p id="cancel-label" class="h3">
-                Espere {{ (isReservation) ? 'Reservando' : 'Liberando' }} Asiento
-              </p>
+              <b-spinner variant="primary" class="m-2" style="width: 3rem; height: 3rem" />
+              <p id="cancel-label" class="h3">Espere {{ isReservation ? 'Reservando' : 'Liberando' }} Asiento</p>
             </div>
           </template>
         </b-overlay>
@@ -106,7 +78,7 @@
 <script>
 import Seat from '@/components/bus_selection/Seat'
 import ReserveOrReleaseSeat from '@/mixins/reserveOrReleaseSeat'
-import {mapGetters, mapActions} from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import imgFreeSeat from '@/assets/img/seat/free_seat.png'
 import imgSelectedSeat from '@/assets/img/seat/selected_seat.png'
@@ -115,7 +87,7 @@ import imgBusySeat from '@/assets/img/seat/busy_seat.png'
 export default {
   name: 'DinamicBus',
   mixins: [ReserveOrReleaseSeat],
-  components: {Seat},
+  components: { Seat },
   data: () => ({
     imgFreeSeat,
     imgSelectedSeat,
@@ -137,15 +109,14 @@ export default {
   }),
 
   props: {
-    drawSeats: {type: Array, required: true, default: () => []},
-    availableSeats: {type: Array, required: true, default: () => []},
-    param: {type: Object, required: true, default: () => null},
-    service: {type: Object, required: true}
+    drawSeats: { type: Array, required: true, default: () => [] },
+    availableSeats: { type: Array, required: true, default: () => [] },
+    param: { type: Object, required: true, default: () => null },
+    service: { type: Object, required: true }
   },
 
   computed: {
     seatComponent() {
-
       return this.$refs[`seat-${this.seatNum}`][0]
     }
   },
@@ -167,19 +138,20 @@ export default {
       let status = ''
       if (isNaN(num)) status = 'busy'
       else {
-        const seat = this.availableSeats.find(o => (o.floor === floor && o.num === num))
+        const seat = this.availableSeats.find((o) => o.floor === floor && o.num === num)
         status = seat ? seat.status : 'busy'
       }
       return status
     },
     // cambiar los valores de num y estatus para dibujar los asientos del bus
-    getValues(item) { //arreglo de valores que trae la API
+    getValues(item) {
+      //arreglo de valores que trae la API
       //const num = this.fixNumOfSeatForFloor(item.num, item.floor)
       const status = this.getStatusToSeat(item.num, item.floor)
       return {
         num: item.num,
         status: status,
-        numfloor: (item.floor === 0) ? '1' : '2'
+        numfloor: item.floor === 0 ? '1' : '2'
       }
     },
 
@@ -201,7 +173,7 @@ export default {
     },
 
     //cuando se selecciona un asiento
-    async changeStatusSeat({state, num}) {
+    async changeStatusSeat({ state, num }) {
       // console.log('params changeStatusSeat', this.param)
       this.seatNum = num
       this.param.asiento = num
@@ -214,29 +186,31 @@ export default {
         this.isReservation = true // reservar asiento
         this.param.book_ticket = {
           seat_details: {
-            seat_detail: [{
-              seat_number: num,
-              fare: this.service.tarifaPrimerPisoInternet,
-              title: "Mr",
-              name: "Ivan Valenzuela",
-              age: "33",
-              sex: "M",
-              is_primary: "true",
-              id_card_type: "1",
-              id_card_number: "17211508k",
-              id_card_issued_by: "oneone"
-            }]
+            seat_detail: [
+              {
+                seat_number: num,
+                fare: this.service.tarifaPrimerPisoInternet,
+                title: 'Mr',
+                name: 'Ivan Valenzuela',
+                age: '33',
+                sex: 'M',
+                is_primary: 'true',
+                id_card_type: '1',
+                id_card_number: '17211508k',
+                id_card_issued_by: 'oneone'
+              }
+            ]
           },
           contact_detail: {
-            mobile_number: "942858102",
-            emergency_name: "Ivan Valenzuela",
-            email: "ivalenzuela@wit.la"
+            mobile_number: '942858102',
+            emergency_name: 'Ivan Valenzuela',
+            email: 'ivalenzuela@wit.la'
           }
         }
         this.param.origin_id = this.param.origen
         this.param.destination_id = this.param.destino
         this.param.boarding_at = this.param.boarding_at
-        this.param.no_of_seats = "1"
+        this.param.no_of_seats = '1'
         this.param.travel_date = this.param.fecha
         this.param.travel_time = this.param.horaSalida
         this.param.cost
@@ -246,22 +220,33 @@ export default {
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
         console.log('DinamicBus: add', this.param)
-      } else if (state === 'delete'
-      ) {
-        this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
-        this.tmpNumFree = this.propsPassengerCounter.numFree + 1
+      } else if (state === 'delete') {
+        await this.deselectSeat(num)
+      }
+    },
 
-        delete this.param.tarifa
-        const {codeReservation} = this.getTravelBus().find(travel => travel.asiento === num)
-        this.param.codigoReserva = codeReservation
-        await this.seatReservation('delete', this.param)
-        console.log('DinamicBus: delete', this.param)
-        this.isReservation = false // liberar asiento
+    async deselectSeat(seatNumber) {
+      try {
+        const seatRef = `seat-${seatNumber}`
+        const seatComponent = (this.$refs[seatRef] && this.$refs[seatRef][0]) || null
+
+        if (seatComponent) {
+          seatComponent.changeColor()
+          this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
+          this.tmpNumFree = this.propsPassengerCounter.numFree + 1
+          delete this.param.tarifa
+          const travel = this.getTravelBus().find((t) => t.asiento === seatNumber)
+          if (travel) this.param.codigoReserva = travel.codeReservation
+          this.isReservation = false
+          console.log('DinamicBus: delete', this.param)
+        }
+      } catch (error) {
+        console.error('Error al deseleccionar asiento:', error)
       }
     },
 
     setupParam() {
-      const seat = this.availableSeats.find(availableSeat => (availableSeat.num === this.seatNum))
+      const seat = this.availableSeats.find((availableSeat) => availableSeat.num === this.seatNum)
       const tarifaStr = seat.price
 
       delete this.param.codigoReserva
@@ -283,22 +268,16 @@ export default {
         let nameSelected = ['badge-selected', this.$parent.name].join('-')
         let comp = this.$parent.$parent.$parent
         // Show or hide badge selected
-        comp
-          .$refs[nameSelected][0]
-          .style.display = (0 < this.propsPassengerCounter.numSelected) ? '' : 'none'
+        comp.$refs[nameSelected][0].style.display = 0 < this.propsPassengerCounter.numSelected ? '' : 'none'
         // Change the number of seats selected
-        comp
-          .$refs[nameSelected][0]
-          .textContent = ['Seleccionados:', this.propsPassengerCounter.numSelected].join(' ')
+        comp.$refs[nameSelected][0].textContent = ['Seleccionados:', this.propsPassengerCounter.numSelected].join(' ')
       }
-    }
-    ,
-
+    },
     statusReservation(value) {
       console.log('DinamicBus: statusReservation ', value)
-      if (!value)
-      this.showMsgBoxError()
+      if (!value) this.showMsgBoxError()
     }
   }
 }
 </script>
+
