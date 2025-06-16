@@ -220,16 +220,17 @@ export default {
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
         console.log('DinamicBus: add', this.param)
-      // } else if (state === 'delete') {
-      //   this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
-      //   this.tmpNumFree = this.propsPassengerCounter.numFree + 1
+        // } else if (state === 'delete') {
+        //   this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
+        //   this.tmpNumFree = this.propsPassengerCounter.numFree + 1
 
-      //   delete this.param.tarifa
-      //   const { codeReservation } = this.getTravelBus().find((travel) => travel.asiento === num)
-      //   this.param.codigoReserva = codeReservation
-      //   await this.seatReservation('delete', this.param)
-      //   console.log('DinamicBus: delete', this.param)
-      //   this.isReservation = false // liberar asiento
+        //   delete this.param.tarifa
+        //   const { codeReservation } = this.getTravelBus().find((travel) => travel.asiento === num)
+        //   this.param.codigoReserva = codeReservation
+        //   await this.seatReservation('delete', this.param)
+        //   console.log('DinamicBus: delete', this.param)
+        //   this.isReservation = false // liberar asiento
+        await this.deselectSeat(num)
       }
     },
 
