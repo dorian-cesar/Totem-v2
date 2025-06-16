@@ -34,8 +34,7 @@ export default {
 
       // formato
       // return `${day}/${month}/${year} - ${hours}:${minutes}`
-      return `${day}/${month}/${year} - ${hours}`
-
+      return `${day}/${month}/${year} - ${hours}:${minutes}`
     }
   },
   mounted() {
