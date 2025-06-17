@@ -149,10 +149,6 @@ export default {
               .catch((error) => {
                 console.error('Error al guardar en DB, tentative_booking: ', error)
               })
-            setTimeout(() => {
-              this.$router.push('/travelselection')
-              window.location.reload()
-            }, 3000)
             return
           }
           await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS))
@@ -202,11 +198,7 @@ export default {
               console.error('Error al guardar en DB, tentative booking: ', error)
             })
         }
-        if (
-          typeof data.response !== 'undefined' &&
-          typeof data.response.code !== 'undefined' &&
-          typeof data.response.code == 500
-        ) {
+        if (typeof data !== 'object' && !data.result) {
           this.statusReservation = false
           console.log('no ticket', data)
           console.log('Datos para DB tentative booking:', bookingData)
@@ -230,16 +222,14 @@ export default {
           } else {
             this.statusReservation = false
             console.log('no ticket', data)
-            setTimeout(() => {
-              this.$router.push('/travelselection')
-              window.location.reload()
-            }, 3000)
           }
         } else {
-          this.statusReservation = false
+          this.statusReservation = true
+          setTimeout(() => { // para que aparezca modal de error
+            this.statusReservation = false
+          }, 50)
           bookingData.codigo_reserva = 'Reserva fallida'
           console.log('no result', data)
-
           console.log('Datos para DB tentative booking:', bookingData)
           this.axios
             .post(this.info.urlLogs, {
@@ -251,10 +241,6 @@ export default {
             .catch((error) => {
               console.error('Error al guardar en DB, tentative_booking :', error)
             })
-          setTimeout(() => {
-            this.$router.push('/travelselection')
-            window.location.reload()
-          }, 3000)
         }
       }
       this.isLoadingReservation = false
