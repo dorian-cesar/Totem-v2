@@ -251,6 +251,27 @@ export default {
       }
     },
 
+    async reservaHandler(seatNumber) {
+      try {
+        const seatRef = `seat-${seatNumber}`
+        const seatComponent = (this.$refs[seatRef] && this.$refs[seatRef][0]) || null
+
+        if (seatComponent) {
+          seatComponent.changeColor()
+          seatComponent.initialColor('busy')
+          seatComponent.statusSeat = 'busy'
+          this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
+          this.propsPassengerCounter.numBusy += 1
+          const travel = this.getTravelBus().find((t) => t.asiento === seatNumber)
+          if (travel) this.param.codigoReserva = travel.codeReservation
+          this.isReservation = false
+          console.log('DinamicBus: reserva fallida, asiento marcado como ocupado', this.param)
+        }
+      } catch (error) {
+        console.error('Error en reservaHandler:', error)
+      }
+    },
+
     setupParam() {
       const seat = this.availableSeats.find((availableSeat) => availableSeat.num === this.seatNum)
       const tarifaStr = seat.price
@@ -281,7 +302,7 @@ export default {
     },
     statusReservation(value) {
       console.log('DinamicBus: statusReservation ', value)
-      if (!value) this.showMsgBoxError()
+      if (!value) this.showMsgBoxError(this.seatNum)
     }
   }
 }
