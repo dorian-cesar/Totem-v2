@@ -156,7 +156,7 @@ export default {
     },
 
     // Mensaje de error
-    async showMsgBoxError() {
+    async showMsgBoxError(num) {
       await this.$bvModal.msgBoxOk('Se presentó un error al reservar el asiento, debe elegir otro.', {
         title: 'Información',
         size: 'sm',
@@ -166,10 +166,7 @@ export default {
         footerClass: 'p-2 ml-2 mr-2 border-top-0',
         centered: true
       })
-
-      this.seatComponent.initialColor('busy') // cambio de color
-      this.seatComponent.statusSeat = 'busy' // agregar el status
-      this.propsPassengerCounter.numBusy += 1 // sumarlo al contador de pasajeros
+      await this.reservaHandler(num)
     },
 
     //cuando se selecciona un asiento
@@ -220,7 +217,7 @@ export default {
         // console.log(this.drawSeats)
         await this.seatReservation('add', this.param, this.param.servicio)
         console.log('DinamicBus: add', this.param)
-        } else if (state === 'delete') {
+      } else if (state === 'delete') {
         //   this.tmpNumSelected = this.propsPassengerCounter.numSelected - 1
         //   this.tmpNumFree = this.propsPassengerCounter.numFree + 1
 
