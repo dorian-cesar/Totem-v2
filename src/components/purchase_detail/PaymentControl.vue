@@ -18,11 +18,11 @@
           </h2>
         </b-col>
         <b-col cols="12" v-show="isChangeStatus" class="text-center mb-4">
-          <b-button @click="actionButton('cerrar')" :variant="isTryAgain ? 'primary' : 'secondary'"
+          <!-- <b-button @click="actionButton('cerrar')" :variant="isTryAgain ? 'primary' : 'secondary'"
             class="custom-button-alert text-center mr-3"
             style="background-color: #FF5200 !important; border: none; color: white;" :disabled="!isTryAgain">
             Intente de Nuevo
-          </b-button>
+          </b-button> -->
 
           <b-button @click="actionButton('salir')" class="custom-button-alert text-center ml-3"
             style="background-color: #001689!important; border: none; color: white;">
