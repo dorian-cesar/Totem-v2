@@ -11,6 +11,7 @@ yarn.lock
 curl.txt
 view-json.json
 DB-totem.js
+view-js.js
 # Editor directories and files
 .idea
 .vscode
