@@ -85,7 +85,8 @@ export default {
       //
       isCheckOutService: false, //<- Chequeo de isOutService completado
       dataPOS: '',
-      info
+      info,
+      token: localStorage.getItem('authToken')
     }
   },
 
@@ -200,7 +201,16 @@ export default {
             : this.propsPersonalInformation.total.replace('.', '')
         }
         this.axios
-          .post(this.info.urlLogs, { bookingData })
+          .post(
+            this.info.urlLogs,
+            { bookingData },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
           .then(() => {
             console.log('Guardado exitoso en DB pagarPOS simulado')
             console.log('Datos para DB pagarPOS: ', bookingData)
@@ -244,7 +254,16 @@ export default {
             total_transaccion: ''
           }
           this.axios
-            .post(this.info.urlLogs, { bookingData })
+            .post(
+              this.info.urlLogs,
+              { bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${this.token}`
+                }
+              }
+            )
             .then(() => {
               console.log('Error guardado en DB (pagarPos)')
               console.log('Datos para DB pagarPOS: ', bookingData)
@@ -329,8 +348,17 @@ export default {
     //         bookingData.fecha_transaccion = formattedDate
     //         bookingData.hora_transaccion = formattedTime
     //         bookingData.total_transaccion = this.dataPOS.amount
-    //         this.axios
-    //           .post(this.info.urlLogs, { bookingData })
+    //                   this.axios
+    // .post(
+    //   this.info.urlLogs,
+    //   { bookingData },
+    //   {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${this.token}`
+    //     }
+    //   }
+    // )
     //           .then(() => {
     //             console.log('Guardado exitoso en DB (pagarPos)')
     //             console.log('Datos para DB pagarPOS: ', bookingData)
@@ -349,8 +377,17 @@ export default {
     //       } else {
     //         bookingData.estado_transaccion = 'Pago fallido'
     //         bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '')
-    //         this.axios
-    //           .post(this.info.urlLogs, { bookingData })
+    //                   this.axios
+    // .post(
+    //   this.info.urlLogs,
+    //   { bookingData },
+    //   {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${this.token}`
+    //     }
+    //   }
+    // )
     //           .then(() => {
     //             console.log('Error guardado en DB (pagarPos)')
     //             console.log('Datos del error para DB pagarPOS: ', bookingData)
@@ -397,8 +434,17 @@ export default {
     //           hora_transaccion: '',
     //           total_transaccion: ''
     //         }
-    //         this.axios
-    //           .post(this.info.urlLogs, { bookingData })
+    //                   this.axios
+    // .post(
+    //   this.info.urlLogs,
+    //   { bookingData },
+    //   {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       Authorization: `Bearer ${this.token}`
+    //     }
+    //   }
+    // )
     //           .then(() => {
     //             console.log('Error guardado en DB (pagarPos)')
     //             console.log('Datos para DB pagarPOS: ', bookingData)
@@ -663,7 +709,16 @@ export default {
             console.log('bookingData:', bookingData)
 
             try {
-              await this.axios.post(this.info.urlLogs, { bookingData })
+              await this.axios.post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
             } catch (logError) {
               console.error(`Error al guardar intento ${attempt} en DB:`, logError)
@@ -755,7 +810,7 @@ export default {
               boleto: response_boleto.toString(),
               codigo: response_codigo.toString(),
               rut: localStorage.getItem('rut') || 'Sin RUT',
-              servicio: response_servicio, 
+              servicio: response_servicio,
               ruta: response_ruta,
               piso: response_piso,
               asiento: response_asiento,
@@ -769,7 +824,7 @@ export default {
             }
 
             ticketsGeneradosFormatted.boletos.push(response_ticket)
-            console.log("ticketsGeneradosFormatted: ", ticketsGeneradosFormatted)
+            console.log('ticketsGeneradosFormatted: ', ticketsGeneradosFormatted)
 
             // formatear fecha y hora para DB
             const rawDate = this.dataPOS.realDate
@@ -803,9 +858,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Datos para DB confirm_booking: ', bookingData)
                 console.log('Guardado exitoso en DB (confirm booking)')
@@ -853,9 +915,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Error guardado en DB (confirm booking)')
               })
