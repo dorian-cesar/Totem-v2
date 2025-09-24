@@ -26,6 +26,8 @@ export default {
       const rut = localStorage.getItem('rut')
       localStorage.setItem('id_bus', service)
 
+      const token = localStorage.getItem('authToken')
+
       if ('add' === option)
         api = `/gds/api/tentative_booking/${service}.json?api_key=${API_KEY}&region=chile` // reservar asiento
       else if (option === 'delete') {
@@ -99,9 +101,16 @@ export default {
             total_transaccion: ''
           }
           this.axios
-            .post(this.info.urlLogs, {
-              bookingData
-            })
+            .post(
+              this.info.urlLogs,
+              { bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`
+                }
+              }
+            )
             .then(() => {
               console.log(`Intento ${attempt} guardado en DB (tentative booking)`)
             })
@@ -140,9 +149,16 @@ export default {
               total_transaccion: ''
             }
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Error guardado en DB (tentative booking)')
               })
@@ -188,9 +204,16 @@ export default {
         console.log('Datos para DB tentative booking:', bookingData)
         if (hasTicketDetails) {
           this.axios
-            .post(this.info.urlLogs, {
-              bookingData
-            })
+            .post(
+              this.info.urlLogs,
+              { bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`
+                }
+              }
+            )
             .then(() => {
               console.log('Guardado exitoso en DB (tentative booking)')
             })
@@ -204,9 +227,16 @@ export default {
           console.log('Datos para DB tentative booking:', bookingData)
 
           this.axios
-            .post(this.info.urlLogs, {
-              bookingData
-            })
+            .post(
+              this.info.urlLogs,
+              { bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`
+                }
+              }
+            )
             .then(() => {
               console.log('Error guardado en DB (tentative booking)')
             })
@@ -225,16 +255,24 @@ export default {
           }
         } else {
           this.statusReservation = true
-          setTimeout(() => { // para que aparezca modal de error
+          setTimeout(() => {
+            // para que aparezca modal de error
             this.statusReservation = false
           }, 50)
           bookingData.codigo_reserva = 'Reserva fallida'
           console.log('no result', data)
           console.log('Datos para DB tentative booking:', bookingData)
           this.axios
-            .post(this.info.urlLogs, {
-              bookingData
-            })
+            .post(
+              this.info.urlLogs,
+              { bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`
+                }
+              }
+            )
             .then(() => {
               console.log('Error guardado en DB (tentative booking)')
             })

@@ -85,7 +85,8 @@ export default {
       //
       isCheckOutService: false, //<- Chequeo de isOutService completado
       dataPOS: '',
-      info
+      info,
+      token: localStorage.getItem('authToken')
     }
   },
 
@@ -185,7 +186,16 @@ export default {
             bookingData.hora_transaccion = formattedTime
             bookingData.total_transaccion = this.dataPOS.amount
             this.axios
-              .post(this.info.urlLogs, { bookingData })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Guardado exitoso en DB (pagarPos)')
                 console.log('Datos para DB pagarPOS: ', bookingData)
@@ -205,7 +215,16 @@ export default {
             bookingData.estado_transaccion = 'Pago fallido'
             bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '')
             this.axios
-              .post(this.info.urlLogs, { bookingData })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Error guardado en DB (pagarPos)')
                 console.log('Datos del error para DB pagarPOS: ', bookingData)
@@ -253,7 +272,16 @@ export default {
               total_transaccion: ''
             }
             this.axios
-              .post(this.info.urlLogs, { bookingData })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Error guardado en DB (pagarPos)')
                 console.log('Datos para DB pagarPOS: ', bookingData)
@@ -451,7 +479,16 @@ export default {
             console.log('bookingData:', bookingData)
 
             try {
-              await this.axios.post(this.info.urlLogs, { bookingData })
+              await this.axios.post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               console.log(`Intento ${attempt} guardado en DB (confirm booking)`)
             } catch (logError) {
               console.error(`Error al guardar intento ${attempt} en DB:`, logError)
@@ -488,7 +525,7 @@ export default {
         // const proxy = 'https://newstg3-gdsbus.kupos.cl'
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        const proxy = "https://gds.kupos.com"
+        const proxy = 'https://gds.kupos.com'
         const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
@@ -590,9 +627,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Datos para DB confirm_booking: ', bookingData)
                 console.log('Guardado exitoso en DB (confirm booking)')
@@ -640,9 +684,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(() => {
                 console.log('Error guardado en DB (confirm booking)')
               })

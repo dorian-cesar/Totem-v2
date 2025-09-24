@@ -69,6 +69,7 @@ import { mapActions } from 'vuex'
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
 import ImgRut from '@/assets/img/usuario-rut.png'
+import info from '../../../info.json'
 
 export default {
   name: 'OriginDestination',
@@ -111,7 +112,8 @@ export default {
     teclasFila1: ['1', '2', '3', '4', '5'],
     teclasFila2: ['6', '7', '8', '9', '0'],
     holdTimeout: null,
-    deleteInterval: null
+    deleteInterval: null,
+    info
   }),
   components: { selectInput: Select },
   watch: {
@@ -184,6 +186,23 @@ export default {
 
     getListDepartureCities: async function () {
       try {
+        let token = localStorage.getItem('authToken')
+        const loginResponse = await this.axios.post(
+          `${this.info.urlLogin}/login`,
+          {
+            username: process.env.VUE_APP_USERNAME,
+            password: process.env.VUE_APP_PASSWORD
+          },
+          {
+            headers: {
+              'content-type': 'application/json'
+            }
+          }
+        )
+        if (loginResponse.data && loginResponse.data.token) {
+          token = loginResponse.data.token
+          localStorage.setItem('authToken', token)
+        }
         // api antigua
         // const proxy = "https://gds.ticketsimply.us"
         // const API_KEY = "TSSDFPAPI30103014"
