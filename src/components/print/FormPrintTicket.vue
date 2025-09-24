@@ -106,7 +106,6 @@ export default {
     },
 
     async getToken() {
-      let token = localStorage.getItem('authToken')
       try {
         const response = await axios.post(
           `${this.info.urlLogin}/login`,
