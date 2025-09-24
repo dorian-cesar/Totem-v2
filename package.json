@@ -14,10 +14,6 @@
       "name": "Edixon Piña",
       "email": "edixonalbertto@gmail.com",
       "url": "https://edixonalberto.com"
-    },
-    {
-      "name": "Diego Wigodski",
-      "email": "dwigodski@gmail.com"
     }
   ],
   "scripts": {
@@ -35,6 +31,7 @@
     "babel-plugin-wildcard": "^5.0.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.21.2",
+    "dotenv": "^17.2.2",
     "es6-promise": "^4.2.8",
     "escpos": "^3.0.0-alpha.6",
     "idle-vue": "^2.0.5",
