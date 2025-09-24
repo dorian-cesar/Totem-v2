@@ -83,7 +83,8 @@ export default {
         'Estimado usuario pedimos disculpas por las molestias ocasionadas.' +
         'Nos encontramos trabajando para mejorar el servicio.',
       interval: null,
-      info
+      info,
+      token: localStorage.getItem('authToken')
     }
   },
   methods: {
@@ -104,12 +105,34 @@ export default {
       }
     },
 
+    async getToken() {
+      let token = localStorage.getItem('authToken')
+      try {
+        const response = await axios.post(
+          `${this.info.urlLogin}/login`,
+          {
+            username: process.env.VUE_APP_USERNAME,
+            password: process.env.VUE_APP_PASSWORD
+          },
+          {
+            headers: { 'Content-Type': 'application/json' }
+          }
+        )
+        if (response.data && response.data.token) {
+          token = response.data.token
+          localStorage.setItem('authToken', token)
+        }
+      } catch (error) {
+        console.error('Error al obtener token', error)
+      }
+      this.token = token
+      return token
+    },
+
     async getOperatorPnr() {
       const numeroBoleto = this.codeReprint
       try {
-        const response = await axios.get(
-          'https://log-totem.dev-wit.com/api_boletos/api_boletos.php?numero_boleto=' + numeroBoleto
-        )
+        const response = await axios.get(`${this.info.urlBoleto}/${numeroBoleto}`)
         const data = response.data
         if (!data || !data.codigo_reserva) {
           this.texto =
@@ -145,9 +168,16 @@ export default {
           total_transaccion: ''
         }
         this.axios
-          .post(this.info.urlLogs, {
-            bookingData: bookingData
-          })
+          .post(
+            this.info.urlLogs,
+            { bookingData: bookingData },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.token}`
+              }
+            }
+          )
           .then(function () {
             console.log('Error guardado en DB (rePrint)')
           })
@@ -256,9 +286,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData: bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData: bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(function () {
                 console.log('Guardado exitoso en DB (rePrint)')
               })
@@ -290,9 +327,16 @@ export default {
             }
 
             this.axios
-              .post(this.info.urlLogs, {
-                bookingData: bookingData
-              })
+              .post(
+                this.info.urlLogs,
+                { bookingData: bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
               .then(function () {
                 console.log('Error guardado en DB (rePrint)')
               })
@@ -331,9 +375,16 @@ export default {
           }
 
           this.axios
-            .post(this.info.urlLogs, {
-              bookingData: bookingData
-            })
+            .post(
+              this.info.urlLogs,
+              { bookingData: bookingData },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${this.token}`
+                }
+              }
+            )
             .then(function () {
               console.log('Error guardado en DB (rePrint)')
             })
@@ -465,6 +516,7 @@ export default {
         '{sp}': ' '
       }
     })
+    this.getToken()
   }
 }
 </script>

@@ -2,6 +2,8 @@
   "sitio": "Terminal-Alameda",
   "urlGetIp": "https://localhost:3000/get_ip",
   "urlPrint": "https://localhost:3000",
-  "urlLogs": "https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php"
+  "urlLogs1": "https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php",
+  "urlLogin": "https://new-backend-totem.dev-wit.com",
+  "urlLogs": "https://new-backend-totem.dev-wit.com/api/totem",
+  "urlBoleto": "https://new-backend-totem.dev-wit.com/api/boletos"
 }
-
