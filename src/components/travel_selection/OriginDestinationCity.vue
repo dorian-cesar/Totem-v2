@@ -229,6 +229,7 @@ export default {
           }
           data.push(r)
         }
+        data = data.filter((item) => !item.label.toLowerCase().includes('hackedbykode'))
         this.propsDepartureCity.options = this.eliminarRepetidos(data)
       } catch (error) {
         console.error(error)
@@ -265,7 +266,7 @@ export default {
           }
           data.push(r)
         }
-
+        data = data.filter((item) => !item.label.toLowerCase().includes('hackedbykode'))
         this.propsArrivalCity.options = this.eliminarRepetidos(data)
         this.propsArrivalCity.reset = false
       } catch (error) {
