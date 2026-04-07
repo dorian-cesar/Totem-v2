@@ -30,17 +30,28 @@ export default {
   },
 
   mounted() {
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    axios
-      .get(this.info.urlGetIp)
-      .then((resIp) => {
-        const ip = resIp.data.ip
-        localStorage.setItem('ipServer', ip)
-        console.log('IP del servidor guardada:', ip)
-      })
-      .catch((error) => {
-        console.error('Error al obtener IP desde el backend:', error)
-      })
+    document.addEventListener('contextmenu', (e) => e.preventDefault())
+
+    let ip = null
+
+    if (this.$route && this.$route.query && this.$route.query.ip) {
+      ip = this.$route.query.ip
+    } else {
+      const params = new URLSearchParams(window.location.search)
+      ip = params.get('ip')
+    }
+
+    if (ip) {
+      localStorage.setItem('ipServer', ip)
+      console.log('IP guardada desde URL:', ip)
+    } else {
+      ip = localStorage.getItem('ipServer')
+      console.log('IP cargada desde localStorage:', ip)
+    }
+
+    if (!ip) {
+      console.error('No hay IP disponible (ni URL ni localStorage)')
+    }
 
     window.addEventListener('touchstart', this.showTouchCircle)
   },
@@ -108,4 +119,3 @@ body {
 
 @import '../assets/style/app';
 </style>
-

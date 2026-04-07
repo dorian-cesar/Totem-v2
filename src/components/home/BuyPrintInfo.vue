@@ -30,7 +30,7 @@
           </b-button>
         </div> -->
         <div class="text-center">
-          <b-img :src="ImgLogoBlanco" fluid alt="Logo Pullman" class="logo-blanco"/>
+          <b-img :src="ImgLogoBlanco" fluid alt="Logo Pullman" class="logo-blanco" />
         </div>
       </blockquote>
     </b-card>
@@ -58,44 +58,58 @@ export default {
     monitorInterval: null
   }),
   methods: {
-    // checkServerStatus() {
-    //   axios
-    //     .get(this.info.urlGetIp, { timeout: 2500 })
-    //     .then((res) => {
-    //       const monitorIp = res.data.ip
-    //       console.log('IP del servidor obtenida:', monitorIp)
-    //       if (!monitorIp) {
-    //         console.error('No se pudo obtener la IP del servidor')
-    //         this.serverAvailable = false
-    //         this.loading = true
-    //         return
-    //       }
-    //       axios
-    //         .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
-    //         .then((response) => {
-    //           console.log('Estado del servidor:', response.data)
-    //           const isAvailable = response.data.server === true
-    //           this.serverAvailable = isAvailable
-    //           this.loading = !isAvailable
-    //         })
-    //         .catch((error) => {
-    //           console.error('Error al verificar el estado del servidor:', error)
-    //           this.serverAvailable = false
-    //           this.loading = true
-    //         })
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error al obtener IP desde el backend:', error)
-    //       this.serverAvailable = false
-    //       this.loading = true
-    //     })
-    // }
+    checkServerStatus() {
+      let monitorIp = null
+
+      // 1. Intentar desde Vue Router
+      if (this.$route && this.$route.query && this.$route.query.ip) {
+        monitorIp = this.$route.query.ip
+      } else {
+        // 2. Intentar desde query string nativo
+        const params = new URLSearchParams(window.location.search)
+        monitorIp = params.get('ip')
+      }
+
+      // 3. Fallback a localStorage
+      if (!monitorIp) {
+        monitorIp = localStorage.getItem('ipServer')
+        console.log('IP desde localStorage:', monitorIp)
+      } else {
+        // 4. Guardar si viene por URL
+        localStorage.setItem('ipServer', monitorIp)
+        console.log('IP guardada desde URL:', monitorIp)
+      }
+
+      // 5. Validación final
+      if (!monitorIp) {
+        console.error('No hay IP disponible (ni URL ni localStorage)')
+        this.serverAvailable = false
+        this.loading = true
+        return
+      }
+
+      console.log('IP final usada:', monitorIp)
+
+      axios
+        .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
+        .then((response) => {
+          console.log('Estado del servidor:', response.data)
+          const isAvailable = response.data.server === true
+          this.serverAvailable = isAvailable
+          this.loading = !isAvailable
+        })
+        .catch((error) => {
+          console.error('Error al verificar el estado del servidor:', error)
+          this.serverAvailable = false
+          this.loading = true
+        })
+    }
   },
   mounted() {
-    // this.checkServerStatus()
+    this.checkServerStatus()
     this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
-    localStorage.removeItem('rut');
-    localStorage.removeItem('id_bus');
+    localStorage.removeItem('rut')
+    localStorage.removeItem('id_bus')
   },
   beforeDestroy() {
     if (this.monitorInterval) {
@@ -121,4 +135,3 @@ export default {
   opacity: 0.2;
 }
 </style>
-
