@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex justify-content-between align-items-center pr-5 pl-5 font-weight-bold">
-    <p class="mb-0 text-left" style="width: 33%; color: azure; font-size: 24px">Terminal Alameda</p>
+    <p class="mb-0 text-left" style="width: 33%; color: azure; font-size: 24px">Terminal Viña del Mar</p>
     <div style="width: 33%" class="text-center">
       <div id="date-time">
         {{ dateTime }}
@@ -34,7 +34,6 @@ export default {
 
       // return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`
       return `${day}/${month}/${year} - ${hours}:${minutes}`
-
     }
   },
   mounted() {
@@ -60,4 +59,3 @@ export default {
   opacity: 0.2;
 }
 </style>
-
