@@ -178,13 +178,13 @@ export default {
       }
 
       // voucher transbank
-      // try {
-      //   await this.imprimirRawBT(voucher)
-      //   // await this.delay(5000)
-      //   console.log('Impresión enviada con éxito - transbank')
-      // } catch (error) {
-      //   console.error('Error al enviar los datos de impresión', error)
-      // }
+      try {
+        await this.imprimirRawBT(voucher)
+        // await this.delay(5000)
+        console.log('Impresión enviada con éxito - transbank')
+      } catch (error) {
+        console.error('Error al enviar los datos de impresión', error)
+      }
 
       // Todos los boletos
       let boletosTexto = ''
@@ -316,4 +316,3 @@ export default {
     }
   }
 }
-
