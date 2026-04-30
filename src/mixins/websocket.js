@@ -23,19 +23,18 @@ export default {
   },
 
   methods: {
-    // endpoint para imprimir
     async imprimirRawBT(voucher, boleto) {
       try {
-        const response = await axios.post(this.info.urlPrint, {
-          content: voucher,
-          boleto: boleto
-        })
-        const result = response.data
-        if (result.rawbt) {
-          // const win = window.open(result.rawbt, '_blank')
-          // win.focus()
-          window.location.href = result.rawbt
+        let content = voucher
+        if (boleto) {
+          content += '\n' + boleto
         }
+        
+        // Codificar el contenido en Base64 de forma segura para caracteres especiales (UTF-8)
+        const base64Content = btoa(unescape(encodeURIComponent(content)))
+        const rawbtUrl = `rawbt:base64,${base64Content}`
+        
+        window.location.href = rawbtUrl
       } catch (error) {
         console.error('Error al imprimir - imprimirRawBT: ', error)
       }
@@ -43,13 +42,11 @@ export default {
 
     async imprimirErrorRawBT(voucher) {
       try {
-        const response = await axios.post(this.info.urlPrint, {
-          content: voucher
-        })
-        const result = response.data
-        if (result.rawbt) {
-          window.location.href = result.rawbt
-        }
+        // Codificar el contenido en Base64 de forma segura para caracteres especiales (UTF-8)
+        const base64Content = btoa(unescape(encodeURIComponent(voucher)))
+        const rawbtUrl = `rawbt:base64,${base64Content}`
+        
+        window.location.href = rawbtUrl
       } catch (error) {
         console.error('Error al imprimir - imprimirErrorRawBT: ', error)
       }
