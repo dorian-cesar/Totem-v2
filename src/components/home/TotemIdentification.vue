@@ -41,7 +41,7 @@
 
 <script>
 import SimpleKeyboard from 'simple-keyboard'
-import 'simple-keyboard/build/css/index.css'
+import '@/assets/style/vendor/simple-keyboard.css'
 import axios from 'axios'
 
 export default {
