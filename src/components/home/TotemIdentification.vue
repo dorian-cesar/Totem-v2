@@ -1,7 +1,6 @@
 <template>
   <div class="totem-id-container" v-if="visible">
     <div class="identification-form shadow-lg p-5">
-      
       <!-- Logo wit -->
       <div class="logo-container mb-4 text-center">
         <div class="logo-circle"></div>
@@ -54,15 +53,13 @@
           <button class="key-btn" @click="addNumber('9')">9</button>
         </div>
         <div class="keyboard-row">
-          <button class="key-btn action-key" @click="clearInput">⎚</button>
+          <button class="key-btn action-key" @click="clearInput">Borrar</button>
           <button class="key-btn" @click="addNumber('0')">0</button>
           <button class="key-btn action-key" @click="backspace">⌫</button>
         </div>
       </div>
 
-      <div class="footer-text mt-5">
-        WIT INNOVACION Y TECNOLOGIA SPA<br>v1.2.0
-      </div>
+      <div class="footer-text mt-5">WIT INNOVACION Y TECNOLOGIA SPA<br />v3.0.0</div>
     </div>
   </div>
 </template>
