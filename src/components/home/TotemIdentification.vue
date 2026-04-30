@@ -17,7 +17,6 @@
           placeholder="Ej: 1001"
           class="totem-input text-center h1"
           readonly
-          @click="showKeyboard = true"
         ></b-form-input>
       </div>
 
@@ -38,8 +37,27 @@
         </b-button>
       </div>
 
-      <div class="keyboard-wrapper mt-4">
-        <div class="simple-keyboard-numeric"></div>
+      <div class="custom-keyboard mt-4">
+        <div class="keyboard-row">
+          <button class="key-btn" @click="addNumber('1')">1</button>
+          <button class="key-btn" @click="addNumber('2')">2</button>
+          <button class="key-btn" @click="addNumber('3')">3</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key-btn" @click="addNumber('4')">4</button>
+          <button class="key-btn" @click="addNumber('5')">5</button>
+          <button class="key-btn" @click="addNumber('6')">6</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key-btn" @click="addNumber('7')">7</button>
+          <button class="key-btn" @click="addNumber('8')">8</button>
+          <button class="key-btn" @click="addNumber('9')">9</button>
+        </div>
+        <div class="keyboard-row">
+          <button class="key-btn action-key" @click="clearInput">⎚</button>
+          <button class="key-btn" @click="addNumber('0')">0</button>
+          <button class="key-btn action-key" @click="backspace">⌫</button>
+        </div>
       </div>
 
       <div class="footer-text mt-5">
@@ -50,8 +68,6 @@
 </template>
 
 <script>
-import SimpleKeyboard from 'simple-keyboard'
-import '@/assets/style/vendor/simple-keyboard.css'
 import axios from 'axios'
 
 export default {
@@ -66,54 +82,25 @@ export default {
     return {
       totemId: '',
       loading: false,
-      error: null,
-      keyboard: null
+      error: null
     }
   },
   mounted() {
-    if (this.visible) {
-      this.initKeyboard()
-    }
     // Cargar ID previo si existe
     const savedId = localStorage.getItem('totemIdentifier')
     if (savedId) {
       this.totemId = savedId
     }
   },
-  watch: {
-    visible(val) {
-      if (val && !this.keyboard) {
-        this.$nextTick(() => {
-          this.initKeyboard()
-        })
-      }
-    }
-  },
   methods: {
-    initKeyboard() {
-      this.keyboard = new SimpleKeyboard('.simple-keyboard-numeric', {
-        onChange: (input) => this.onChange(input),
-        onKeyPress: (button) => this.onKeyPress(button),
-        layout: {
-          default: ['1 2 3', '4 5 6', '7 8 9', '{clear} 0 {bksp}']
-        },
-        display: {
-          '{bksp}': '⌫',
-          '{clear}': '⎚'
-        },
-        theme: 'hg-theme-default hg-layout-numeric numeric-theme'
-      })
-      this.keyboard.setInput(this.totemId)
+    addNumber(num) {
+      this.totemId += num
     },
-    onChange(input) {
-      this.totemId = input
+    clearInput() {
+      this.totemId = ''
     },
-    onKeyPress(button) {
-      if (button === '{clear}') {
-        this.totemId = '';
-        this.keyboard.setInput('');
-      }
-      console.log('Button pressed', button)
+    backspace() {
+      this.totemId = this.totemId.slice(0, -1)
     },
     async identifyTotem() {
       this.loading = true
@@ -251,42 +238,45 @@ export default {
   font-weight: 900;
 }
 
-.keyboard-wrapper {
-  background: transparent;
-  padding: 0;
+/* Custom Keyboard Styles */
+.custom-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 90%;
   margin: 0 auto;
 }
 
-/* Estilos personalizados para el teclado numérico */
-:deep(.numeric-theme) {
-  background-color: transparent;
+.keyboard-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-:deep(.numeric-theme .hg-button) {
+.key-btn {
+  flex: 1;
   height: 85px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: #2b61c4;
+  border: none;
   border-bottom: 5px solid #1a4294;
   font-size: 2.2rem;
   font-weight: 800;
   border-radius: 15px;
-  margin: 5px;
-  transition: all 0.1s ease;
   color: white;
+  transition: all 0.1s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: none !important;
 }
 
-:deep(.numeric-theme .hg-button:active) {
+.key-btn:active {
   background-color: #3670db;
   transform: translateY(2px);
   border-bottom-width: 2px;
 }
 
-:deep(.numeric-theme .hg-button.hg-button-clear),
-:deep(.numeric-theme .hg-button.hg-button-bksp) {
-  background: #2b61c4;
+.action-key {
   font-size: 2rem;
 }
 
