@@ -32,26 +32,19 @@ export default {
   mounted() {
     document.addEventListener('contextmenu', (e) => e.preventDefault())
 
-    let ip = null
-
-    if (this.$route && this.$route.query && this.$route.query.ip) {
-      ip = this.$route.query.ip
-    } else {
-      const params = new URLSearchParams(window.location.search)
-      ip = params.get('ip')
-    }
-
-    if (ip) {
-      localStorage.setItem('ipServer', ip)
-      console.log('IP guardada desde URL:', ip)
-    } else {
-      ip = localStorage.getItem('ipServer')
-      console.log('IP cargada desde localStorage:', ip)
-    }
-
-    if (!ip) {
-      console.error('No hay IP disponible (ni URL ni localStorage)')
-    }
+    // Lógica de IP movida a TotemIdentification.vue y BuyPrintInfo.vue
+    // let ip = null
+    // if (this.$route && this.$route.query && this.$route.query.ip) {
+    //   ip = this.$route.query.ip
+    // } else {
+    //   const params = new URLSearchParams(window.location.search)
+    //   ip = params.get('ip')
+    // }
+    // if (ip) {
+    //   localStorage.setItem('ipServer', ip)
+    // } else {
+    //   ip = localStorage.getItem('ipServer')
+    // }
 
     window.addEventListener('touchstart', this.showTouchCircle)
   },
