@@ -987,6 +987,7 @@ export default {
     //salir a Home
     goHome() {
       this.liberarAsientos()
+      sessionStorage.setItem('autoReload', 'true')
       this.$router.push({ name: 'Home' }).then(() => {
         window.location.reload()
       })

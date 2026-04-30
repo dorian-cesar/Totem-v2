@@ -48,6 +48,7 @@ export default {
   // },
   mounted() {
     setTimeout(() => {
+      sessionStorage.setItem('autoReload', 'true');
       this.$router.push('/');
       window.location.reload();
     }, 6000);
