@@ -1,8 +1,15 @@
 <template>
   <div class="totem-id-container" v-if="visible">
     <div class="identification-form shadow-lg p-5">
-      <h1 class="text-center mb-4 text-primary font-weight-bold">Configuración de Totem</h1>
-      <p class="text-center text-muted mb-4 h4">Ingrese el identificador numérico de este equipo</p>
+      
+      <!-- Logo wit -->
+      <div class="logo-container mb-4 text-center">
+        <div class="logo-circle"></div>
+        <span class="logo-text">wit</span>
+      </div>
+
+      <h1 class="text-center text-white font-weight-bold mb-2">Configuración</h1>
+      <p class="text-center subtitle-text mb-4 h4">Ingrese el identificador único del tótem</p>
 
       <div class="input-container mb-4">
         <b-form-input
@@ -18,22 +25,25 @@
         {{ error }}
       </div>
 
-      <div class="actions mt-5">
+      <div class="actions mt-4 mb-4">
         <b-button
-          variant="primary"
           block
           size="lg"
-          class="py-3 font-weight-bold h3"
+          class="btn-iniciar py-3 font-weight-bold h3 d-flex justify-content-center align-items-center"
           :disabled="loading || !totemId"
           @click="identifyTotem"
         >
           <b-spinner v-if="loading" small class="mr-2"></b-spinner>
-          IDENTIFICAR EQUIPO
+          Iniciar Tótem <span class="arrow-icon ml-2">➔</span>
         </b-button>
       </div>
 
-      <div class="keyboard-wrapper mt-3">
+      <div class="keyboard-wrapper mt-4">
         <div class="simple-keyboard-numeric"></div>
+      </div>
+
+      <div class="footer-text mt-5">
+        WIT INNOVACION Y TECNOLOGIA SPA<br>v1.2.0
       </div>
     </div>
   </div>
@@ -85,10 +95,11 @@ export default {
         onChange: (input) => this.onChange(input),
         onKeyPress: (button) => this.onKeyPress(button),
         layout: {
-          default: ['1 2 3', '4 5 6', '7 8 9', '0 {bksp}']
+          default: ['1 2 3', '4 5 6', '7 8 9', '{clear} 0 {bksp}']
         },
         display: {
-          '{bksp}': 'Borrar'
+          '{bksp}': '⌫',
+          '{clear}': '⎚'
         },
         theme: 'hg-theme-default hg-layout-numeric numeric-theme'
       })
@@ -98,6 +109,10 @@ export default {
       this.totemId = input
     },
     onKeyPress(button) {
+      if (button === '{clear}') {
+        this.totemId = '';
+        this.keyboard.setInput('');
+      }
       console.log('Button pressed', button)
     },
     async identifyTotem() {
@@ -137,45 +152,108 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(0, 22, 137, 0.98) 0%, rgba(0, 11, 74, 0.98) 100%);
+  background: radial-gradient(circle at center, #1142a6 0%, #082567 100%);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(10px);
 }
 
 .identification-form {
-  background: white;
+  background: #1d52b1;
   width: 750px;
   border-radius: 40px;
   max-height: 95vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Logo Styles */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo-circle {
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+.logo-circle::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 30px;
+  background-color: #1d52b1;
+  border-radius: 4px;
+}
+.logo-text {
+  font-size: 4rem;
+  font-weight: 700;
+  color: white;
+  margin-left: 15px;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.subtitle-text {
+  color: #a4c2f4;
 }
 
 .totem-input {
-  border: 2px solid #e2e8f0;
+  background-color: transparent !important;
+  border: 2px solid #4a7ddb;
   border-radius: 20px;
   height: 90px;
   font-size: 3.5rem !important;
-  color: #001689;
-  background-color: #f8fafc;
+  color: white !important;
   transition: all 0.3s ease;
   font-weight: 700;
 }
 
+.totem-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .totem-input:focus {
-  border-color: #001689;
-  box-shadow: 0 0 0 4px rgba(0, 22, 137, 0.1);
-  background-color: white;
+  border-color: #8ea7d6;
+  box-shadow: 0 0 0 4px rgba(142, 167, 214, 0.2);
+  outline: none;
+}
+
+.btn-iniciar {
+  background-color: #8ea7d6;
+  color: #0b2e7a;
+  border: none;
+  border-radius: 20px;
+  height: 80px;
+  transition: all 0.2s ease;
+}
+
+.btn-iniciar:hover:not(:disabled) {
+  background-color: #a4c2f4;
+  transform: scale(1.02);
+}
+
+.btn-iniciar:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.arrow-icon {
+  font-size: 1.5rem;
+  font-weight: 900;
 }
 
 .keyboard-wrapper {
-  background: #f1f5f9;
-  padding: 15px;
-  border-radius: 25px;
+  background: transparent;
+  padding: 0;
   width: 90%;
   margin: 0 auto;
 }
@@ -190,46 +268,38 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: white;
-  border-bottom: 4px solid #cbd5e1;
+  background: #2b61c4;
+  border-bottom: 5px solid #1a4294;
   font-size: 2.2rem;
   font-weight: 800;
   border-radius: 15px;
-  margin: 4px;
+  margin: 5px;
   transition: all 0.1s ease;
-  color: #1e293b;
+  color: white;
 }
 
 :deep(.numeric-theme .hg-button:active) {
-  background-color: #e2e8f0;
+  background-color: #3670db;
   transform: translateY(2px);
   border-bottom-width: 2px;
 }
 
+:deep(.numeric-theme .hg-button.hg-button-clear),
 :deep(.numeric-theme .hg-button.hg-button-bksp) {
-  background: #f43f5e;
-  color: white;
-  border-bottom: 4px solid #be123c;
+  background: #2b61c4;
+  font-size: 2rem;
 }
 
-:deep(.numeric-theme .hg-button.hg-button-bksp:active) {
-  background: #e11d48;
+.footer-text {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #6a95e3;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-.btn-primary {
-  background-color: #001689;
-  border: none;
-  border-radius: 20px;
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #000b4a;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 22, 137, 0.4);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
+/* Fix Bootstrap overriding transparent input */
+.form-control[readonly] {
+  background-color: transparent;
 }
 </style>
