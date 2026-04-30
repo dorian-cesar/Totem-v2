@@ -32,7 +32,7 @@
         </b-button>
       </div>
 
-      <div class="keyboard-wrapper mt-5">
+      <div class="keyboard-wrapper mt-3">
         <div class="simple-keyboard-numeric"></div>
       </div>
     </div>
@@ -137,33 +137,47 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 22, 137, 0.95);
+  background: linear-gradient(135deg, rgba(0, 22, 137, 0.98) 0%, rgba(0, 11, 74, 0.98) 100%);
   z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .identification-form {
   background: white;
-  width: 900px;
-  border-radius: 30px;
-  max-height: 90vh;
+  width: 750px;
+  border-radius: 40px;
+  max-height: 95vh;
   overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .totem-input {
-  border: 3px solid #001689;
-  border-radius: 15px;
-  height: 100px;
-  font-size: 3rem !important;
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  height: 90px;
+  font-size: 3.5rem !important;
   color: #001689;
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+  font-weight: 700;
+}
+
+.totem-input:focus {
+  border-color: #001689;
+  box-shadow: 0 0 0 4px rgba(0, 22, 137, 0.1);
+  background-color: white;
 }
 
 .keyboard-wrapper {
-  background: #f8f9fa;
-  padding: 20px;
-  border-radius: 20px;
+  background: #f1f5f9;
+  padding: 15px;
+  border-radius: 25px;
+  width: 90%;
+  margin: 0 auto;
 }
 
 /* Estilos personalizados para el teclado numérico */
@@ -172,23 +186,50 @@ export default {
 }
 
 :deep(.numeric-theme .hg-button) {
-  height: 120px;
+  height: 85px;
   display: flex;
   justify-content: center;
   align-items: center;
   background: white;
-  border-bottom: 5px solid #ddd;
-  font-size: 2.5rem;
-  font-weight: bold;
+  border-bottom: 4px solid #cbd5e1;
+  font-size: 2.2rem;
+  font-weight: 800;
+  border-radius: 15px;
+  margin: 4px;
+  transition: all 0.1s ease;
+  color: #1e293b;
 }
 
 :deep(.numeric-theme .hg-button:active) {
-  background-color: #efefef;
+  background-color: #e2e8f0;
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 :deep(.numeric-theme .hg-button.hg-button-bksp) {
-  background: #ff5200;
+  background: #f43f5e;
   color: white;
-  border-bottom: 5px solid #c43f00;
+  border-bottom: 4px solid #be123c;
+}
+
+:deep(.numeric-theme .hg-button.hg-button-bksp:active) {
+  background: #e11d48;
+}
+
+.btn-primary {
+  background-color: #001689;
+  border: none;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #000b4a;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 22, 137, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 </style>
