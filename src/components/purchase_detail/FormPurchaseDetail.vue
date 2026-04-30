@@ -302,7 +302,16 @@ export default {
         })
         .then((response) => {
           console.log('Pago procesado:', response.data)
-          console.log('successful: ', response.data.data.successful)
+          
+          const apiResponse = response.data
+          const apiData = apiResponse.data || {}
+          const rawData = apiData.rawData || {}
+          
+          // Determinamos si el pago fue exitoso (soportando ambas estructuras)
+          const isSuccessful = apiResponse.success && (apiData.approved || rawData.successful || apiData.successful)
+          
+          console.log('successful: ', isSuccessful)
+
           // inicializar variables
           const bookingData = {
             sitio: this.info.sitio,
@@ -329,25 +338,46 @@ export default {
             total_transaccion: ''
           }
 
-          if (response.data.data.successful === true) {
+          if (isSuccessful === true) {
             console.log('transbank successful response: ', response.data)
-            this.dataPOS = response.data.data
+            
+            // Usamos rawData si está disponible, sino el objeto data (compatibilidad)
+            this.dataPOS = Object.keys(rawData).length > 0 ? rawData : apiData
+            
             // formatear fecha y hora para DB
-            const rawDate = this.dataPOS.realDate
-            const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
-            const rawTime = this.dataPOS.realTime
-            const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-            this.propsPaymentControl.msg = response.data.data.responseMessage
-            bookingData.tarjeta_marca = this.dataPOS.cardBrand
-            bookingData.tipo_tarjeta = this.dataPOS.cardType
-            bookingData.codigo_transaccion = this.dataPOS.ticket
-            bookingData.codigo_autorizacion = this.dataPOS.authorizationCode
-            bookingData.id_pos = this.dataPOS.terminalId
+            let formattedDate = ''
+            let formattedTime = ''
+            
+            if (this.dataPOS.realDate && this.dataPOS.realDate.length === 8) {
+              const rawDate = this.dataPOS.realDate
+              formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
+            } else if (apiData.timestamp) {
+              const [d] = apiData.timestamp.split(' ')
+              formattedDate = `${d.slice(4, 8)}-${d.slice(2, 4)}-${d.slice(0, 2)}`
+            }
+
+            if (this.dataPOS.realTime && this.dataPOS.realTime.length === 6) {
+              const rawTime = this.dataPOS.realTime
+              formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
+            } else if (apiData.timestamp) {
+              const [, t] = apiData.timestamp.split(' ')
+              formattedTime = `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`
+            }
+
+            // Mensaje para el modal
+            this.propsPaymentControl.msg = apiResponse.message || this.dataPOS.responseMessage || 'Pago procesado'
+            
+            bookingData.tarjeta_marca = this.dataPOS.cardBrand || apiData.cardBrand
+            bookingData.tipo_tarjeta = this.dataPOS.cardType || apiData.cardType
+            bookingData.codigo_transaccion = this.dataPOS.ticket || rawData.ticket
+            bookingData.codigo_autorizacion = this.dataPOS.authorizationCode || apiData.authorizationCode
+            bookingData.id_pos = this.dataPOS.terminalId || rawData.terminalId
             bookingData.estado_transaccion = 'Pago realizado'
-            bookingData.numero_transaccion = this.dataPOS.operationNumber
+            bookingData.numero_transaccion = this.dataPOS.operationNumber || apiData.operationNumber
             bookingData.fecha_transaccion = formattedDate
             bookingData.hora_transaccion = formattedTime
-            bookingData.total_transaccion = this.dataPOS.amount
+            bookingData.total_transaccion = this.dataPOS.amount || apiData.amount
+            
             this.axios
               .post(
                 this.info.urlLogs,
@@ -370,9 +400,9 @@ export default {
               this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
             }, 2000)
             this.isErrorPOS = false
-            this.ballotNumberPOS = Number(response.data.data.authorizationCode)
-            this.paymentPOS = response.data.data
-            this.amountPOS = response.data.data.amount
+            this.ballotNumberPOS = Number(bookingData.codigo_autorizacion)
+            this.paymentPOS = this.dataPOS
+            this.amountPOS = bookingData.total_transaccion
             this.endTransactionPOS(true)
           } else {
             bookingData.estado_transaccion = 'Pago fallido'
@@ -395,7 +425,9 @@ export default {
               .catch((error) => {
                 console.error('Error al guardar en DB, pagarPOS : ', error)
               })
-            this.propsPaymentControl.msgError = response.data.data.responseMessage
+            
+            // Mensaje de error para el modal
+            this.propsPaymentControl.msgError = apiResponse.message || rawData.responseMessage || 'Transacción rechazada'
             this.isErrorPOS = true
             this.isErrorTerminarTransaccionPOS(true)
           }
