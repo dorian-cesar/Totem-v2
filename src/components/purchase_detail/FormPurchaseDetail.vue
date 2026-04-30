@@ -325,17 +325,17 @@ export default {
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
             numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
-            id_pos: '',
+            id_pos: rawData.terminalId || '',
             id_bus: this.propsPersonalInformation.tickets[0].servicio,
-            codigo_transaccion: '',
-            tipo_tarjeta: '',
-            tarjeta_marca: '',
-            codigo_autorizacion: '',
+            codigo_transaccion: rawData.ticket || '',
+            tipo_tarjeta: rawData.cardType || apiData.cardType || '',
+            tarjeta_marca: rawData.cardBrand || apiData.cardBrand || '',
+            codigo_autorizacion: apiData.authorizationCode || rawData.authorizationCode || '',
             estado_transaccion: '',
-            numero_transaccion: '',
+            numero_transaccion: apiData.operationNumber || rawData.operationNumber || '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: ''
+            total_transaccion: apiData.amount || rawData.amount || ''
           }
 
           if (isSuccessful === true) {
@@ -364,19 +364,12 @@ export default {
               formattedTime = `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`
             }
 
-            // Mensaje para el modal
-            this.propsPaymentControl.msg = apiResponse.message || this.dataPOS.responseMessage || 'Pago procesado'
+            // Mensaje para el modal (Priorizamos el mensaje específico de Transbank)
+            this.propsPaymentControl.msg = rawData.responseMessage || apiResponse.message || 'Pago Aprobado'
             
-            bookingData.tarjeta_marca = this.dataPOS.cardBrand || apiData.cardBrand
-            bookingData.tipo_tarjeta = this.dataPOS.cardType || apiData.cardType
-            bookingData.codigo_transaccion = this.dataPOS.ticket || rawData.ticket
-            bookingData.codigo_autorizacion = this.dataPOS.authorizationCode || apiData.authorizationCode
-            bookingData.id_pos = this.dataPOS.terminalId || rawData.terminalId
             bookingData.estado_transaccion = 'Pago realizado'
-            bookingData.numero_transaccion = this.dataPOS.operationNumber || apiData.operationNumber
             bookingData.fecha_transaccion = formattedDate
             bookingData.hora_transaccion = formattedTime
-            bookingData.total_transaccion = this.dataPOS.amount || apiData.amount
             
             this.axios
               .post(
@@ -405,8 +398,10 @@ export default {
             this.amountPOS = bookingData.total_transaccion
             this.endTransactionPOS(true)
           } else {
-            bookingData.estado_transaccion = 'Pago fallido'
-            bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '')
+            // Caso de fallo o cancelación
+            bookingData.estado_transaccion = rawData.responseMessage || 'Pago fallido'
+            bookingData.total_transaccion = bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
+            
             this.axios
               .post(
                 this.info.urlLogs,
@@ -426,8 +421,8 @@ export default {
                 console.error('Error al guardar en DB, pagarPOS : ', error)
               })
             
-            // Mensaje de error para el modal
-            this.propsPaymentControl.msgError = apiResponse.message || rawData.responseMessage || 'Transacción rechazada'
+            // Mensaje de error para el modal (Priorizamos el mensaje de Transbank como "Transacción Cancelada")
+            this.propsPaymentControl.msgError = rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
             this.isErrorPOS = true
             this.isErrorTerminarTransaccionPOS(true)
           }
