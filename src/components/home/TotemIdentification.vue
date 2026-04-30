@@ -1,6 +1,11 @@
 <template>
   <div class="totem-id-container" v-if="visible">
-    <div class="identification-form shadow-lg p-5">
+    <div v-if="initialCheck" class="text-center d-flex flex-column align-items-center justify-content-center">
+      <b-spinner style="width: 5rem; height: 5rem; color: white;" class="mb-4"></b-spinner>
+      <h2 class="text-white font-weight-bold">Conectando...</h2>
+    </div>
+
+    <div v-else class="identification-form shadow-lg p-5">
       <!-- Logo wit -->
       <div class="logo-container mb-4 text-center">
         <div class="logo-circle"></div>
@@ -79,14 +84,31 @@ export default {
     return {
       totemId: '',
       loading: false,
+      initialCheck: true,
       error: null
     }
   },
-  mounted() {
-    // Cargar ID previo si existe
+  async mounted() {
     const savedId = localStorage.getItem('totemIdentifier')
+    const autoReload = sessionStorage.getItem('autoReload')
+
     if (savedId) {
       this.totemId = savedId
+      
+      if (autoReload === 'true') {
+        // Estamos en el paso intermedio: se hizo router.push('/') pero aún no se ejecuta window.location.reload()
+        // Cambiamos el estado para que la próxima carga (el reload real) haga la validación.
+        sessionStorage.setItem('autoReload', 'pending')
+      } else if (autoReload === 'pending') {
+        // Este es el reload real de la página. Ahora sí auto-validamos.
+        sessionStorage.removeItem('autoReload')
+        await this.identifyTotem()
+      } else {
+        // Es un inicio manual o F5, mostrar formulario
+        this.initialCheck = false
+      }
+    } else {
+      this.initialCheck = false
     }
   },
   methods: {
