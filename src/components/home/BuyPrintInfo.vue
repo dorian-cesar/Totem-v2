@@ -1,10 +1,17 @@
 <template>
   <div class="pt-3">
-    <div v-if="loading" class="text-black-50 text-center pb-4">
+    <!-- Formulario de Identificación -->
+    <totem-identification
+      v-if="!isIdentified"
+      @identified="onTotemIdentified"
+    />
+
+    <div v-if="loading && isIdentified" class="text-black-50 text-center pb-4">
       <b-spinner type="grow"></b-spinner>
       <span class="text-white pl-2 h2">Espere mientras se inicia el servidor</span>
     </div>
-    <b-card class="transparent-main card-custom">
+
+    <b-card v-if="isIdentified" class="transparent-main card-custom">
       <blockquote class="card-blockquote">
         <!-- Button Buy Ticket -->
         <div class="btn-img">
@@ -23,12 +30,6 @@
             <b-img :src="BtnPrintTicket" fluid alt="Print Ticket image" />
           </b-button>
         </div>
-        <!-- Button Get Ticket -->
-        <!-- <div class="btn-img">
-          <b-button variant="link" block :disabled="!serverAvailable">
-            <b-img :src="BtnGetInfo" fluid alt="Get Info" />
-          </b-button>
-        </div> -->
         <div class="text-center">
           <b-img :src="ImgLogoBlanco" fluid alt="Logo Pullman" class="logo-blanco" />
         </div>
@@ -42,53 +43,45 @@ import BtnBuyTicket from '@/assets/img/buy_print_info/btn_buy_ticket.png'
 import BtnPrintTicket from '@/assets/img/buy_print_info/btn_print_ticket_enabled.png'
 import BtnGetInfo from '@/assets/img/buy_print_info/btn_get_info.png'
 import ImgLogoBlanco from '@/assets/img/logo-pullman-nuevo-blanco.svg'
+import TotemIdentification from '@/components/home/TotemIdentification'
 import axios from 'axios'
 import info from '../../../info.json'
 
 export default {
   name: 'BuyPrintInfo',
+  components: {
+    TotemIdentification
+  },
   data: () => ({
-    loading: true, //true
-    serverAvailable: false, //false
+    loading: true,
+    serverAvailable: false,
+    isIdentified: false,
     BtnBuyTicket,
     BtnPrintTicket,
-    // BtnGetInfo,
     ImgLogoBlanco,
     info,
     monitorInterval: null
   }),
   methods: {
+    onTotemIdentified(deviceData) {
+      console.log('Identificación completada:', deviceData)
+      this.isIdentified = true
+      this.checkServerStatus()
+      this.monitorInterval = setInterval(this.checkServerStatus, 5000)
+    },
     checkServerStatus() {
-      let monitorIp = null
+      if (!this.isIdentified) return
 
-      // 1. Intentar desde Vue Router
-      if (this.$route && this.$route.query && this.$route.query.ip) {
-        monitorIp = this.$route.query.ip
-      } else {
-        // 2. Intentar desde query string nativo
-        const params = new URLSearchParams(window.location.search)
-        monitorIp = params.get('ip')
-      }
+      const monitorIp = localStorage.getItem('ipServer')
 
-      // 3. Fallback a localStorage
       if (!monitorIp) {
-        monitorIp = localStorage.getItem('ipServer')
-        console.log('IP desde localStorage:', monitorIp)
-      } else {
-        // 4. Guardar si viene por URL
-        localStorage.setItem('ipServer', monitorIp)
-        console.log('IP guardada desde URL:', monitorIp)
-      }
-
-      // 5. Validación final
-      if (!monitorIp) {
-        console.error('No hay IP disponible (ni URL ni localStorage)')
+        console.error('No hay IP disponible')
         this.serverAvailable = false
         this.loading = true
         return
       }
 
-      console.log('IP final usada:', monitorIp)
+      console.log('Verificando servidor en IP:', monitorIp)
 
       axios
         .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
@@ -106,8 +99,8 @@ export default {
     }
   },
   mounted() {
-    this.checkServerStatus()
-    this.monitorInterval = setInterval(this.checkServerStatus, 5000) // tiempo entre checkServerStatus
+    // Al refrescar, siempre pedimos identificación según requerimiento
+    this.isIdentified = false
     localStorage.removeItem('rut')
     localStorage.removeItem('id_bus')
   },
