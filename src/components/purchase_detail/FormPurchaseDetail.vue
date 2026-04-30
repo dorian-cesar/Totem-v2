@@ -139,8 +139,17 @@ export default {
         })
         .then((response) => {
           console.log('Pago procesado:', response.data)
-          console.log('successful: ', response.data.data.successful)
-          //inicializar variables
+          
+          const apiResponse = response.data
+          const apiData = apiResponse.data || {}
+          const rawData = apiData.rawData || {}
+          
+          // Determinamos si el pago fue exitoso (soportando ambas estructuras)
+          const isSuccessful = apiResponse.success && (apiData.approved || rawData.successful || apiData.successful)
+          
+          console.log('successful: ', isSuccessful)
+
+          // inicializar variables
           const bookingData = {
             sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
@@ -151,40 +160,54 @@ export default {
             hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
             asiento: this.propsPersonalInformation.tickets[0].seat,
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-            // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+            numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
-            id_pos: '',
+            id_pos: rawData.terminalId || '',
             id_bus: this.propsPersonalInformation.tickets[0].servicio,
-            codigo_transaccion: '',
-            tipo_tarjeta: '',
-            tarjeta_marca: '',
-            codigo_autorizacion: '',
+            codigo_transaccion: rawData.ticket || '',
+            tipo_tarjeta: rawData.cardType || apiData.cardType || '',
+            tarjeta_marca: rawData.cardBrand || apiData.cardBrand || '',
+            codigo_autorizacion: apiData.authorizationCode || rawData.authorizationCode || '',
             estado_transaccion: '',
-            numero_transaccion: '',
+            numero_transaccion: apiData.operationNumber || rawData.operationNumber || '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: ''
+            total_transaccion: apiData.amount || rawData.amount || ''
           }
 
-          if (response.data.data.successful === true) {
+          if (isSuccessful === true) {
             console.log('transbank successful response: ', response.data)
-            this.dataPOS = response.data.data
+            
+            // Usamos rawData si está disponible, sino el objeto data (compatibilidad)
+            this.dataPOS = Object.keys(rawData).length > 0 ? rawData : apiData
+            
             // formatear fecha y hora para DB
-            const rawDate = this.dataPOS.realDate
-            const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
-            const rawTime = this.dataPOS.realTime
-            const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-            this.propsPaymentControl.msg = response.data.data.responseMessage
-            bookingData.tarjeta_marca = this.dataPOS.cardBrand
-            bookingData.tipo_tarjeta = this.dataPOS.cardType
-            bookingData.codigo_transaccion = this.dataPOS.ticket
-            bookingData.codigo_autorizacion = this.dataPOS.authorizationCode
-            bookingData.id_pos = this.dataPOS.terminalId
+            let formattedDate = ''
+            let formattedTime = ''
+            
+            if (this.dataPOS.realDate && this.dataPOS.realDate.length === 8) {
+              const rawDate = this.dataPOS.realDate
+              formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
+            } else if (apiData.timestamp) {
+              const [d] = apiData.timestamp.split(' ')
+              formattedDate = `${d.slice(4, 8)}-${d.slice(2, 4)}-${d.slice(0, 2)}`
+            }
+
+            if (this.dataPOS.realTime && this.dataPOS.realTime.length === 6) {
+              const rawTime = this.dataPOS.realTime
+              formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
+            } else if (apiData.timestamp) {
+              const [, t] = apiData.timestamp.split(' ')
+              formattedTime = `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`
+            }
+
+            // Mensaje para el modal (Priorizamos el mensaje específico de Transbank)
+            this.propsPaymentControl.msg = rawData.responseMessage || apiResponse.message || 'Pago Aprobado'
+            
             bookingData.estado_transaccion = 'Pago realizado'
-            bookingData.numero_transaccion = this.dataPOS.operationNumber
             bookingData.fecha_transaccion = formattedDate
             bookingData.hora_transaccion = formattedTime
-            bookingData.total_transaccion = this.dataPOS.amount
+            
             this.axios
               .post(
                 this.info.urlLogs,
@@ -207,13 +230,15 @@ export default {
               this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
             }, 2000)
             this.isErrorPOS = false
-            this.ballotNumberPOS = Number(response.data.data.authorizationCode)
-            this.paymentPOS = response.data.data
-            this.amountPOS = response.data.data.amount
+            this.ballotNumberPOS = Number(bookingData.codigo_autorizacion)
+            this.paymentPOS = this.dataPOS
+            this.amountPOS = bookingData.total_transaccion
             this.endTransactionPOS(true)
           } else {
-            bookingData.estado_transaccion = 'Pago fallido'
-            bookingData.total_transaccion = this.propsPersonalInformation.total.replace('.', '')
+            // Caso de fallo o cancelación
+            bookingData.estado_transaccion = rawData.responseMessage || 'Pago fallido'
+            bookingData.total_transaccion = bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
+            
             this.axios
               .post(
                 this.info.urlLogs,
@@ -232,7 +257,9 @@ export default {
               .catch((error) => {
                 console.error('Error al guardar en DB, pagarPOS : ', error)
               })
-            this.propsPaymentControl.msgError = response.data.data.responseMessage
+            
+            // Mensaje de error para el modal (Priorizamos el mensaje de Transbank como "Transacción Cancelada")
+            this.propsPaymentControl.msgError = rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
             this.isErrorPOS = true
             this.isErrorTerminarTransaccionPOS(true)
           }
