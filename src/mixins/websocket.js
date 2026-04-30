@@ -1,5 +1,6 @@
 import axios from 'axios'
 import info from '../../info.json'
+import { logoData } from '../lib/logo.js'
 
 export default {
   data() {
@@ -23,15 +24,72 @@ export default {
   },
 
   methods: {
+    generatePrintCommand(content, boleto) {
+      function appendBytes(arr1, arr2) {
+        const merged = new Uint8Array(arr1.length + arr2.length)
+        merged.set(arr1)
+        merged.set(arr2, arr1.length)
+        return merged
+      }
+
+      const encoder = new TextEncoder()
+      let escPos = new Uint8Array(0)
+
+      function feedAndCut() {
+        let seq = new Uint8Array(0)
+        seq = appendBytes(seq, encoder.encode('\n\n\n\n'))
+        seq = appendBytes(seq, new Uint8Array([0x1D, 0x56, 0x00]))
+        return seq
+      }
+
+      escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
+
+      if (content && boleto) {
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
+        escPos = appendBytes(escPos, encoder.encode(content))
+        escPos = appendBytes(escPos, feedAndCut())
+
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x01]))
+        if (logoData.length > 0) escPos = appendBytes(escPos, logoData)
+        escPos = appendBytes(escPos, encoder.encode('\n\n'))
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
+        escPos = appendBytes(escPos, encoder.encode(boleto))
+        escPos = appendBytes(escPos, feedAndCut())
+      } else if (boleto) {
+        const firstLine = boleto.split('\n')[0] || '-------'
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x01]))
+        escPos = appendBytes(escPos, encoder.encode(firstLine + '\n'))
+        escPos = appendBytes(escPos, feedAndCut())
+
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x01]))
+        if (logoData.length > 0) escPos = appendBytes(escPos, logoData)
+        escPos = appendBytes(escPos, new Uint8Array([0x0A, 0x0A]))
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
+        escPos = appendBytes(escPos, encoder.encode(boleto))
+        escPos = appendBytes(escPos, feedAndCut())
+      } else if (content) {
+        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
+        escPos = appendBytes(escPos, encoder.encode(content))
+        escPos = appendBytes(escPos, feedAndCut())
+      }
+
+      return escPos
+    },
+
+    uint8ToBase64(uint8arr) {
+      let binary = ''
+      for (let i = 0; i < uint8arr.length; i++) {
+        binary += String.fromCharCode(uint8arr[i])
+      }
+      return btoa(binary)
+    },
+
     async imprimirRawBT(voucher, boleto) {
       try {
-        let content = voucher
-        if (boleto) {
-          content += '\n' + boleto
-        }
-        
-        // Codificar el contenido en Base64 de forma segura para caracteres especiales (UTF-8)
-        const base64Content = btoa(unescape(encodeURIComponent(content)))
+        const escPosData = this.generatePrintCommand(voucher, boleto)
+        const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
         
         window.location.href = rawbtUrl
@@ -42,8 +100,8 @@ export default {
 
     async imprimirErrorRawBT(voucher) {
       try {
-        // Codificar el contenido en Base64 de forma segura para caracteres especiales (UTF-8)
-        const base64Content = btoa(unescape(encodeURIComponent(voucher)))
+        const escPosData = this.generatePrintCommand(voucher, null)
+        const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
         
         window.location.href = rawbtUrl
