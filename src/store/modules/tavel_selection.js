@@ -25,10 +25,10 @@ export default {
       return state.codeArrivalCity
     },
     isDepartureCity: state => {
-      return !!(state.nameDepartureCity && state.codeDepartureCity)
+      return Boolean(state.nameDepartureCity && state.codeDepartureCity !== undefined && state.codeDepartureCity !== null && state.codeDepartureCity !== '')
     },
     isArrivalCity: state => {
-      return !!(state.nameArrivalCity && state.codeArrivalCity)
+      return Boolean(state.nameArrivalCity && state.codeArrivalCity !== undefined && state.codeArrivalCity !== null && state.codeArrivalCity !== '')
     },
 
     getOriginCity: state => {
