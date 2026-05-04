@@ -1,15 +1,14 @@
 <template>
-  <form-print-ticket/>
+  <form-print-ticket />
 </template>
 
 <script>
-  import FormPrintTicket from "@/components/print/FormPrintTicket";
+import FormPrintTicket from '@/components/print/FormPrintTicket'
 
-  export default {
-    name: "PrintTicket",
-    components: {
-      FormPrintTicket
-    }
-
+export default {
+  name: 'PrintTicket',
+  components: {
+    FormPrintTicket
   }
+}
 </script>
