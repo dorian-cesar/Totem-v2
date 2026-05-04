@@ -63,8 +63,10 @@
         if (!this.isOutService && 'status_internet' === this.messageWebSocket.type) {//<- variables del mixin
           // Terminar intervalos
           clearInterval(this.interval)
-          // Ir a Home
-          this.$router.push('/')
+          sessionStorage.setItem('autoReload', 'true')
+          this.$router.push('/').then(() => {
+            window.location.reload()
+          })
         }
       },
 

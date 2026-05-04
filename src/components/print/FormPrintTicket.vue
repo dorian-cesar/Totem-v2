@@ -484,8 +484,10 @@ export default {
     },
 
     goHome() {
-      //this.$router.push('/')
-      this.$router.push({ name: 'Home' })
+      sessionStorage.setItem('autoReload', 'true')
+      this.$router.push({ name: 'Home' }).then(() => {
+        window.location.reload()
+      })
     },
     // Click Toolbar button
     eventClick: function (name) {
