@@ -124,10 +124,10 @@ export default {
           value: PRESELECT_VALUE
         }
       }
-      this.setArrivalCity()
+      
+      // Update Vuex with the new Origin (and current Destination)
       if (newVal) {
-        this.propsArrivalCity.options = []
-        this.getListArrivalCities()
+        this.setValues()
         this.$emit('selected', true)
       }
     },
@@ -228,60 +228,25 @@ export default {
           data.push(r)
         }
         data = data.filter((item) => !item.label.toLowerCase().includes('hackedbykode'))
-        this.propsDepartureCity.options = this.eliminarRepetidos(data)
+        let dataFiltered = this.eliminarRepetidos(data)
+        this.propsDepartureCity.options = dataFiltered
+        this.propsArrivalCity.options = dataFiltered
       } catch (error) {
         console.error(error)
       }
     },
 
-    // Get arrival cities
-    getListArrivalCities: async function () {
-      try {
-        // api antigua
-        // const proxy = "https://gds.ticketsimply.us"
-        // const API_KEY = "TSSDFPAPI30103014"
-        // const proxy = "https://newstg3-gdsbus.kupos.cl"
-        // const API_KEY = "TSXFQYAPI25766888"
-        // api kupos
-        const proxy = 'https://gds.kupos.com'
-        const API_KEY = 'TSSDFPAPI30103014'
-        const api = `/gds/api/cities.json?api_key=${API_KEY}`
-        const body = this.propsDepartureCity.selected.value
+    // Removed redundant getListArrivalCities since they both use the same endpoint
 
-        const response = await this.axios.get([proxy, api].join('/'), {
-          headers: {
-            'content-type': 'application/json'
-          }
-        })
-        let results = response.data.result
-        // console.log(results)
-        results.shift()
-        let data = []
-        for (let result of results) {
-          const r = {
-            label: result[1],
-            value: result[0]
-          }
-          data.push(r)
-        }
-        data = data.filter((item) => !item.label.toLowerCase().includes('hackedbykode'))
-        this.propsArrivalCity.options = this.eliminarRepetidos(data)
-        this.propsArrivalCity.reset = false
-      } catch (error) {
-        console.error(error)
-      }
-    },
-
-    // Set the values of the cities in the store
     setValues() {
       this.setDepartureCity({
-        name: this.propsDepartureCity.selected.label,
-        code: this.propsDepartureCity.selected.value
+        name: this.propsDepartureCity.selected ? this.propsDepartureCity.selected.label : '',
+        code: this.propsDepartureCity.selected ? this.propsDepartureCity.selected.value : ''
       })
 
       this.setArrivalCity({
-        name: this.propsArrivalCity.selected.label,
-        code: this.propsArrivalCity.selected.value
+        name: this.propsArrivalCity.selected ? this.propsArrivalCity.selected.label : '',
+        code: this.propsArrivalCity.selected ? this.propsArrivalCity.selected.value : ''
       })
     },
     action(name, val) {

@@ -21,7 +21,7 @@
           :placeholder="placeholder"
           :resetOnOptionsChange="true"
           :disabled="showSpinner"
-          @input="selected"
+          @input="onSelect"
           :value="value"
           @open="status('open')"
           @close="status('close')"
@@ -47,11 +47,19 @@
       preSelectValue: {type: String, default: () => ''},
       icon: {type: String, default: () => ''},
       imgClass: String,
+      selected: {type: [String, Object], default: null}
+    },
+    watch: {
+      selected(newVal) {
+        if (!newVal) {
+          this.value = null;
+        }
+      }
     },
     mounted() {
       if (this.preSelectLabel && this.preSelectValue) {
         this.value = {label: this.preSelectLabel, value: this.preSelectValue}
-        this.selected(this.value)
+        this.onSelect(this.value)
       }
     },
     computed: {
@@ -60,7 +68,7 @@
       }
     },
     methods: {
-      selected(val) {
+      onSelect(val) {
         if (val) {
           this.value = val
           this.$emit('selectedValue', val)
