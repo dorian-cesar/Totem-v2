@@ -6,16 +6,16 @@
 // const URL_PROXY = "https://pullman.cl"; // cambio para que funcione en netlify
 // const URL_PROXY = "http://qa.pullman.cl"; // API de desarrollo
 // const URL_PROXY = "https://pullmanapi.viajaenbus.cl";
-const URL_PROXY = "https://gds.ticketsimply.us";
-const API_KEY = "TSSDFPAPI30103014"
+const URL_PROXY = 'https://gds.ticketsimply.us'
+const API_KEY = 'TSSDFPAPI30103014'
 
 const ID_SYSTEM = 1
 
 /*
  * DEFAULT CITY
  * */
-const PRESELECT_LABEL = "Santiago";
-const PRESELECT_VALUE = "1646";
+const PRESELECT_LABEL = 'Viña del Mar'
+const PRESELECT_VALUE = '2070'
 
 /*
  * CONNECTION WEBSOCKET
@@ -29,9 +29,9 @@ const CONNECTION_URL = 'ws://localhost:8080/cable'
 /*
  * STAND BY DISPLAY
  * */
-const IS_STANDBY = false;
+const IS_STANDBY = false
 
 /*
  * Clave
  * */
-const KEY_VALUE = [3, 6, 9];
+const KEY_VALUE = [3, 6, 9]
