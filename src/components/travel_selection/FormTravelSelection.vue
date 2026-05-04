@@ -76,7 +76,14 @@ export default {
     ...mapGetters('TravelSelection', ['isDepartureCity', 'isArrivalCity']),
 
     clickButton(name) {
-      this.$router.push({ name: 'Left-Button' === name ? 'Home' : 'BusSelection' })
+      if ('Left-Button' === name) {
+        sessionStorage.setItem('autoReload', 'true')
+        this.$router.push({ name: 'Home' }).then(() => {
+          window.location.reload()
+        })
+      } else {
+        this.$router.push({ name: 'BusSelection' })
+      }
     },
     selectAction(val) {
       // console.log('selectAction', val)

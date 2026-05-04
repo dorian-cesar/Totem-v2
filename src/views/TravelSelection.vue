@@ -11,7 +11,10 @@
     name: 'TravelSelection',
     components: {FormTravelSelection},
     onIdle() {
-      this.$router.push({name: 'Home'})
+      sessionStorage.setItem('autoReload', 'true')
+      this.$router.push({name: 'Home'}).then(() => {
+        window.location.reload()
+      })
     },
   }
 </script>
