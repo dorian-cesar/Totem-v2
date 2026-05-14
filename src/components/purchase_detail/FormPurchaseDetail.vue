@@ -779,11 +779,11 @@ export default {
       console.log('reservation codes: ', this.reservationCodes)
       for await (const rc of this.reservationCodes) {
         // api dev
-        const proxy = 'https://newstg3-gdsbus.kupos.cl'
-        const API_KEY = 'TSXFQYAPI25766888'
+        // const proxy = 'https://newstg3-gdsbus.kupos.cl'
+        // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
-        // const proxy = "https://gds.kupos.com"
-        // const API_KEY = 'TSSDFPAPI30103014'
+        const proxy = 'https://gds.kupos.com'
+        const API_KEY = 'TSSDFPAPI30103014'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento
