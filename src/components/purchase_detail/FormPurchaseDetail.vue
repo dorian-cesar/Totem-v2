@@ -661,17 +661,16 @@ export default {
     // this.guardarTransaccionPOS()
     // },
     // Imprimir voucher + boletos
-    imprimir() {
+    async imprimir() {
       // Imprimir Voucher
       console.log('imprimir voucher')
-      this.imprimirVoucher(this.paymentPOS, this.ticketsGenerados.boletos, this.ballotNumberPOS)
+      await this.imprimirVoucher(this.paymentPOS, this.ticketsGenerados.boletos, this.ballotNumberPOS)
     },
     //imprimir comprobante de error
-    imprimirComprobanteError() {
+    async imprimirComprobanteError() {
       console.log('imprimirComprobanteError')
       console.log('transaccionPOS', this.transaccionPOS.codigo)
-      this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
-      this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo ? this.transaccionPOS.codigo : 'SIN CODIGO')
+      await this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
     },
     //buscar la ruta de cada boleto
     buscarRuta(origen, destino) {
@@ -1180,7 +1179,7 @@ export default {
     //   }
     // },
     //terminó la generación de boletos
-    loadingTerminarTransaccionPOS: function (val) {
+    async loadingTerminarTransaccionPOS(val) {
       console.log(
         '- watch:loadingTerminarTransaccionPOS',
         'loadingTerminarTransaccionPOS = ' + val,
@@ -1196,7 +1195,7 @@ export default {
         )
         // Imprimir voucher + boletos
         clearTimeout(this.timeClose)
-        this.imprimir()
+        await this.imprimir()
         this.$router.push('/payamount')
       } else if (val && this.ticketsGenerados.estado === false) {
         console.log(
@@ -1207,7 +1206,7 @@ export default {
           '-> router:push:payamount'
         )
         clearTimeout(this.timeClose)
-        this.imprimirComprobanteError()
+        await this.imprimirComprobanteError()
         this.$router.push('/payamount')
       }
     }
