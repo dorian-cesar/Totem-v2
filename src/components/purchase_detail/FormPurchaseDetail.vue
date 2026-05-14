@@ -661,17 +661,17 @@ export default {
     // this.guardarTransaccionPOS()
     // },
     // Imprimir voucher + boletos
-    async imprimir() {
+    imprimir() {
       // Imprimir Voucher
       console.log('imprimir voucher')
-      await this.imprimirVoucher(this.paymentPOS, this.ticketsGenerados.boletos, this.ballotNumberPOS)
+      this.imprimirVoucher(this.paymentPOS, this.ticketsGenerados.boletos, this.ballotNumberPOS)
     },
     //imprimir comprobante de error
-    async imprimirComprobanteError() {
+    imprimirComprobanteError() {
       console.log('imprimirComprobanteError')
       console.log('transaccionPOS', this.transaccionPOS.codigo)
-      await this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
-      // await this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo ? this.transaccionPOS.codigo : 'SIN CODIGO')
+      this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo)
+      this.imprimirVoucherError(this.paymentPOS, this.transaccionPOS.codigo ? this.transaccionPOS.codigo : 'SIN CODIGO')
     },
     //buscar la ruta de cada boleto
     buscarRuta(origen, destino) {
@@ -1180,7 +1180,7 @@ export default {
     //   }
     // },
     //terminó la generación de boletos
-    async loadingTerminarTransaccionPOS(val) {
+    loadingTerminarTransaccionPOS: function (val) {
       console.log(
         '- watch:loadingTerminarTransaccionPOS',
         'loadingTerminarTransaccionPOS = ' + val,
@@ -1196,7 +1196,7 @@ export default {
         )
         // Imprimir voucher + boletos
         clearTimeout(this.timeClose)
-        await this.imprimir()
+        this.imprimir()
         this.$router.push('/payamount')
       } else if (val && this.ticketsGenerados.estado === false) {
         console.log(
@@ -1207,7 +1207,7 @@ export default {
           '-> router:push:payamount'
         )
         clearTimeout(this.timeClose)
-        await this.imprimirComprobanteError()
+        this.imprimirComprobanteError()
         this.$router.push('/payamount')
       }
     }

@@ -128,7 +128,7 @@ export default {
         // boleto = JSON.parse(boleto)
         // console.log('boleto', boleto)
         // --- API booking_details ---
-        const isDev = false // Cambiado a false para usar producción en totemviña
+        const isDev = true // Cambia esto a false para usar producción
 
         const proxy = isDev
           ? 'https://newstg3-gdsbus.kupos.cl' // API desarrollo
