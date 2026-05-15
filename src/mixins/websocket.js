@@ -81,9 +81,8 @@ export default {
 
       // Initialize printer
       escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
-      // Send some null bytes and multiple newlines for stability
-      escPos = appendBytes(escPos, new Uint8Array([0x00, 0x00, 0x00, 0x00]))
-      escPos = appendBytes(escPos, encoder.encode('\n\n\n\n'))
+      // Send a dummy buffer to avoid "eating" the first characters
+      escPos = appendBytes(escPos, encoder.encode('.\n.\n.\n.\n'))
       // Explicitly set alignment to Left
       escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
 
