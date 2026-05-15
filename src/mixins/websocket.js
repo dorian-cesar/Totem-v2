@@ -44,17 +44,20 @@ export default {
 
       function addLogo() {
         let seq = new Uint8Array(0)
+        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x00])) // Clean alignment state
         seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x01])) // Center
         if (logoData && logoData.length > 0) {
           seq = appendBytes(seq, logoData)
         }
+        seq = appendBytes(seq, new Uint8Array([0x00, 0x00, 0x00, 0x00])) // Buffer null bytes
         seq = appendBytes(seq, encoder.encode('\n'))
-        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x00])) // Left
+        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x00])) // Reset to Left
         return seq
       }
 
       // Initialize printer
       escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
+      escPos = appendBytes(escPos, encoder.encode('\n'))
 
       // Print Voucher
       if (content) {
