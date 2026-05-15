@@ -57,7 +57,7 @@ export default {
 
       // Initialize printer
       escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
-      escPos = appendBytes(escPos, encoder.encode('\n'))
+      escPos = appendBytes(escPos, encoder.encode('\n\n\n'))
 
       // Print Voucher
       if (content) {
