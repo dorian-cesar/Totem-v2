@@ -24,6 +24,30 @@ export default {
   },
 
   methods: {
+    formatBoleto(t) {
+      return (
+        '--------------- BOLETO PULLMAN --------------\n' +
+        ` BOLETO:            ${t.codigo_reserva}\n` +
+        ` CODIGO DE RESERVA: ${t.boleto}\n` +
+        ` SERVICIO:          ${t.servicio}\n` +
+        ` RUTA: ${t.ruta}                 \n` +
+        ` PISO:              ${t.piso}\n` +
+        ` ASIENTO:           ${t.asiento}\n` +
+        ` ORIGEN:            ${t.origen}\n` +
+        ` DESTINO:           ${t.destino}\n` +
+        ` FECHA COMPRA:      ${t.fecha_compra}\n` +
+        ` HORA DE VIAJE:     ${t.hora}\n` +
+        ` TOTAL:             $${t.total}\n` +
+        '                              \n' +
+        '                              \n' +
+        '----------- TERMINOS Y CONDICIONES ---------\n' +
+        '            GRACIAS POR SU COMPRA\n' +
+        '                COPIA CLIENTE\n' +
+        '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
+        '---------------------------------------------\n'
+      )
+    },
+
     generatePrintCommand(content, boletos, withLogo = true) {
       function appendBytes(arr1, arr2) {
         const merged = new Uint8Array(arr1.length + arr2.length)
@@ -57,11 +81,14 @@ export default {
 
       // Initialize printer
       escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
-      escPos = appendBytes(escPos, encoder.encode('\n\n\n'))
+      // Send some null bytes and multiple newlines for stability
+      escPos = appendBytes(escPos, new Uint8Array([0x00, 0x00, 0x00, 0x00]))
+      escPos = appendBytes(escPos, encoder.encode('\n\n\n\n'))
+      // Explicitly set alignment to Left
+      escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
 
       // Print Voucher
       if (content) {
-        escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
         escPos = appendBytes(escPos, encoder.encode(content))
         escPos = appendBytes(escPos, feedAndCut())
       }
@@ -247,28 +274,7 @@ export default {
       // Todos los boletos
       let boletosArray = []
       for (const t of tickets) {
-        let boletoTexto =
-          '--------------- BOLETO PULLMAN --------------\n' +
-          ` BOLETO:            ${t.codigo_reserva}\n` +
-          ` CODIGO DE RESERVA: ${t.boleto}\n` +
-          ` SERVICIO:          ${t.servicio}\n` +
-          ` RUTA: ${t.ruta}                 \n` +
-          ` PISO:              ${t.piso}\n` +
-          ` ASIENTO:           ${t.asiento}\n` +
-          ` ORIGEN:            ${t.origen}\n` +
-          ` DESTINO:           ${t.destino}\n` +
-          ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-          ` HORA DE VIAJE:     ${t.hora}\n` +
-          ` TOTAL:             $${t.total}\n` +
-          '                              \n' +
-          '                              \n' +
-          '----------- TERMINOS Y CONDICIONES ---------\n' +
-          '            GRACIAS POR SU COMPRA\n' +
-          '                COPIA CLIENTE\n' +
-          '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
-          '---------------------------------------------\n'
-
-        boletosArray.push(boletoTexto)
+        boletosArray.push(this.formatBoleto(t))
       }
 
       // Enviar todo en una sola impresión

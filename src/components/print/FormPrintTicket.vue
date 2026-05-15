@@ -428,29 +428,8 @@ export default {
       try {
         let boletosArray = []
         for (const t of tickets) {
-          let boletoTexto =
-            '--------------- BOLETO PULLMAN --------------\n' +
-            ` BOLETO:            ${t.codigo_reserva}\n` +
-            ` CODIGO DE RESERVA: ${t.boleto}\n` +
-            ` SERVICIO:          ${t.servicio}\n` +
-            ` RUTA: ${t.ruta}                 \n` +
-            ` PISO:              ${t.piso}\n` +
-            ` ASIENTO:           ${t.asiento}\n` +
-            ` ORIGEN:            ${t.origen}\n` +
-            ` DESTINO:           ${t.destino}\n` +
-            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
-            ` HORA DE VIAJE:     ${t.hora}\n` +
-            ` TOTAL:             $${t.total}\n` +
-            '                              \n' +
-            '                              \n' +
-            '----------- TERMINOS Y CONDICIONES ---------\n' +
-            '            GRACIAS POR SU COMPRA\n' +
-            '                COPIA CLIENTE\n' +
-            '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
-            '---------------------------------------------\n'
-
-          boletosArray.push(boletoTexto)
-          console.log('+ methods:reimprimir', 'ticket {}', boletoTexto, '-> /imprimir')
+          boletosArray.push(this.formatBoleto(t))
+          console.log('+ methods:reimprimir', 'ticket {}', t, '-> /imprimir')
         }
 
         // Enviar todos los boletos en una sola impresión usando la lógica de RawBT del mixin (sin logo)
