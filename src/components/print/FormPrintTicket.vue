@@ -399,20 +399,6 @@ export default {
         })
     },
 
-    async reImprimirRawBT(texto) {
-      try {
-        const response = await axios.post(this.info.urlPrint, {
-          boleto: texto
-        })
-        const result = response.data
-        if (result.rawbt) {
-          window.location.href = result.rawbt
-        }
-      } catch (error) {
-        console.error('Error al imprimir - imprimirRawBT: ', error)
-      }
-    },
-
     // imprime el boleto
     async rePrint() {
       this.codeReprint = ''
@@ -440,6 +426,7 @@ export default {
       }
 
       try {
+        let boletosArray = []
         for (const t of tickets) {
           let boletoTexto =
             '--------------- BOLETO PULLMAN --------------\n' +
@@ -451,25 +438,25 @@ export default {
             ` ASIENTO:           ${t.asiento}\n` +
             ` ORIGEN:            ${t.origen}\n` +
             ` DESTINO:           ${t.destino}\n` +
-            ` FECHA DE VIAJE:    ${t.fecha}\n` +
+            ` FECHA COMPRA:      ${t.fecha_compra}\n` +
             ` HORA DE VIAJE:     ${t.hora}\n` +
             ` TOTAL:             $${t.total}\n` +
             '                              \n' +
             '                              \n' +
-            '---------- TERMINOS Y CONDICIONES ----------\n' +
+            '----------- TERMINOS Y CONDICIONES ---------\n' +
             '            GRACIAS POR SU COMPRA\n' +
             '                COPIA CLIENTE\n' +
             '       BOLETO VALIDO PARA PASAJE EN BUS\n' +
             '---------------------------------------------\n'
 
-          try {
-            await this.reImprimirRawBT(boletoTexto)
-            console.log('Impresión enviada con éxito - reImprimirRawBT')
-          } catch (error) {
-            console.error('Error al enviar los datos de impresión', error)
-          }
-          console.log('+ methods:reimprimir', 'tickets {}', boletoTexto, '-> /imprimir')
+          boletosArray.push(boletoTexto)
+          console.log('+ methods:reimprimir', 'ticket {}', boletoTexto, '-> /imprimir')
         }
+
+        // Enviar todos los boletos en una sola impresión usando la lógica de RawBT del mixin
+        await this.imprimirRawBT(null, boletosArray)
+        console.log('Impresión enviada con éxito - imprimirRawBT')
+
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {
           this.texto = ''
