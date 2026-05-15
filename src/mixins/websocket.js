@@ -24,7 +24,7 @@ export default {
   },
 
   methods: {
-    generatePrintCommand(content, boletos) {
+    generatePrintCommand(content, boletos, withLogo = true) {
       function appendBytes(arr1, arr2) {
         const merged = new Uint8Array(arr1.length + arr2.length)
         merged.set(arr1)
@@ -69,7 +69,9 @@ export default {
       // Print Boletos
       if (boletos && boletos.length > 0) {
         for (const boleto of boletos) {
-          escPos = appendBytes(escPos, addLogo())
+          if (withLogo) {
+            escPos = appendBytes(escPos, addLogo())
+          }
           escPos = appendBytes(escPos, encoder.encode(boleto))
           escPos = appendBytes(escPos, feedAndCut())
         }
@@ -86,9 +88,9 @@ export default {
       return btoa(binary)
     },
 
-    async imprimirRawBT(voucher, boletos) {
+    async imprimirRawBT(voucher, boletos, withLogo = true) {
       try {
-        const escPosData = this.generatePrintCommand(voucher, boletos)
+        const escPosData = this.generatePrintCommand(voucher, boletos, withLogo)
         const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
         
@@ -101,7 +103,7 @@ export default {
 
     async imprimirErrorRawBT(voucher) {
       try {
-        const escPosData = this.generatePrintCommand(voucher, null)
+        const escPosData = this.generatePrintCommand(voucher, null, false)
         const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
         

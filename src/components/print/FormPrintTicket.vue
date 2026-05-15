@@ -453,9 +453,9 @@ export default {
           console.log('+ methods:reimprimir', 'ticket {}', boletoTexto, '-> /imprimir')
         }
 
-        // Enviar todos los boletos en una sola impresión usando la lógica de RawBT del mixin
-        await this.imprimirRawBT(null, boletosArray)
-        console.log('Impresión enviada con éxito - imprimirRawBT')
+        // Enviar todos los boletos en una sola impresión usando la lógica de RawBT del mixin (sin logo)
+        await this.imprimirRawBT(null, boletosArray, false)
+        console.log('Impresión enviada con éxito - imprimirRawBT (sin logo)')
 
         this.texto = 'Boleto impreso correctamente.\nPorfavor retire su boleto.'
         setTimeout(() => {
