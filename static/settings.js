@@ -14,8 +14,8 @@ const ID_SYSTEM = 1
 /*
  * DEFAULT CITY
  * */
-const PRESELECT_LABEL = 'Viña del Mar'
-const PRESELECT_VALUE = '2070'
+const PRESELECT_LABEL = 'Santiago'
+const PRESELECT_VALUE = '1646'
 
 /*
  * CONNECTION WEBSOCKET
