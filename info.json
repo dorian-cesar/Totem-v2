@@ -1,5 +1,5 @@
 {
-  "sitio": "Terminal-Viña",
+  "sitio": "Terminal-Alameda",
   "urlGetIp": "https://localhost:3000/get_ip",
   "urlPrint": "https://localhost:3000/print",
   "urlLogs1": "https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php",
