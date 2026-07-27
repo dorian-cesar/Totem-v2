@@ -32,6 +32,11 @@ export default {
   mounted() {
     document.addEventListener('contextmenu', (e) => e.preventDefault())
 
+    if (!sessionStorage.getItem('welcome_printed')) {
+      this.printWelcome()
+      sessionStorage.setItem('welcome_printed', 'true')
+    }
+
     // Lógica de IP movida a TotemIdentification.vue y BuyPrintInfo.vue
     // let ip = null
     // if (this.$route && this.$route.query && this.$route.query.ip) {
@@ -62,6 +67,32 @@ export default {
       setTimeout(() => {
         document.body.removeChild(circle)
       }, 600)
+    },
+    printWelcome() {
+      try {
+        const encoder = new TextEncoder()
+        
+        function append(arr1, arr2) {
+          const m = new Uint8Array(arr1.length + arr2.length)
+          m.set(arr1)
+          m.set(arr2, arr1.length)
+          return m
+        }
+
+        let escPos = new Uint8Array([0x1B, 0x40]) // Init
+        escPos = append(escPos, new Uint8Array([0x1B, 0x61, 0x01])) // Center
+        escPos = append(escPos, encoder.encode('\n\n\n--------------------------------\n      BIENVENIDO AL TOTEM       \n        DE AUTOSERVICIO         \n--------------------------------\n\n\n\n\n'))
+        escPos = append(escPos, new Uint8Array([0x1D, 0x56, 0x00])) // Cut
+
+        let binary = ''
+        for (let i = 0; i < escPos.length; i++) {
+          binary += String.fromCharCode(escPos[i])
+        }
+        
+        window.location.href = `rawbt:base64,${btoa(binary)}`
+      } catch (error) {
+        console.error('Error printing welcome message:', error)
+      }
     }
   }
 }
