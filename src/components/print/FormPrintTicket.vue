@@ -196,7 +196,7 @@ export default {
       // const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       const proxy = 'https://gds.kupos.com'
-      const API_KEY = 'TSSDFPAPI30103014'
+      const API_KEY = 'TSFEFSAPI80085614'
       let api = 'gds/api/booking_details.json?region=chile&pnr_number=' + numeroBoleto + '&api_key=' + API_KEY
 
       this.texto = 'Imprimiendo boleto, por favor espere...'
@@ -530,4 +530,3 @@ input {
   text-transform: none;
 }
 </style>
-

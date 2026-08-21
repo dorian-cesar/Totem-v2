@@ -20,7 +20,7 @@ export default {
       // const API_KEY = 'TSXFQYAPI25766888'
       // api kupos
       const proxy = 'https://gds.kupos.com'
-      const API_KEY = 'TSSDFPAPI30103014'
+      const API_KEY = 'TSFEFSAPI80085614'
       let api = ''
 
       const rut = localStorage.getItem('rut')
@@ -285,4 +285,3 @@ export default {
     }
   }
 }
-

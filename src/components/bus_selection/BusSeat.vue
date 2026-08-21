@@ -136,7 +136,7 @@ export default {
       ].find((val) => val.name === value).change
     },
 
-  //buscar distribución y estado de los asientos en el bus
+    //buscar distribución y estado de los asientos en el bus
     searchBusService: async function () {
       try {
         // api dev
@@ -144,7 +144,7 @@ export default {
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         const proxy = 'https://gds.kupos.com'
-        const API_KEY = 'TSSDFPAPI30103014'
+        const API_KEY = 'TSFEFSAPI80085614'
         const api1 = `/gds/api/ui_schedule/${this.idServicio}.json?api_key=${API_KEY}`
         //const api1 = "integrador-web/rest/private/venta/planilla"
         //const api2 = "integrador-web/rest/private/venta/buscarPlantillaVertical"
@@ -196,21 +196,28 @@ export default {
             let seat_info = row_seat.split('|')
             let seat = seat_null
 
-            if (seat_info[0] !== '') {
-              seat = {
-                numfloor: 0,
-                floor: 0,
-                num: seat_info[0],
-                type: seat_info[1],
-                status: 'busy'
-              }
-            } else if (seat_info[0] !== 'DR_IMG') {
+            const isAccessory = seat_info[0] && (
+              seat_info[0].indexOf('_IMG') !== -1 ||
+              seat_info[0].indexOf('ST_') !== -1 ||
+              seat_info[0].indexOf('WR_') !== -1 ||
+              seat_info[0].indexOf('DR_') !== -1
+            )
+
+            if (isAccessory || seat_info[0] === '') {
               seat = {
                 numfloor: 0,
                 floor: 0,
                 num: '%',
                 type: seat_info[0],
                 status: '%'
+              }
+            } else {
+              seat = {
+                numfloor: 0,
+                floor: 0,
+                num: seat_info[0],
+                type: seat_info[1],
+                status: 'busy'
               }
             }
             seats.push(seat)
@@ -226,8 +233,15 @@ export default {
 
         if (floor_available !== '') {
           floor_available = floor_available.split('@')
-          let floor_1 = floor_available[0].split(',').filter((num) => num && num !== 'DR_IMG')
-          let floor_2 = floor_available[1].split(',').filter((num) => num && num !== 'DR_IMG')
+          const isNotAccessoryFilter = (num) => {
+            return num &&
+                   num.indexOf('_IMG') === -1 &&
+                   num.indexOf('ST_') === -1 &&
+                   num.indexOf('WR_') === -1 &&
+                   num.indexOf('DR_') === -1
+          }
+          let floor_1 = floor_available[0].split(',').filter(isNotAccessoryFilter)
+          let floor_2 = floor_available[1].split(',').filter(isNotAccessoryFilter)
 
           // Actualizar información de piso en asientos disponibles
           for (let avail of available_seats) {
@@ -350,4 +364,3 @@ export default {
   }
 }
 </script>
-

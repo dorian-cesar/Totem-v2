@@ -302,14 +302,14 @@ export default {
         })
         .then((response) => {
           console.log('Pago procesado:', response.data)
-          
+
           const apiResponse = response.data
           const apiData = apiResponse.data || {}
           const rawData = apiData.rawData || {}
-          
+
           // Determinamos si el pago fue exitoso (soportando ambas estructuras)
           const isSuccessful = apiResponse.success && (apiData.approved || rawData.successful || apiData.successful)
-          
+
           console.log('successful: ', isSuccessful)
 
           // inicializar variables
@@ -340,14 +340,14 @@ export default {
 
           if (isSuccessful === true) {
             console.log('transbank successful response: ', response.data)
-            
+
             // Usamos rawData si está disponible, sino el objeto data (compatibilidad)
             this.dataPOS = Object.keys(rawData).length > 0 ? rawData : apiData
-            
+
             // formatear fecha y hora para DB
             let formattedDate = ''
             let formattedTime = ''
-            
+
             if (this.dataPOS.realDate && this.dataPOS.realDate.length === 8) {
               const rawDate = this.dataPOS.realDate
               formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
@@ -366,11 +366,11 @@ export default {
 
             // Mensaje para el modal (Priorizamos el mensaje específico de Transbank)
             this.propsPaymentControl.msg = rawData.responseMessage || apiResponse.message || 'Pago Aprobado'
-            
+
             bookingData.estado_transaccion = 'Pago realizado'
             bookingData.fecha_transaccion = formattedDate
             bookingData.hora_transaccion = formattedTime
-            
+
             this.axios
               .post(
                 this.info.urlLogs,
@@ -400,8 +400,9 @@ export default {
           } else {
             // Caso de fallo o cancelación
             bookingData.estado_transaccion = rawData.responseMessage || 'Pago fallido'
-            bookingData.total_transaccion = bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
-            
+            bookingData.total_transaccion =
+              bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
+
             this.axios
               .post(
                 this.info.urlLogs,
@@ -420,9 +421,10 @@ export default {
               .catch((error) => {
                 console.error('Error al guardar en DB, pagarPOS : ', error)
               })
-            
+
             // Mensaje de error para el modal (Priorizamos el mensaje de Transbank como "Transacción Cancelada")
-            this.propsPaymentControl.msgError = rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
+            this.propsPaymentControl.msgError =
+              rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
             this.isErrorPOS = true
             this.isErrorTerminarTransaccionPOS(true)
           }
@@ -782,7 +784,7 @@ export default {
         // const API_KEY = 'TSXFQYAPI25766888'
         // api kupos
         const proxy = 'https://gds.kupos.com'
-        const API_KEY = 'TSSDFPAPI30103014'
+        const API_KEY = 'TSFEFSAPI80085614'
         let api = ''
 
         api = `gds/api/confirm_booking/${rc}.json?api_key=${API_KEY}&region=chile` // confirmar reservar asiento

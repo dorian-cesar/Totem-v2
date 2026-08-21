@@ -62,29 +62,29 @@ export default {
       function feedAndCut() {
         let seq = new Uint8Array(0)
         seq = appendBytes(seq, encoder.encode('\n\n\n\n'))
-        seq = appendBytes(seq, new Uint8Array([0x1D, 0x56, 0x00]))
+        seq = appendBytes(seq, new Uint8Array([0x1d, 0x56, 0x00]))
         return seq
       }
 
       function addLogo() {
         let seq = new Uint8Array(0)
-        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x00])) // Clean alignment state
-        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x01])) // Center
+        seq = appendBytes(seq, new Uint8Array([0x1b, 0x61, 0x00])) // Clean alignment state
+        seq = appendBytes(seq, new Uint8Array([0x1b, 0x61, 0x01])) // Center
         if (logoData && logoData.length > 0) {
           seq = appendBytes(seq, logoData)
         }
         seq = appendBytes(seq, new Uint8Array([0x00, 0x00, 0x00, 0x00])) // Buffer null bytes
         seq = appendBytes(seq, encoder.encode('\n'))
-        seq = appendBytes(seq, new Uint8Array([0x1B, 0x61, 0x00])) // Reset to Left
+        seq = appendBytes(seq, new Uint8Array([0x1b, 0x61, 0x00])) // Reset to Left
         return seq
       }
 
       // Initialize printer
-      escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x40]))
+      escPos = appendBytes(escPos, new Uint8Array([0x1b, 0x40]))
       // Send a dummy buffer to avoid "eating" the first characters
       escPos = appendBytes(escPos, encoder.encode('.\n.\n.\n.\n'))
       // Explicitly set alignment to Left
-      escPos = appendBytes(escPos, new Uint8Array([0x1B, 0x61, 0x00]))
+      escPos = appendBytes(escPos, new Uint8Array([0x1b, 0x61, 0x00]))
 
       // Print Voucher
       if (content) {
@@ -119,7 +119,7 @@ export default {
         const escPosData = this.generatePrintCommand(voucher, boletos, withLogo)
         const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
-        
+
         console.log('Enviando a RawBT...')
         window.location.href = rawbtUrl
       } catch (error) {
@@ -132,7 +132,7 @@ export default {
         const escPosData = this.generatePrintCommand(voucher, null, false)
         const base64Content = this.uint8ToBase64(escPosData)
         const rawbtUrl = `rawbt:base64,${base64Content}`
-        
+
         window.location.href = rawbtUrl
       } catch (error) {
         console.error('Error al imprimir - imprimirErrorRawBT: ', error)
@@ -220,7 +220,7 @@ export default {
 
         const API_KEY = isDev
           ? 'TSXFQYAPI25766888' // Dev key
-          : 'TSSDFPAPI30103014' // Prod key
+          : 'TSFEFSAPI80085614' // Prod key
 
         const params = new URLSearchParams({
           region: 'chile',

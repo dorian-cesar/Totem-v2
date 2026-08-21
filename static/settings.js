@@ -7,7 +7,7 @@
 // const URL_PROXY = "http://qa.pullman.cl"; // API de desarrollo
 // const URL_PROXY = "https://pullmanapi.viajaenbus.cl";
 const URL_PROXY = 'https://gds.ticketsimply.us'
-const API_KEY = 'TSSDFPAPI30103014'
+const API_KEY = 'TSFEFSAPI80085614'
 
 const ID_SYSTEM = 1
 
