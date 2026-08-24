@@ -68,11 +68,24 @@ remote pushes were performed).
   - `VITE_APP_GDS_MODE` set to either `dev` or `prod` to toggle the environment.
   - `VITE_APP_GDS_PROXY_DEV` / `VITE_APP_GDS_API_KEY_DEV` for GDS Dev environment.
   - `VITE_APP_GDS_PROXY_PROD` / `VITE_APP_GDS_API_KEY_PROD` for GDS Prod environment.
+  - `VITE_APP_SITIO`, `VITE_APP_URL_GET_IP`, `VITE_APP_URL_PRINT`, `VITE_APP_URL_LOGS1`, `VITE_APP_URL_LOGIN`,
+    `VITE_APP_URL_LOGS`, `VITE_APP_URL_BOLETO` to replace `info.json` variables.
 - Sensitive values are kept in the local `.env` which is excluded via `.gitignore`. The committed `.env.example`
   contains only template placeholders to protect sensitive keys.
 - **[vite.config.js](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/vite.config.js):** Dynamic configuration
-  selecting GDS credentials based on `VITE_APP_GDS_MODE` and mapping them to `process.env` properties globally.
-- Replaced all hardcoded GDS credentials with dynamic environment variables in all views, components, and mixins.
+  selecting GDS credentials based on `VITE_APP_GDS_MODE` and mapping all keys to `process.env` properties globally.
+- **[info.js](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/src/info.js) [NEW]:** Configuration module exporting the
+  environment properties dynamically.
+- Replaced all imports of `info.json` with imports of the secure `@/info` module in all views, components, and mixins.
+
+### 🌐 Netlify Deployment Adjustments
+
+- **[.npmrc](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/.npmrc) [NEW]:** Added `legacy-peer-deps=true`
+  configuration to ensure automated dependencies installation runs smoothly on Netlify builds.
+- **[public/\_redirects](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/public/_redirects) [NEW]:** Added SPA
+  redirect rules to handle client-side routing on Netlify and avoid 404 errors on route reloading.
+- Moved public files (like `settings.js`, icon, and background assets) from the old `static/` directory to
+  `public/static/` to conform to Vite's asset handling.
 
 ---
 
