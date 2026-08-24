@@ -1,4 +1,4 @@
-import info from '../../info.json'
+import info from '@/info'
 
 export default {
   data() {

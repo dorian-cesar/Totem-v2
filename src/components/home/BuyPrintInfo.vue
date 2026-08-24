@@ -45,7 +45,7 @@ import BtnGetInfo from '@/assets/img/buy_print_info/btn_get_info.png'
 import ImgLogoBlanco from '@/assets/img/logo-pullman-nuevo-blanco.svg'
 import TotemIdentification from '@/components/home/TotemIdentification'
 import axios from 'axios'
-import info from '../../../info.json'
+import info from '@/info'
 
 export default {
   name: 'BuyPrintInfo',

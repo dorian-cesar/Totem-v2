@@ -6,7 +6,7 @@
         {{ dateTime }}
       </div>
     </div>
-    <p class="version-text mb-0 text-right" style="width: 33%">2.5.0 Version © WIT 2025</p>
+    <p class="version-text mb-0 text-right" style="width: 33%">3.0.0 Version © WIT {{ currentYear }}</p>
   </div>
 </template>
 
@@ -16,6 +16,11 @@ export default {
     return {
       dateTime: this.getCurrentDateTime(),
       intervalId: null
+    }
+  },
+  computed: {
+    currentYear() {
+      return new Date().getFullYear()
     }
   },
   methods: {

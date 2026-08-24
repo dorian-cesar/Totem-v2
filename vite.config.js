@@ -15,7 +15,14 @@ export default defineConfig(({ mode }) => {
       'process.env.VUE_APP_USERNAME': JSON.stringify(env.VITE_APP_USERNAME),
       'process.env.VUE_APP_PASSWORD': JSON.stringify(env.VITE_APP_PASSWORD),
       'process.env.VUE_APP_GDS_PROXY': JSON.stringify(gdsProxy),
-      'process.env.VUE_APP_GDS_API_KEY': JSON.stringify(gdsApiKey)
+      'process.env.VUE_APP_GDS_API_KEY': JSON.stringify(gdsApiKey),
+      'process.env.VUE_APP_SITIO': JSON.stringify(env.VITE_APP_SITIO),
+      'process.env.VUE_APP_URL_GET_IP': JSON.stringify(env.VITE_APP_URL_GET_IP),
+      'process.env.VUE_APP_URL_PRINT': JSON.stringify(env.VITE_APP_URL_PRINT),
+      'process.env.VUE_APP_URL_LOGS1': JSON.stringify(env.VITE_APP_URL_LOGS1),
+      'process.env.VUE_APP_URL_LOGIN': JSON.stringify(env.VITE_APP_URL_LOGIN),
+      'process.env.VUE_APP_URL_LOGS': JSON.stringify(env.VITE_APP_URL_LOGS),
+      'process.env.VUE_APP_URL_BOLETO': JSON.stringify(env.VITE_APP_URL_BOLETO),
     },
     resolve: {
       alias: {

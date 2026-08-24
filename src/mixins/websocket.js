@@ -1,5 +1,5 @@
 import axios from 'axios'
-import info from '../../info.json'
+import info from '@/info'
 import { logoData } from '../lib/logo.js'
 
 export default {

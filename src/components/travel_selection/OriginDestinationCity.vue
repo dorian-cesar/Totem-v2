@@ -69,7 +69,7 @@ import { mapActions } from 'vuex'
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
 import ImgRut from '@/assets/img/usuario-rut.png'
-import info from '../../../info.json'
+import info from '@/info'
 
 export default {
   name: 'OriginDestination',

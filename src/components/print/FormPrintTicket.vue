@@ -57,7 +57,7 @@
 import WebSocket from '@/mixins/websocket.js'
 import SimpleKeyboard from 'simple-keyboard'
 import '@/assets/style/keyboard.css'
-import info from '../../../info.json'
+import info from '@/info'
 import axios from 'axios'
 
 export default {

@@ -14,7 +14,7 @@
 import Logo from '@/components/Logo.vue'
 import DateAndTime from '@/components/DateAndTime.vue'
 import axios from 'axios'
-import infoData from '../../info.json'
+import infoData from '@/info'
 
 export default {
   name: 'App',
