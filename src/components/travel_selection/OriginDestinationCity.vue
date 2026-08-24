@@ -417,13 +417,16 @@ export default {
           if (matchedAgreement) {
             found = true
             this.validationSuccess = true
-            this.validationMessage = `Convenio válido: ${matchedAgreement.nombre}`
+            const val = Number(matchedAgreement.valor_descuento) || 0
+            const esPorcentaje = String(matchedAgreement.tipo_descuento).toLowerCase().includes('porcent')
+            const descTexto = esPorcentaje ? `${val}%` : `$${val}`
+            this.validationMessage = `Convenio válido: ${matchedAgreement.nombre} (${descTexto} de dcto.)`
 
             this.setConvenio({
               seleccionado: matchedAgreement,
               tipo: 'codigo',
               codigo: code,
-              descuentoValor: Number(matchedAgreement.valor_descuento) || 0,
+              descuentoValor: val,
               descuentoTipo: matchedAgreement.tipo_descuento || ''
             })
 
@@ -569,13 +572,16 @@ export default {
           if (matchedAgreement) {
             found = true
             this.validationSuccess = true
-            this.validationMessage = `Convenio encontrado: ${matchedAgreement.nombre}`
+            const val = Number(matchedAgreement.valor_descuento) || 0
+            const esPorcentaje = String(matchedAgreement.tipo_descuento).toLowerCase().includes('porcent')
+            const descTexto = esPorcentaje ? `${val}%` : `$${val}`
+            this.validationMessage = `Convenio encontrado: ${matchedAgreement.nombre} (${descTexto} de dcto.)`
 
             this.setConvenio({
               seleccionado: matchedAgreement,
               tipo: 'rut',
               codigo: '',
-              descuentoValor: Number(matchedAgreement.valor_descuento) || 0,
+              descuentoValor: val,
               descuentoTipo: matchedAgreement.tipo_descuento || ''
             })
             break
