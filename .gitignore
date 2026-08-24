@@ -19,3 +19,4 @@ view-js.js
 *.ntvs*
 *.njsproj
 *.sln
+.env
