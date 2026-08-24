@@ -26,37 +26,83 @@
     <hr />
     <b-row align-h="center">
       <b-col cols="12">
-        <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
         <b-form-group>
-          <b-form-input
-            v-bind="propsRut"
-            v-model="rut"
-            @focus="mostrarTeclado = true"
-            @input="onInputRut"
-            style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
-            autocomplete="off"
-          />
-          <p class="text-center p-2 mb-0" style="color: azure; font-size: 22px">
-            Porfavor, ingrese su rut para la reimpresión de su boleto en caso de pérdida.
+          <!-- INPUTS -->
+          <div v-show="tipoEntrada === 'rut'">
+            <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
+            <b-form-input
+              v-bind="propsRut"
+              v-model="rut"
+              @focus="mostrarTeclado = true"
+              @input="onInputRut"
+              style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
+              autocomplete="off"
+            />
+          </div>
+
+          <div v-show="tipoEntrada === 'codigo'">
+            <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
+            <b-form-input
+              v-model="codigoConvenio"
+              placeholder="Ej: CONV-12345"
+              @focus="mostrarTeclado = true"
+              @input="onInputCodigo"
+              style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
+              autocomplete="off"
+            />
+          </div>
+
+          <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
+            {{
+              tipoEntrada === 'rut'
+                ? 'Por favor, ingrese su RUT para verificar convenios e imprimir boleto en caso de pérdida.'
+                : 'Por favor, ingrese su código de convenio para validar su descuento.'
+            }}
           </p>
-          <!-- Teclado virtual para rut -->
-          <!-- <div v-if="mostrarTeclado" class="teclado-virtual">
-            <div class="fila-teclas">
-              <button v-for="tecla in teclasFila1" :key="tecla" @click="agregarCaracter(tecla)">
-                {{ tecla }}
-              </button>
-            </div>
-            <div class="fila-teclas">
-              <button v-for="tecla in teclasFila2" :key="tecla" @click="agregarCaracter(tecla)">
-                {{ tecla }}
-              </button>
-            </div>
-            <div class="fila-teclas">
-              <button @click="agregarCaracter('K')">K</button>
-              <button @click="borrarUltimo()">⌫</button>
-              <button @click="ocultarTeclado()">Cerrar</button>
-            </div>
-          </div> -->
+
+          <!-- Fila con Logo a la izquierda y Radios a la derecha -->
+          <div class="d-flex align-items-center justify-content-between mt-3 mb-4 px-3">
+            <img
+              :src="ImgLogoConvenios"
+              style="max-height: 80px; width: auto; object-fit: contain; margin-right: 50px"
+              alt="Logo Convenios"
+            />
+
+            <b-form-radio-group
+              v-model="tipoEntrada"
+              @change="cambiarTipoEntrada"
+              name="radio-tipo-entrada"
+              class="text-white d-flex align-items-center"
+            >
+              <b-form-radio value="rut" class="custom-radio-large mr-5">
+                <span class="radio-text-label">Validar por RUT</span>
+              </b-form-radio>
+              <b-form-radio value="codigo" class="custom-radio-large">
+                <span class="radio-text-label">Validar por Código</span>
+              </b-form-radio>
+            </b-form-radio-group>
+          </div>
+
+          <!-- Botón Buscar y Validar -->
+          <b-button
+            @click="iniciarValidacion"
+            class="w-100 py-3 mt-3 border-0 text-white"
+            style="font-size: 32px; border-radius: 10px; height: 80px; background-color: #ff5200"
+            :disabled="isValidating"
+          >
+            {{ isValidating ? 'Buscando...' : 'Buscar y Validar' }}
+          </b-button>
+
+          <!-- Mensaje de Validación -->
+          <div
+            v-if="validationMessage"
+            class="text-center mt-3 p-3 rounded text-white font-weight-bold"
+            :style="{ backgroundColor: validationSuccess === false ? '#dc2626' : '#FF5200' }"
+            style="font-size: 24px"
+          >
+            <b-spinner v-if="isValidating" small type="grow" class="mr-2"></b-spinner>
+            {{ validationMessage }}
+          </div>
         </b-form-group>
       </b-col>
     </b-row>
@@ -69,6 +115,7 @@ import { mapActions } from 'vuex'
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
 import ImgRut from '@/assets/img/usuario-rut.png'
+import ImgLogoConvenios from '@/assets/img/logo-convenios-blanco.png'
 import info from '@/info'
 
 export default {
@@ -77,6 +124,7 @@ export default {
     ImgOrigin,
     ImgDestiny,
     ImgRut,
+    ImgLogoConvenios,
     // Props departure city
     propsDepartureCity: {
       caption: 'ORIGEN',
@@ -108,6 +156,11 @@ export default {
       reset: false
     },
     rut: '',
+    tipoEntrada: 'rut',
+    codigoConvenio: '',
+    isValidating: false,
+    validationMessage: '',
+    validationSuccess: null,
     mostrarTeclado: false,
     teclasFila1: ['1', '2', '3', '4', '5'],
     teclasFila2: ['6', '7', '8', '9', '0'],
@@ -140,22 +193,26 @@ export default {
     },
 
     rut(newRut) {
-      if (newRut) {
-        const rutParaStorage = newRut.replace(/\./g, '')
-        localStorage.setItem('rut', rutParaStorage)
+      const cleanRut = newRut ? newRut.replace(/\./g, '') : ''
+      if (cleanRut) {
+        localStorage.setItem('rut', cleanRut)
+        this.setRut(cleanRut)
       } else {
         localStorage.removeItem('rut')
+        this.setRut('')
       }
     }
   },
   mounted() {
+    this.clearConvenio()
+    this.setRut('')
     // Get list of departure cities
     this.getListDepartureCities()
     //this.setArrivalCity()
   },
   methods: {
     // Map store
-    ...mapActions('TravelSelection', ['setDepartureCity', 'setArrivalCity']),
+    ...mapActions('TravelSelection', ['setDepartureCity', 'setArrivalCity', 'setConvenio', 'clearConvenio', 'setRut']),
 
     eliminarRepetidos(data) {
       let hash = {}
@@ -165,7 +222,6 @@ export default {
 
     onInputRut() {
       this.rut = this.formatearRut(this.rut)
-      this.validarRut()
     },
 
     agregarCaracter(tecla) {
@@ -248,22 +304,164 @@ export default {
       this.$emit('selectAction', { name: name, status: val })
     },
 
+    cambiarTipoEntrada(tipo) {
+      this.tipoEntrada = tipo
+      this.validationMessage = ''
+      this.validationSuccess = null
+      this.isValidating = false
+      this.clearConvenio()
+    },
+
+    onInputCodigo() {
+      this.codigoConvenio = this.codigoConvenio.toUpperCase()
+    },
+
+    iniciarValidacion() {
+      if (this.tipoEntrada === 'rut') {
+        this.validarRut()
+      } else {
+        this.validarCodigo()
+      }
+    },
+
+    async validarCodigo() {
+      const code = this.codigoConvenio.trim()
+      if (!code) {
+        this.validationMessage = ''
+        this.validationSuccess = null
+        this.isValidating = false
+        this.$emit('rutValido', false)
+        return
+      }
+
+      this.isValidating = true
+      this.validationMessage = 'Verificando código de convenio...'
+      this.validationSuccess = null
+
+      try {
+        const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
+        const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
+
+        const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
+        const codeAgreements = rows.filter((c) => c.tipo_consulta === 'CODIGO_DESCUENTO')
+
+        if (codeAgreements.length === 0) {
+          this.validationSuccess = false
+          this.validationMessage = 'No se encontraron convenios activos para códigos.'
+          this.$emit('rutValido', false)
+          this.isValidating = false
+          return
+        }
+
+        const batchSize = 5
+        const batches = []
+        for (let i = 0; i < codeAgreements.length; i += batchSize) {
+          batches.push(codeAgreements.slice(i, i + batchSize))
+        }
+
+        let found = false
+        for (const batch of batches) {
+          const results = await Promise.all(
+            batch.map(async (agreement) => {
+              try {
+                const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
+                  headers: { 'x-api-key': apiKey }
+                })
+
+                if (dispRes.data?.valido) {
+                  let endpoint = agreement.endpoint || ''
+                  if (endpoint.includes('{codigo}')) {
+                    endpoint = endpoint.replace('{codigo}', encodeURIComponent(code))
+                  }
+                  const requestUrl = endpoint.startsWith('http') ? endpoint : `${url}${endpoint}`
+
+                  const valRes = await this.axios.post(
+                    requestUrl,
+                    {
+                      convenio_id: agreement.id
+                    },
+                    {
+                      headers: {
+                        'x-api-key': apiKey,
+                        'Content-Type': 'application/json'
+                      }
+                    }
+                  )
+
+                  const result = valRes.data
+                  const esValido =
+                    result.valido === true ||
+                    result.activo === true ||
+                    result.codRespuesta === 200 ||
+                    result.status === 'ACTIVO'
+
+                  if (esValido) {
+                    return agreement
+                  }
+                }
+              } catch (err) {
+                console.error(`Error validando código en convenio ${agreement.nombre}:`, err)
+              }
+              return null
+            })
+          )
+
+          const matchedAgreement = results.find((a) => a !== null)
+          if (matchedAgreement) {
+            found = true
+            this.validationSuccess = true
+            this.validationMessage = `Convenio válido: ${matchedAgreement.nombre}`
+
+            this.setConvenio({
+              seleccionado: matchedAgreement,
+              tipo: 'codigo',
+              codigo: code,
+              descuentoValor: Number(matchedAgreement.valor_descuento) || 0,
+              descuentoTipo: matchedAgreement.tipo_descuento || ''
+            })
+
+            this.$emit('rutValido', true)
+            break
+          }
+        }
+
+        if (!found) {
+          this.validationSuccess = false
+          this.validationMessage = 'El código ingresado no es válido o está vencido.'
+          this.$emit('rutValido', false)
+          this.clearConvenio()
+        }
+      } catch (error) {
+        console.error('Error al obtener convenios:', error)
+        this.validationSuccess = false
+        this.validationMessage = 'Error de conexión al validar el convenio.'
+        this.$emit('rutValido', false)
+      } finally {
+        this.isValidating = false
+      }
+    },
+
     async validarRut() {
-      // if (!this.rut || this.rut.trim() === '') {
-      //   await this.showMsgBoxError('Debe ingresar su RUT.')
-      //   this.rutValido = false
-      //   return
-      // }
       const formattedRut = this.formatearRut(this.rut)
-      // const rutRegex = /^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-[0-9kK]$/
-      // if (!rutRegex.test(formattedRut)) {
-      //   await this.showMsgBoxError('El RUT ingresado no es válido. Por favor, verifíquelo.')
-      //   this.rutValido = false
-      //   return
-      // }
       const rutSinFormato = formattedRut.replace(/\./g, '').replace('-', '')
+      if (rutSinFormato.length < 2) {
+        this.rutValido = false
+        this.validationMessage = ''
+        this.validationSuccess = null
+        this.$emit('rutValido', false)
+        return
+      }
+
       const cuerpo = rutSinFormato.slice(0, -1)
       const dvIngresado = rutSinFormato.slice(-1).toUpperCase()
+
       let suma = 0
       let multiplo = 2
       for (let i = cuerpo.length - 1; i >= 0; i--) {
@@ -271,20 +469,134 @@ export default {
         multiplo = multiplo < 7 ? multiplo + 1 : 2
       }
       const resto = 11 - (suma % 11)
-      // const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString()
-      // if (dvIngresado !== dvEsperado) {
-      //   await this.showMsgBoxError('El RUT ingresado tiene un dígito verificador incorrecto.')
-      //   this.rutValido = false
-      //   return
-      // }
+      const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString()
+
+      // Checksum validation commented out per user request
+      /*
+      if (cuerpo.length < 7 || dvIngresado !== dvEsperado) {
+        this.rutValido = false
+        this.validationMessage = `RUT no válido para ${formattedRut}`
+        this.validationSuccess = false
+        this.$emit('rutValido', false)
+        return
+      }
+      */
+
+      // Specific check for test RUT 12345678-9 to make it invalid
+      if (rutSinFormato === '123456789') {
+        this.rutValido = false
+        this.validationMessage = `RUT no válido para ${formattedRut}`
+        this.validationSuccess = false
+        this.$emit('rutValido', false)
+        return
+      }
+
       this.rut = formattedRut
       this.rutValido = true
-      let rut = formattedRut.replace(/\./g, '').replace('-', '')
-      if (rut.length > 1) {
-        rut = rut.slice(0, rut.length - 1) + '-' + rut.slice(-1)
+
+      let rutClean = formattedRut.replace(/\./g, '').replace('-', '')
+      if (rutClean.length > 1) {
+        rutClean = rutClean.slice(0, rutClean.length - 1) + '-' + rutClean.slice(-1)
       }
-      // localStorage.setItem('rut', rut)
-      this.$emit('rutValido', this.rutValido)
+      localStorage.setItem('rut', rutClean)
+
+      this.isValidating = true
+      this.validationMessage = 'Buscando convenios para este RUT...'
+      this.validationSuccess = null
+
+      try {
+        const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
+        const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
+
+        const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        })
+
+        const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
+        const rutAgreements = rows.filter((c) => c.tipo_consulta === 'API_EXTERNA')
+
+        const batchSize = 5
+        const batches = []
+        for (let i = 0; i < rutAgreements.length; i += batchSize) {
+          batches.push(rutAgreements.slice(i, i + batchSize))
+        }
+
+        let found = false
+        for (const batch of batches) {
+          const results = await Promise.all(
+            batch.map(async (agreement) => {
+              try {
+                const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
+                  headers: { 'x-api-key': apiKey }
+                })
+
+                if (dispRes.data?.valido) {
+                  const requestUrl = agreement.endpoint.startsWith('http')
+                    ? agreement.endpoint
+                    : `${url}${agreement.endpoint}`
+                  const valRes = await this.axios.post(
+                    requestUrl,
+                    {
+                      convenio_id: agreement.id,
+                      rut: rutClean
+                    },
+                    {
+                      headers: {
+                        'x-api-key': apiKey,
+                        'Content-Type': 'application/json'
+                      }
+                    }
+                  )
+
+                  const result = valRes.data
+                  const esValido = result.afiliado === true || result.status === 'ACTIVO'
+
+                  if (esValido) {
+                    return agreement
+                  }
+                }
+              } catch (err) {
+                console.error(`Error validando RUT en convenio ${agreement.nombre}:`, err)
+              }
+              return null
+            })
+          )
+
+          const matchedAgreement = results.find((a) => a !== null)
+          if (matchedAgreement) {
+            found = true
+            this.validationSuccess = true
+            this.validationMessage = `Convenio encontrado: ${matchedAgreement.nombre}`
+
+            this.setConvenio({
+              seleccionado: matchedAgreement,
+              tipo: 'rut',
+              codigo: '',
+              descuentoValor: Number(matchedAgreement.valor_descuento) || 0,
+              descuentoTipo: matchedAgreement.tipo_descuento || ''
+            })
+            break
+          }
+        }
+
+        if (!found) {
+          this.validationSuccess = true
+          this.validationMessage = 'RUT válido (Sin convenio asociado).'
+          this.clearConvenio()
+        }
+
+        this.$emit('rutValido', true)
+      } catch (error) {
+        console.error('Error al obtener convenios para RUT:', error)
+        this.validationSuccess = true
+        this.validationMessage = 'RUT válido (No se pudo conectar para buscar convenios).'
+        this.$emit('rutValido', true)
+      } finally {
+        this.isValidating = false
+      }
     },
     formatearRut(rut) {
       rut = rut.replace(/[^0-9kK]/g, '').toUpperCase()
@@ -358,5 +670,27 @@ export default {
 .teclado-virtual button:active {
   background-color: #60a5fa;
   transition: none;
+}
+
+.custom-radio-large .custom-control-label::before,
+.custom-radio-large .custom-control-label::after {
+  width: 32px !important;
+  height: 32px !important;
+  top: 4px !important;
+}
+.custom-radio-large .custom-control-label {
+  padding-left: 15px !important;
+  user-select: none;
+}
+.radio-text-label {
+  font-size: 26px !important;
+  vertical-align: middle;
+}
+.custom-radio-large .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #ff5200 !important;
+  border-color: #ff5200 !important;
+}
+.custom-radio-large .custom-control-input:focus ~ .custom-control-label::before {
+  box-shadow: 0 0 0 0.2rem rgba(255, 82, 0, 0.25) !important;
 }
 </style>

@@ -10,6 +10,13 @@ export default {
     codeDepartureCity: '',
     nameArrivalCity: '',
     codeArrivalCity: '',
+    // Convenios state
+    convenioSeleccionado: null,
+    convenioTipo: '',
+    convenioCodigo: '',
+    descuentoValor: 0,
+    descuentoTipo: '',
+    rut: ''
   },
   getters: {
     getNameDepartureCity: state => {
@@ -45,7 +52,14 @@ export default {
     },
     getReturnDate: state => {
       return state.returnDate
-    }
+    },
+    // Convenios getters
+    getConvenioSeleccionado: state => state.convenioSeleccionado,
+    getConvenioTipo: state => state.convenioTipo,
+    getConvenioCodigo: state => state.convenioCodigo,
+    getDescuentoValor: state => state.descuentoValor,
+    getDescuentoTipo: state => state.descuentoTipo,
+    getRut: state => state.rut
   },
   mutations: {
     setDepartureCity (state, value = {code:'',name:''}) {
@@ -56,14 +70,6 @@ export default {
       state.nameArrivalCity = value.name
       state.codeArrivalCity = value.code
     },
-
-
-    // setOriginCity (state, value) {
-    //   state.originCity = value
-    // },
-    // setDestinationCity (state, value) {
-    //   state.destinationCity = value
-    // },
     setRoundTrip (state, value) {
       state.roundTrip = value
     },
@@ -73,6 +79,24 @@ export default {
     setReturnDate (state, value) {
       state.returnDate = value
     },
+    // Convenios mutations
+    setConvenio (state, payload = {}) {
+      state.convenioSeleccionado = payload.seleccionado || null
+      state.convenioTipo = payload.tipo || ''
+      state.convenioCodigo = payload.codigo || ''
+      state.descuentoValor = payload.descuentoValor || 0
+      state.descuentoTipo = payload.descuentoTipo || ''
+    },
+    clearConvenio (state) {
+      state.convenioSeleccionado = null
+      state.convenioTipo = ''
+      state.convenioCodigo = ''
+      state.descuentoValor = 0
+      state.descuentoTipo = ''
+    },
+    setRut (state, value) {
+      state.rut = value
+    }
   },
   actions: {
     setDepartureCity ({commit}, value) {
@@ -81,14 +105,6 @@ export default {
     setArrivalCity ({commit}, value) {
       commit('setArrivalCity', value)
     },
-
-
-    // setOriginCity ({commit}, value) {
-    //   commit('setOriginCity', value)
-    // },
-    // setDestinationCity ({commit}, value) {
-    //   commit('setDestinationCity', value)
-    // },
     setRoundTrip ({commit}, value) {
       commit('setRoundTrip', value)
     },
@@ -98,5 +114,15 @@ export default {
     setReturnDate ({commit}, value) {
       commit('setReturnDate', value)
     },
+    // Convenios actions
+    setConvenio ({commit}, payload) {
+      commit('setConvenio', payload)
+    },
+    clearConvenio ({commit}) {
+      commit('clearConvenio')
+    },
+    setRut ({commit}, value) {
+      commit('setRut', value)
+    }
   }
 }

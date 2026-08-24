@@ -23,6 +23,8 @@ export default defineConfig(({ mode }) => {
       'process.env.VUE_APP_URL_LOGIN': JSON.stringify(env.VITE_APP_URL_LOGIN),
       'process.env.VUE_APP_URL_LOGS': JSON.stringify(env.VITE_APP_URL_LOGS),
       'process.env.VUE_APP_URL_BOLETO': JSON.stringify(env.VITE_APP_URL_BOLETO),
+      'process.env.VUE_APP_BACKEND_CONVENIOS_URL': JSON.stringify(env.VITE_APP_BACKEND_CONVENIOS_URL),
+      'process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY': JSON.stringify(env.VITE_APP_BACKEND_CONVENIOS_API_KEY)
     },
     resolve: {
       alias: {
