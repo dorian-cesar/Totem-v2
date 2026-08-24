@@ -15,12 +15,8 @@ export default {
     // cambiar el estatus del flag loading
     async seatReservation(option, param, service) {
       this.isLoadingReservation = true
-      // api dev
-      // const proxy = 'https://newstg3-gdsbus.kupos.cl'
-      // const API_KEY = 'TSXFQYAPI25766888'
-      // api kupos
-      const proxy = 'https://gds.kupos.com'
-      const API_KEY = 'TSFEFSAPI80085614'
+      const proxy = process.env.VUE_APP_GDS_PROXY
+      const API_KEY = process.env.VUE_APP_GDS_API_KEY
       let api = ''
 
       const rut = localStorage.getItem('rut')

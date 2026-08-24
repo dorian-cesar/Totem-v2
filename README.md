@@ -59,6 +59,21 @@ remote pushes were performed).
   - Replaced outdated Webpack dependencies with `vite` (`^5.2.11`) and `@vitejs/plugin-vue2` (`^2.3.1`).
   - Allowed Node engines `node >=18.0.0`.
 
+### 🔑 Environment Variables
+
+- **[.env](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/.env) [NEW]** &
+  **[.env.example](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/.env.example) [NEW]:** Centralized environment
+  variables:
+  - `VITE_APP_USERNAME` / `VITE_APP_PASSWORD` for background login.
+  - `VITE_APP_GDS_MODE` set to either `dev` or `prod` to toggle the environment.
+  - `VITE_APP_GDS_PROXY_DEV` / `VITE_APP_GDS_API_KEY_DEV` for GDS Dev environment.
+  - `VITE_APP_GDS_PROXY_PROD` / `VITE_APP_GDS_API_KEY_PROD` for GDS Prod environment.
+- Sensitive values are kept in the local `.env` which is excluded via `.gitignore`. The committed `.env.example`
+  contains only template placeholders to protect sensitive keys.
+- **[vite.config.js](file:///c:/Users/Usuario/Desktop/wit-dev/Totem-v2/vite.config.js):** Dynamic configuration
+  selecting GDS credentials based on `VITE_APP_GDS_MODE` and mapping them to `process.env` properties globally.
+- Replaced all hardcoded GDS credentials with dynamic environment variables in all views, components, and mixins.
+
 ---
 
 ## Verification & Build Status

@@ -122,12 +122,8 @@ export default {
       // Reset total list
       this.propsListCaptionOrigin.totalList = ''
 
-      // api dev
-      // const proxy = "https://newstg3-gdsbus.kupos.cl"
-      // const API_KEY = "TSXFQYAPI25766888"
-      // api kupos
-      const proxy = 'https://gds.kupos.com'
-      const API_KEY = 'TSFEFSAPI80085614'
+      const proxy = process.env.VUE_APP_GDS_PROXY
+      const API_KEY = process.env.VUE_APP_GDS_API_KEY
 
       const date = this.changeFormatDate2(this.getDepartureDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeDepartureCity()}/${this.getCodeArrivalCity()}/${date}.json?api_key=${API_KEY}`
@@ -223,12 +219,8 @@ export default {
     getListBusReturn: async function () {
       this.propsListCaptionDestination.totalList = ''
 
-      // api dev
-      // const proxy = "https://newstg3-gdsbus.kupos.cl"
-      // const API_KEY = "TSXFQYAPI25766888"
-      // api kupos
-      const proxy = 'https://gds.kupos.com'
-      const API_KEY = 'TSFEFSAPI80085614'
+      const proxy = process.env.VUE_APP_GDS_PROXY
+      const API_KEY = process.env.VUE_APP_GDS_API_KEY
       const date = this.changeFormatDate2(this.getReturnDate(), 'yyyymmdd')
       const api = `/gds/api/ui_schedules/${this.getCodeArrivalCity()}/${this.getCodeDepartureCity()}/${date}.json?api_key=${API_KEY}`
       const body = {

@@ -203,15 +203,8 @@ export default {
           token = loginResponse.data.token
           localStorage.setItem('authToken', token)
         }
-        // api antigua
-        // const proxy = "https://gds.ticketsimply.us"
-        // const API_KEY = "TSFEFSAPI80085614"
-        // api dev
-        // const proxy = "https://newstg3-gdsbus.kupos.cl"
-        // const API_KEY = "TSXFQYAPI25766888"
-        // api kupos
-        const proxy = 'https://gds.kupos.com'
-        const API_KEY = 'TSFEFSAPI80085614'
+        const proxy = process.env.VUE_APP_GDS_PROXY
+        const API_KEY = process.env.VUE_APP_GDS_API_KEY
         const api = `/gds/api/cities.json?api_key=${API_KEY}`
 
         const response = await this.axios.get([proxy, api].join('/'), {

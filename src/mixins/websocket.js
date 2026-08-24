@@ -212,15 +212,8 @@ export default {
         // boleto = JSON.parse(boleto)
         // console.log('boleto', boleto)
         // --- API booking_details ---
-        const isDev = false // Cambiado a false para usar producción
-
-        const proxy = isDev
-          ? 'https://newstg3-gdsbus.kupos.cl' // API desarrollo
-          : 'https://gds.kupos.com' // API producción
-
-        const API_KEY = isDev
-          ? 'TSXFQYAPI25766888' // Dev key
-          : 'TSFEFSAPI80085614' // Prod key
+        const proxy = process.env.VUE_APP_GDS_PROXY
+        const API_KEY = process.env.VUE_APP_GDS_API_KEY
 
         const params = new URLSearchParams({
           region: 'chile',
