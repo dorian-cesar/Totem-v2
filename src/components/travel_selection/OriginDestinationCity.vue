@@ -27,8 +27,9 @@
     <b-row align-h="center">
       <b-col cols="12">
         <b-form-group>
-          <!-- INPUTS -->
-          <div v-show="tipoEntrada === 'rut'">
+          <!-- 1. MODO NORMAL (SIN CONVENIO DESPLEGADO) -->
+          <div v-show="!tieneConvenio">
+            <!-- INPUT RUT NORMAL -->
             <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
             <b-form-input
               v-bind="propsRut"
@@ -38,70 +39,150 @@
               style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
               autocomplete="off"
             />
-          </div>
+            <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
+              Ingrese su RUT para emitir su pasaje e imprimir en caso de pérdida.
+            </p>
 
-          <div v-show="tipoEntrada === 'codigo'">
-            <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-            <b-form-input
-              v-model="codigoConvenio"
-              placeholder="Ej: CONV-12345"
-              @focus="mostrarTeclado = true"
-              @input="onInputCodigo"
-              style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
-              autocomplete="off"
-            />
-          </div>
-
-          <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
-            {{
-              tipoEntrada === 'rut'
-                ? 'Por favor, ingrese su RUT para verificar convenios e imprimir boleto en caso de pérdida.'
-                : 'Por favor, ingrese su código de convenio para validar su descuento.'
-            }}
-          </p>
-
-          <!-- Fila con Logo a la izquierda y Radios a la derecha -->
-          <div class="d-flex align-items-center justify-content-between mt-3 mb-4 px-3">
-            <img
-              :src="ImgLogoConvenios"
-              style="max-height: 80px; width: auto; object-fit: contain; margin-right: 50px"
-              alt="Logo Convenios"
-            />
-
-            <b-form-radio-group
-              v-model="tipoEntrada"
-              @change="cambiarTipoEntrada"
-              name="radio-tipo-entrada"
-              class="text-white d-flex align-items-center"
+            <!-- Banner con Logo Convenios y Pregunta -->
+            <div
+              class="convenio-banner d-flex align-items-center justify-content-between p-3 my-2"
+              @click="toggleConvenio"
             >
-              <b-form-radio value="rut" class="custom-radio-large mr-5">
-                <span class="radio-text-label">Validar por RUT</span>
-              </b-form-radio>
-              <b-form-radio value="codigo" class="custom-radio-large">
-                <span class="radio-text-label">Validar por Código</span>
-              </b-form-radio>
-            </b-form-radio-group>
+              <div class="d-flex align-items-center">
+                <img
+                  :src="ImgLogoConvenios"
+                  style="max-height: 65px; width: auto; object-fit: contain; margin-right: 25px"
+                  alt="Logo Convenios"
+                />
+                <div class="text-left">
+                  <div style="font-size: 28px; color: #ffffff; font-weight: bold;">
+                    ¿Tienes convenio o código de descuento?
+                  </div>
+                  <div style="font-size: 20px; color: #dbeafe;">
+                    Toca aquí para validar tu beneficio institucional o cupón
+                  </div>
+                </div>
+              </div>
+              <b-button
+                class="convenio-btn-action text-white"
+                @click.stop="toggleConvenio"
+              >
+                Tengo Convenio
+              </b-button>
+            </div>
           </div>
 
-          <!-- Botón Buscar y Validar -->
-          <b-button
-            @click="iniciarValidacion"
-            class="w-100 py-3 mt-3 border-0 text-white"
-            style="font-size: 32px; border-radius: 10px; height: 80px; background-color: #ff5200"
-            :disabled="isValidating"
-          >
-            {{ isValidating ? 'Buscando...' : 'Buscar y Validar' }}
-          </b-button>
+          <!-- 2. MODO CONVENIO DESPLEGADO -->
+          <div v-show="tieneConvenio" class="convenio-container-expanded">
+            <!-- Encabezado con Logo Convenios y botón para volver/cerrar -->
+            <div class="d-flex align-items-center justify-content-between mb-3 px-2">
+              <div class="d-flex align-items-center">
+                <img
+                  :src="ImgLogoConvenios"
+                  style="max-height: 65px; width: auto; object-fit: contain; margin-right: 20px"
+                  alt="Logo Convenios"
+                />
+                <span style="font-size: 28px; color: #ffffff; font-weight: bold;">
+                  Validación de Convenios
+                </span>
+              </div>
+              <b-button
+                variant="outline-light"
+                class="btn-cerrar-convenio"
+                @click="toggleConvenio"
+              >
+                ✕ Cancelar / Comprar sin convenio
+              </b-button>
+            </div>
 
-          <!-- Mensaje de Validación -->
-          <div
-            v-if="validationMessage"
-            class="text-center mt-3 p-3 rounded text-white font-weight-bold"
-            :style="{ backgroundColor: validationSuccess === false ? '#dc2626' : '#FF5200' }"
-            style="font-size: 24px"
-          >
-            <b-spinner v-if="isValidating" small type="grow" class="mr-2"></b-spinner>
-            {{ validationMessage }}
+            <!-- Radios de tipo de validación -->
+            <div class="d-flex align-items-center justify-content-end mb-3 px-2">
+              <b-form-radio-group
+                v-model="tipoEntrada"
+                @change="cambiarTipoEntrada"
+                name="radio-tipo-entrada"
+                class="text-white d-flex align-items-center"
+              >
+                <b-form-radio value="rut" class="custom-radio-large mr-5">
+                  <span class="radio-text-label">Validar por RUT</span>
+                </b-form-radio>
+                <b-form-radio value="codigo" class="custom-radio-large">
+                  <span class="radio-text-label">Validar por Código</span>
+                </b-form-radio>
+              </b-form-radio-group>
+            </div>
+
+            <!-- Selector Previo de Convenio / Institución -->
+            <div class="mb-3">
+              <v-select
+                v-model="convenioSeleccionadoInput"
+                :options="opcionesConvenios"
+                placeholder="Seleccione su Institución / Convenio (Opcional)"
+                class="convenio-select"
+                :clearable="true"
+                :disabled="cargandoConvenios"
+              >
+                <template #no-options>
+                  <span style="font-size: 24px; padding: 10px; color: #666">
+                    {{ cargandoConvenios ? 'Cargando convenios...' : 'No hay convenios disponibles para este tipo' }}
+                  </span>
+                </template>
+              </v-select>
+            </div>
+
+            <!-- INPUTS -->
+            <div v-show="tipoEntrada === 'rut'">
+              <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
+              <b-form-input
+                v-bind="propsRut"
+                v-model="rut"
+                @focus="mostrarTeclado = true"
+                @input="onInputRut"
+                style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
+                autocomplete="off"
+              />
+            </div>
+
+            <div v-show="tipoEntrada === 'codigo'">
+              <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
+              <b-form-input
+                v-model="codigoConvenio"
+                placeholder="Ej: CONV-12345"
+                @focus="mostrarTeclado = true"
+                @input="onInputCodigo"
+                style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
+                autocomplete="off"
+              />
+            </div>
+
+            <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
+              {{
+                tipoEntrada === 'rut'
+                  ? 'Ingrese su RUT para validar convenio e imprimir boleto en caso de pérdida.'
+                  : 'Ingrese su código de convenio para validar su descuento.'
+              }}
+            </p>
+
+            <!-- Botón Buscar y Validar -->
+            <b-button
+              @click="iniciarValidacion"
+              class="w-100 py-3 mt-3 border-0 text-white"
+              style="font-size: 32px; border-radius: 10px; height: 80px; background-color: #ff5200"
+              :disabled="isValidating"
+            >
+              {{ isValidating ? 'Buscando...' : 'Buscar y Validar' }}
+            </b-button>
+
+            <!-- Mensaje de Validación -->
+            <div
+              v-if="validationMessage"
+              class="text-center mt-3 p-3 rounded text-white font-weight-bold"
+              :style="{ backgroundColor: validationSuccess === false ? '#dc2626' : '#FF5200' }"
+              style="font-size: 24px"
+            >
+              <b-spinner v-if="isValidating" small type="grow" class="mr-2"></b-spinner>
+              {{ validationMessage }}
+            </div>
           </div>
         </b-form-group>
       </b-col>
@@ -111,6 +192,7 @@
 
 <script>
 import Select from '@/components/Select.vue'
+import vSelect from 'vue-select'
 import { mapActions } from 'vuex'
 import ImgOrigin from '@/assets/img/origin.svg'
 import ImgDestiny from '@/assets/img/destination.svg'
@@ -156,8 +238,12 @@ export default {
       reset: false
     },
     rut: '',
+    tieneConvenio: false,
     tipoEntrada: 'rut',
     codigoConvenio: '',
+    listaConvenios: [],
+    convenioSeleccionadoInput: null,
+    cargandoConvenios: false,
     isValidating: false,
     validationMessage: '',
     validationSuccess: null,
@@ -168,7 +254,22 @@ export default {
     deleteInterval: null,
     info
   }),
-  components: { selectInput: Select },
+  components: { selectInput: Select, vSelect },
+  computed: {
+    opcionesConvenios() {
+      const tipo = this.tipoEntrada === 'rut' ? 'API_EXTERNA' : 'CODIGO_DESCUENTO'
+      const filtrados = this.listaConvenios.filter((c) => c.tipo_consulta === tipo)
+      return filtrados.map((c) => {
+        const val = Number(c.valor_descuento) || 0
+        const esPorcentaje = String(c.tipo_descuento || '').toLowerCase().includes('porcent')
+        const descTexto = esPorcentaje ? `${val}%` : `$${val}`
+        return {
+          label: `${c.nombre} (${descTexto} dcto.)`,
+          value: c
+        }
+      })
+    }
+  },
   watch: {
     'propsDepartureCity.selected'(newVal) {
       if (!newVal) {
@@ -206,13 +307,33 @@ export default {
   mounted() {
     this.clearConvenio()
     this.setRut('')
-    // Get list of departure cities
     this.getListDepartureCities()
-    //this.setArrivalCity()
+    this.obtenerListaConvenios()
   },
   methods: {
     // Map store
     ...mapActions('TravelSelection', ['setDepartureCity', 'setArrivalCity', 'setConvenio', 'clearConvenio', 'setRut']),
+
+    async obtenerListaConvenios() {
+      this.cargandoConvenios = true
+      try {
+        const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
+        const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
+        const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        })
+        const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
+        this.listaConvenios = Array.isArray(rows) ? rows : []
+      } catch (error) {
+        console.error('Error al cargar lista de convenios:', error)
+        this.listaConvenios = []
+      } finally {
+        this.cargandoConvenios = false
+      }
+    },
 
     eliminarRepetidos(data) {
       let hash = {}
@@ -287,8 +408,6 @@ export default {
       }
     },
 
-    // Removed redundant getListArrivalCities since they both use the same endpoint
-
     setValues() {
       this.setDepartureCity({
         name: this.propsDepartureCity.selected ? this.propsDepartureCity.selected.label : '',
@@ -304,8 +423,21 @@ export default {
       this.$emit('selectAction', { name: name, status: val })
     },
 
+    toggleConvenio() {
+      this.tieneConvenio = !this.tieneConvenio
+      if (!this.tieneConvenio) {
+        this.clearConvenio()
+        this.convenioSeleccionadoInput = null
+        this.tipoEntrada = 'rut'
+        this.validationMessage = ''
+        this.validationSuccess = null
+        this.codigoConvenio = ''
+      }
+    },
+
     cambiarTipoEntrada(tipo) {
       this.tipoEntrada = tipo
+      this.convenioSeleccionadoInput = null
       this.validationMessage = ''
       this.validationSuccess = null
       this.isValidating = false
@@ -327,8 +459,8 @@ export default {
     async validarCodigo() {
       const code = this.codigoConvenio.trim()
       if (!code) {
-        this.validationMessage = ''
-        this.validationSuccess = null
+        this.validationMessage = 'Por favor, ingrese un código de convenio.'
+        this.validationSuccess = false
         this.isValidating = false
         this.$emit('rutValido', false)
         return
@@ -342,17 +474,24 @@ export default {
         const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
         const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
 
-        const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
-          headers: {
-            'x-api-key': apiKey,
-            'Content-Type': 'application/json'
+        let targetAgreements = []
+        if (this.convenioSeleccionadoInput && this.convenioSeleccionadoInput.value) {
+          targetAgreements = [this.convenioSeleccionadoInput.value]
+        } else {
+          targetAgreements = this.listaConvenios.filter((c) => c.tipo_consulta === 'CODIGO_DESCUENTO')
+          if (targetAgreements.length === 0) {
+            const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
+              headers: {
+                'x-api-key': apiKey,
+                'Content-Type': 'application/json'
+              }
+            })
+            const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
+            targetAgreements = rows.filter((c) => c.tipo_consulta === 'CODIGO_DESCUENTO')
           }
-        })
+        }
 
-        const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
-        const codeAgreements = rows.filter((c) => c.tipo_consulta === 'CODIGO_DESCUENTO')
-
-        if (codeAgreements.length === 0) {
+        if (targetAgreements.length === 0) {
           this.validationSuccess = false
           this.validationMessage = 'No se encontraron convenios activos para códigos.'
           this.$emit('rutValido', false)
@@ -360,89 +499,76 @@ export default {
           return
         }
 
-        const batchSize = 5
-        const batches = []
-        for (let i = 0; i < codeAgreements.length; i += batchSize) {
-          batches.push(codeAgreements.slice(i, i + batchSize))
-        }
+        let matchedAgreement = null
+        for (const agreement of targetAgreements) {
+          try {
+            const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
+              headers: { 'x-api-key': apiKey }
+            })
 
-        let found = false
-        for (const batch of batches) {
-          const results = await Promise.all(
-            batch.map(async (agreement) => {
-              try {
-                const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
-                  headers: { 'x-api-key': apiKey }
-                })
+            if (dispRes.data?.valido) {
+              let endpoint = agreement.endpoint || ''
+              if (endpoint.includes('{codigo}')) {
+                endpoint = endpoint.replace('{codigo}', encodeURIComponent(code))
+              }
+              const requestUrl = endpoint.startsWith('http') ? endpoint : `${url}${endpoint}`
 
-                if (dispRes.data?.valido) {
-                  let endpoint = agreement.endpoint || ''
-                  if (endpoint.includes('{codigo}')) {
-                    endpoint = endpoint.replace('{codigo}', encodeURIComponent(code))
-                  }
-                  const requestUrl = endpoint.startsWith('http') ? endpoint : `${url}${endpoint}`
-
-                  const valRes = await this.axios.post(
-                    requestUrl,
-                    {
-                      convenio_id: agreement.id
-                    },
-                    {
-                      headers: {
-                        'x-api-key': apiKey,
-                        'Content-Type': 'application/json'
-                      }
-                    }
-                  )
-
-                  const result = valRes.data
-                  const esValido =
-                    result.valido === true ||
-                    result.activo === true ||
-                    result.codRespuesta === 200 ||
-                    result.status === 'ACTIVO'
-
-                  if (esValido) {
-                    return agreement
+              const valRes = await this.axios.post(
+                requestUrl,
+                {
+                  convenio_id: agreement.id
+                },
+                {
+                  headers: {
+                    'x-api-key': apiKey,
+                    'Content-Type': 'application/json'
                   }
                 }
-              } catch (err) {
-                console.error(`Error validando código en convenio ${agreement.nombre}:`, err)
+              )
+
+              const result = valRes.data
+              const esValido =
+                result.valido === true ||
+                result.activo === true ||
+                result.codRespuesta === 200 ||
+                result.status === 'ACTIVO'
+
+              if (esValido) {
+                matchedAgreement = agreement
+                break
               }
-              return null
-            })
-          )
-
-          const matchedAgreement = results.find((a) => a !== null)
-          if (matchedAgreement) {
-            found = true
-            this.validationSuccess = true
-            const val = Number(matchedAgreement.valor_descuento) || 0
-            const esPorcentaje = String(matchedAgreement.tipo_descuento).toLowerCase().includes('porcent')
-            const descTexto = esPorcentaje ? `${val}%` : `$${val}`
-            this.validationMessage = `Convenio válido: ${matchedAgreement.nombre} (${descTexto} de dcto.)`
-
-            this.setConvenio({
-              seleccionado: matchedAgreement,
-              tipo: 'codigo',
-              codigo: code,
-              descuentoValor: val,
-              descuentoTipo: matchedAgreement.tipo_descuento || ''
-            })
-
-            this.$emit('rutValido', true)
-            break
+            }
+          } catch (err) {
+            console.error(`Error validando código en convenio ${agreement.nombre}:`, err)
           }
         }
 
-        if (!found) {
+        if (matchedAgreement) {
+          this.validationSuccess = true
+          const val = Number(matchedAgreement.valor_descuento) || 0
+          const esPorcentaje = String(matchedAgreement.tipo_descuento).toLowerCase().includes('porcent')
+          const descTexto = esPorcentaje ? `${val}%` : `$${val}`
+          this.validationMessage = `Convenio válido: ${matchedAgreement.nombre} (${descTexto} de dcto.)`
+
+          this.setConvenio({
+            seleccionado: matchedAgreement,
+            tipo: 'codigo',
+            codigo: code,
+            descuentoValor: val,
+            descuentoTipo: matchedAgreement.tipo_descuento || ''
+          })
+
+          this.$emit('rutValido', true)
+        } else {
           this.validationSuccess = false
-          this.validationMessage = 'El código ingresado no es válido o está vencido.'
+          this.validationMessage = this.convenioSeleccionadoInput?.value
+            ? `El código no es válido para ${this.convenioSeleccionadoInput.value.nombre}.`
+            : 'El código ingresado no es válido o está vencido.'
           this.$emit('rutValido', false)
           this.clearConvenio()
         }
       } catch (error) {
-        console.error('Error al obtener convenios:', error)
+        console.error('Error al validar convenio:', error)
         this.validationSuccess = false
         this.validationMessage = 'Error de conexión al validar el convenio.'
         this.$emit('rutValido', false)
@@ -462,29 +588,6 @@ export default {
         return
       }
 
-      const cuerpo = rutSinFormato.slice(0, -1)
-      const dvIngresado = rutSinFormato.slice(-1).toUpperCase()
-
-      let suma = 0
-      let multiplo = 2
-      for (let i = cuerpo.length - 1; i >= 0; i--) {
-        suma += parseInt(cuerpo[i]) * multiplo
-        multiplo = multiplo < 7 ? multiplo + 1 : 2
-      }
-      const resto = 11 - (suma % 11)
-      const dvEsperado = resto === 11 ? '0' : resto === 10 ? 'K' : resto.toString()
-
-      // Checksum validation commented out per user request
-      /*
-      if (cuerpo.length < 7 || dvIngresado !== dvEsperado) {
-        this.rutValido = false
-        this.validationMessage = `RUT no válido para ${formattedRut}`
-        this.validationSuccess = false
-        this.$emit('rutValido', false)
-        return
-      }
-      */
-
       // Specific check for test RUT 12345678-9 to make it invalid
       if (rutSinFormato === '123456789') {
         this.rutValido = false
@@ -503,102 +606,82 @@ export default {
       }
       localStorage.setItem('rut', rutClean)
 
+      // Caso 1: No seleccionó ningún convenio específico
+      if (!this.convenioSeleccionadoInput || !this.convenioSeleccionadoInput.value) {
+        this.isValidating = false
+        this.validationSuccess = true
+        this.validationMessage = 'RUT ingresado correctamente (Sin convenio seleccionado).'
+        this.clearConvenio()
+        this.$emit('rutValido', true)
+        return
+      }
+
+      // Caso 2: Seleccionó una institución / convenio específico
+      const agreement = this.convenioSeleccionadoInput.value
       this.isValidating = true
-      this.validationMessage = 'Buscando convenios para este RUT...'
+      this.validationMessage = `Verificando afiliación en ${agreement.nombre}...`
       this.validationSuccess = null
 
       try {
         const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
         const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
 
-        const agreementsRes = await this.axios.get(`${url}/api/convenios?status=ACTIVO`, {
-          headers: {
-            'x-api-key': apiKey,
-            'Content-Type': 'application/json'
-          }
+        const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
+          headers: { 'x-api-key': apiKey }
         })
 
-        const rows = agreementsRes.data?.data?.rows || agreementsRes.data?.rows || agreementsRes.data || []
-        const rutAgreements = rows.filter((c) => c.tipo_consulta === 'API_EXTERNA')
-
-        const batchSize = 5
-        const batches = []
-        for (let i = 0; i < rutAgreements.length; i += batchSize) {
-          batches.push(rutAgreements.slice(i, i + batchSize))
-        }
-
-        let found = false
-        for (const batch of batches) {
-          const results = await Promise.all(
-            batch.map(async (agreement) => {
-              try {
-                const dispRes = await this.axios.get(`${url}/api/convenios/${agreement.id}/disponibilidad`, {
-                  headers: { 'x-api-key': apiKey }
-                })
-
-                if (dispRes.data?.valido) {
-                  const requestUrl = agreement.endpoint.startsWith('http')
-                    ? agreement.endpoint
-                    : `${url}${agreement.endpoint}`
-                  const valRes = await this.axios.post(
-                    requestUrl,
-                    {
-                      convenio_id: agreement.id,
-                      rut: rutClean
-                    },
-                    {
-                      headers: {
-                        'x-api-key': apiKey,
-                        'Content-Type': 'application/json'
-                      }
-                    }
-                  )
-
-                  const result = valRes.data
-                  const esValido = result.afiliado === true || result.status === 'ACTIVO'
-
-                  if (esValido) {
-                    return agreement
-                  }
-                }
-              } catch (err) {
-                console.error(`Error validando RUT en convenio ${agreement.nombre}:`, err)
+        if (dispRes.data?.valido) {
+          const requestUrl = agreement.endpoint.startsWith('http')
+            ? agreement.endpoint
+            : `${url}${agreement.endpoint}`
+          const valRes = await this.axios.post(
+            requestUrl,
+            {
+              convenio_id: agreement.id,
+              rut: rutClean
+            },
+            {
+              headers: {
+                'x-api-key': apiKey,
+                'Content-Type': 'application/json'
               }
-              return null
-            })
+            }
           )
 
-          const matchedAgreement = results.find((a) => a !== null)
-          if (matchedAgreement) {
-            found = true
+          const result = valRes.data
+          const esValido = result.afiliado === true || result.status === 'ACTIVO'
+
+          if (esValido) {
             this.validationSuccess = true
-            const val = Number(matchedAgreement.valor_descuento) || 0
-            const esPorcentaje = String(matchedAgreement.tipo_descuento).toLowerCase().includes('porcent')
+            const val = Number(agreement.valor_descuento) || 0
+            const esPorcentaje = String(agreement.tipo_descuento).toLowerCase().includes('porcent')
             const descTexto = esPorcentaje ? `${val}%` : `$${val}`
-            this.validationMessage = `Convenio encontrado: ${matchedAgreement.nombre} (${descTexto} de dcto.)`
+            this.validationMessage = `Convenio aplicado: ${agreement.nombre} (${descTexto} de dcto.)`
 
             this.setConvenio({
-              seleccionado: matchedAgreement,
+              seleccionado: agreement,
               tipo: 'rut',
               codigo: '',
               descuentoValor: val,
-              descuentoTipo: matchedAgreement.tipo_descuento || ''
+              descuentoTipo: agreement.tipo_descuento || ''
             })
-            break
+          } else {
+            this.validationSuccess = false
+            this.validationMessage = `El RUT no registra afiliación activa en ${agreement.nombre}.`
+            this.clearConvenio()
           }
-        }
-
-        if (!found) {
-          this.validationSuccess = true
-          this.validationMessage = 'RUT válido (Sin convenio asociado).'
+        } else {
+          this.validationSuccess = false
+          this.validationMessage = `El servicio de ${agreement.nombre} no se encuentra disponible temporalmente.`
           this.clearConvenio()
         }
 
         this.$emit('rutValido', true)
       } catch (error) {
-        console.error('Error al obtener convenios para RUT:', error)
+        console.error(`Error validando RUT en convenio ${agreement.nombre}:`, error)
         this.validationSuccess = true
-        this.validationMessage = 'RUT válido (No se pudo conectar para buscar convenios).'
+        this.validationMessage = `RUT válido (No se pudo conectar con ${agreement.nombre}).`
+        this.clearConvenio()
         this.$emit('rutValido', true)
       } finally {
         this.isValidating = false
@@ -638,6 +721,131 @@ export default {
   width: 50px;
   padding-bottom: 10px;
   padding-left: 7px;
+}
+
+.convenio-banner {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+}
+
+.convenio-banner:hover,
+.convenio-banner:active {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #ff5200;
+}
+
+.convenio-btn-action {
+  font-size: 26px !important;
+  padding: 12px 28px !important;
+  border-radius: 10px !important;
+  background-color: #ff5200 !important;
+  border: none !important;
+  font-weight: bold !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 12px rgba(255, 82, 0, 0.4) !important;
+}
+
+.convenio-container-expanded {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.btn-cerrar-convenio {
+  font-size: 20px !important;
+  border-radius: 8px !important;
+  padding: 8px 18px !important;
+}
+
+.convenio-select {
+  font-size: 30px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.convenio-select .vs__dropdown-toggle {
+  background-color: azure !important;
+  border-radius: 10px !important;
+  height: 85px !important;
+  min-height: 85px !important;
+  max-height: 85px !important;
+  padding: 0 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  border: 1px solid #ccc !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+}
+
+.convenio-select .vs__selected-options {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+  max-width: calc(100% - 60px) !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.convenio-select .vs__selected {
+  font-size: 28px !important;
+  color: #111 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  display: block !important;
+  margin: 0 !important;
+}
+
+.convenio-select .vs__search {
+  font-size: 28px !important;
+  color: #111 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.convenio-select .vs__search::placeholder {
+  color: #6b7280 !important;
+  font-size: 26px !important;
+}
+
+.convenio-select .vs__dropdown-menu {
+  max-height: 400px !important;
+  font-size: 28px !important;
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 5px 0 !important;
+}
+
+.convenio-select .vs__dropdown-option {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  color: #1f2937 !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+.convenio-select .vs__dropdown-option--highlight {
+  background-color: #ff5200 !important;
+  color: #ffffff !important;
+}
+
+.convenio-select .vs__clear,
+.convenio-select .vs__open-indicator {
+  transform: scale(1.4);
+  margin-right: 5px;
+  fill: #666;
 }
 
 .vs__dropdown-menu {
