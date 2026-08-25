@@ -90,26 +90,10 @@
                 variant="outline-light"
                 class="btn-cerrar-convenio"
                 @click="toggleConvenio"
+                aria-label="Cerrar convenio"
               >
-                ✕ Cancelar / Comprar sin convenio
+                ✕
               </b-button>
-            </div>
-
-            <!-- Radios de tipo de validación -->
-            <div class="d-flex align-items-center justify-content-end mb-3 px-2">
-              <b-form-radio-group
-                v-model="tipoEntrada"
-                @change="cambiarTipoEntrada"
-                name="radio-tipo-entrada"
-                class="text-white d-flex align-items-center"
-              >
-                <b-form-radio value="rut" class="custom-radio-large mr-5">
-                  <span class="radio-text-label">Validar por RUT</span>
-                </b-form-radio>
-                <b-form-radio value="codigo" class="custom-radio-large">
-                  <span class="radio-text-label">Validar por Código</span>
-                </b-form-radio>
-              </b-form-radio-group>
             </div>
 
             <!-- Selector Previo de Convenio / Institución -->
@@ -117,14 +101,14 @@
               <v-select
                 v-model="convenioSeleccionadoInput"
                 :options="opcionesConvenios"
-                placeholder="Seleccione su Institución / Convenio (Opcional)"
+                placeholder="Seleccione su Institución / Convenio"
                 class="convenio-select"
                 :clearable="true"
                 :disabled="cargandoConvenios"
               >
                 <template #no-options>
                   <span style="font-size: 24px; padding: 10px; color: #666">
-                    {{ cargandoConvenios ? 'Cargando convenios...' : 'No hay convenios disponibles para este tipo' }}
+                    {{ cargandoConvenios ? 'Cargando convenios...' : 'No hay convenios disponibles' }}
                   </span>
                 </template>
               </v-select>
@@ -163,26 +147,26 @@
               }}
             </p>
 
-            <!-- Botón Buscar y Validar -->
+            <!-- Botón Buscar y Validar con mensaje integrado -->
             <b-button
               @click="iniciarValidacion"
-              class="w-100 py-3 mt-3 border-0 text-white"
-              style="font-size: 32px; border-radius: 10px; height: 80px; background-color: #ff5200"
+              class="w-100 py-3 mt-3 border-0 text-white font-weight-bold d-flex align-items-center justify-content-center text-center"
+              :style="{
+                backgroundColor: validationSuccess === false ? '#dc2626' : (validationSuccess === true ? '#16a34a' : '#ff5200'),
+                borderRadius: '10px',
+                minHeight: '80px',
+                height: 'auto',
+                fontSize: validationMessage ? '24px' : '32px',
+                lineHeight: '1.2',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+                transition: 'background-color 0.2s ease'
+              }"
               :disabled="isValidating"
             >
-              {{ isValidating ? 'Buscando...' : 'Buscar y Validar' }}
-            </b-button>
-
-            <!-- Mensaje de Validación -->
-            <div
-              v-if="validationMessage"
-              class="text-center mt-3 p-3 rounded text-white font-weight-bold"
-              :style="{ backgroundColor: validationSuccess === false ? '#dc2626' : '#FF5200' }"
-              style="font-size: 24px"
-            >
               <b-spinner v-if="isValidating" small type="grow" class="mr-2"></b-spinner>
-              {{ validationMessage }}
-            </div>
+              <span>{{ textoBotonValidar }}</span>
+            </b-button>
           </div>
         </b-form-group>
       </b-col>
@@ -239,7 +223,6 @@ export default {
     },
     rut: '',
     tieneConvenio: false,
-    tipoEntrada: 'rut',
     codigoConvenio: '',
     listaConvenios: [],
     convenioSeleccionadoInput: null,
@@ -256,10 +239,14 @@ export default {
   }),
   components: { selectInput: Select, vSelect },
   computed: {
+    tipoEntrada() {
+      if (this.convenioSeleccionadoInput && this.convenioSeleccionadoInput.value) {
+        return this.convenioSeleccionadoInput.value.tipo_consulta === 'CODIGO_DESCUENTO' ? 'codigo' : 'rut'
+      }
+      return 'rut'
+    },
     opcionesConvenios() {
-      const tipo = this.tipoEntrada === 'rut' ? 'API_EXTERNA' : 'CODIGO_DESCUENTO'
-      const filtrados = this.listaConvenios.filter((c) => c.tipo_consulta === tipo)
-      return filtrados.map((c) => {
+      return this.listaConvenios.map((c) => {
         const val = Number(c.valor_descuento) || 0
         const esPorcentaje = String(c.tipo_descuento || '').toLowerCase().includes('porcent')
         const descTexto = esPorcentaje ? `${val}%` : `$${val}`
@@ -268,9 +255,23 @@ export default {
           value: c
         }
       })
+    },
+    textoBotonValidar() {
+      if (this.isValidating) {
+        return this.validationMessage || 'Buscando...'
+      }
+      if (this.validationMessage) {
+        return this.validationMessage
+      }
+      return 'Buscar y Validar'
     }
   },
   watch: {
+    convenioSeleccionadoInput() {
+      this.validationMessage = ''
+      this.validationSuccess = null
+      this.clearConvenio()
+    },
     'propsDepartureCity.selected'(newVal) {
       if (!newVal) {
         this.propsDepartureCity.selected = {
@@ -342,6 +343,10 @@ export default {
     },
 
     onInputRut() {
+      if (this.validationSuccess === false) {
+        this.validationMessage = ''
+        this.validationSuccess = null
+      }
       this.rut = this.formatearRut(this.rut)
     },
 
@@ -428,23 +433,17 @@ export default {
       if (!this.tieneConvenio) {
         this.clearConvenio()
         this.convenioSeleccionadoInput = null
-        this.tipoEntrada = 'rut'
         this.validationMessage = ''
         this.validationSuccess = null
         this.codigoConvenio = ''
       }
     },
 
-    cambiarTipoEntrada(tipo) {
-      this.tipoEntrada = tipo
-      this.convenioSeleccionadoInput = null
-      this.validationMessage = ''
-      this.validationSuccess = null
-      this.isValidating = false
-      this.clearConvenio()
-    },
-
     onInputCodigo() {
+      if (this.validationSuccess === false) {
+        this.validationMessage = ''
+        this.validationSuccess = null
+      }
       this.codigoConvenio = this.codigoConvenio.toUpperCase()
     },
 
@@ -758,9 +757,27 @@ export default {
 }
 
 .btn-cerrar-convenio {
-  font-size: 20px !important;
-  border-radius: 8px !important;
-  padding: 8px 18px !important;
+  font-size: 28px !important;
+  font-weight: bold !important;
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-cerrar-convenio:hover,
+.btn-cerrar-convenio:active {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: #ffffff !important;
+  transform: scale(1.05);
 }
 
 .convenio-select {
