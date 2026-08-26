@@ -166,10 +166,20 @@
             .$refs[['station', activeButton].join('-')][0]
             .innerText
 
+        const datasetObj =
+          listBus
+            .$refs[['price', activeButton].join('-')][0]
+            .dataset
+
+        const originalPriceVal = datasetObj[['originalPrice', this.numfloor].join('')] || datasetObj[['original-price', this.numfloor].join('-')]
         const price =
           listBus
             .$refs[['price', activeButton].join('-')][0]
             .dataset[['price', this.numfloor].join('-')]
+
+        const convenio = this.$store.state.TravelSelection.convenioSeleccionado
+        const convenioId = convenio ? convenio.id : ''
+        const montoDescuento = convenio ? Math.max(0, Number(originalPriceVal) - Number(price)) : 0
 
         // travel
         const props =
@@ -245,8 +255,9 @@
           precio: price,
           empresa: empresa,
           clase: clase,
-          convenio: '', // <- por defecto
-          datosConvenio: '', // <- por defecto
+          convenio: convenioId,
+          montoDescuento: montoDescuento,
+          datosConvenio: convenio ? JSON.stringify(convenio) : '',
           bus: bus,
           piso: piso,
           integrador: integrador,

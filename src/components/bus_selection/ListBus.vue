@@ -76,6 +76,8 @@
                 :ref="['price',buttonType,bus.idServicio, bus.idTerminalOrigen, bus.idTerminalDestino].join('-')"
                 :data-price-1="bus.tarifaConDescuento || bus.tarifaPrimerPisoInternet"
                 :data-price-2="(bus.tarifaSegundoPisoInternet)?bus.tarifaSegundoPisoInternet:''"
+                :data-original-price-1="bus.tarifaPrimerPisoInternet"
+                :data-original-price-2="(bus.tarifaSegundoPisoInternet)?bus.tarifaSegundoPisoInternet:''"
               >
                 <!-- Precio con descuento -->
                 <h5 class="font-weight-bold mb-0" :style="bus.tarifaConDescuento ? 'color:#16a34a' : ''">

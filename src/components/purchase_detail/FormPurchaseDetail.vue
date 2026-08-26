@@ -782,6 +782,11 @@ export default {
             ticketsGeneradosFormatted.boletos.push(response_ticket)
             console.log('ticketsGeneradosFormatted: ', ticketsGeneradosFormatted)
 
+            // Registrar consumo si tiene convenio y descuento
+            if (ticket.convenio && ticket.montoDescuento > 0) {
+              this.registrarConsumoConvenio(ticket.convenio, ticket.montoDescuento)
+            }
+
             // formatear fecha y hora para DB
             const rawDate = this.dataPOS.realDate
             const formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
@@ -896,6 +901,26 @@ export default {
               this.loadingTerminarTransaccionPOS = true
             }
           })
+      }
+    },
+
+    async registrarConsumoConvenio(convenioId, montoDescuento) {
+      try {
+        const url = process.env.VUE_APP_BACKEND_CONVENIOS_URL
+        const apiKey = process.env.VUE_APP_BACKEND_CONVENIOS_API_KEY
+        
+        await this.axios.patch(`${url}/api/convenios/${convenioId}/consumo`, {
+          consumo_tickets: 1,
+          consumo_monto_descuento: montoDescuento
+        }, {
+          headers: {
+            'x-api-key': apiKey,
+            'Content-Type': 'application/json'
+          }
+        })
+        console.log('Consumo de convenio registrado con éxito')
+      } catch (error) {
+        console.error('Error al registrar consumo de convenio:', error)
       }
     },
 
