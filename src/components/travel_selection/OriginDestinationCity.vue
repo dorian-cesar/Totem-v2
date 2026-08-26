@@ -275,15 +275,19 @@ export default {
     },
     'propsDepartureCity.selected'(newVal) {
       if (!newVal) {
-        this.propsDepartureCity.selected = {
-          label: PRESELECT_LABEL,
-          value: PRESELECT_VALUE
+        const codigos = getCiudadesConvenio(this.convenioSeleccionado)
+        if (codigos.length === 0 || codigos.includes(String(PRESELECT_VALUE))) {
+          this.propsDepartureCity.selected = {
+            label: PRESELECT_LABEL,
+            value: PRESELECT_VALUE
+          }
+          return
         }
       }
 
       // Update Vuex with the new Origin (and current Destination)
+      this.setValues()
       if (newVal) {
-        this.setValues()
         this.$emit('selected', true)
       }
     },

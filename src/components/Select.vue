@@ -51,9 +51,7 @@
     },
     watch: {
       selected(newVal) {
-        if (!newVal) {
-          this.value = null;
-        }
+        this.value = newVal || null
       }
     },
     mounted() {
