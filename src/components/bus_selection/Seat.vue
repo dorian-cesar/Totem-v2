@@ -27,6 +27,7 @@
   import imgBusySeat from '@/assets/img/seat/busy_seat.png'
   import imgBlankSeat from '@/assets/img/seat/blank_seat.png'
   import {mapActions, mapGetters} from 'vuex'
+  import { aplicarDescuentoConvenio } from '@/lib/convenioUtils'
 
 // const SEATS_LIMIT = 4
   localStorage.setItem('SEATS_LIMIT', 4);
@@ -52,13 +53,21 @@
     computed: {
       /**
        * Límite efectivo de asientos:
-       * - Si el convenio activo es Tarifa Plana: máximo 1 asiento por tramo
+       * - Si el convenio activo tiene configurado un límite (como max_pasajes en Tarifa Plana): lo respeta
        * - En cualquier otro caso: usa SEATS_LIMIT normal (de localStorage)
        */
       effectiveSeatLimit() {
         const convenio = this.$store.state.TravelSelection.convenioSeleccionado
-        if (convenio && convenio.tipo_descuento === 'Tarifa Plana') {
-          return 1
+        if (convenio) {
+          const busList = this.getBusList()
+          const isOrigin = busList ? ('origin' === busList.slice(0, 6)) : true
+          const origen = isOrigin ? this.getCodeDepartureCity() : this.getCodeArrivalCity()
+          const dbDest = isOrigin ? this.getCodeArrivalCity() : this.getCodeDepartureCity()
+
+          const res = aplicarDescuentoConvenio(0, convenio, origen, dbDest)
+          if (res.seatLimit !== null) {
+            return res.seatLimit
+          }
         }
         return this.SEATS_LIMIT
       }
