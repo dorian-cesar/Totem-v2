@@ -783,7 +783,7 @@ export default {
             console.log('ticketsGeneradosFormatted: ', ticketsGeneradosFormatted)
 
             // Registrar consumo si tiene convenio y descuento
-            if (ticket.convenio && ticket.montoDescuento > 0) {
+            if (ticket && ticket.convenio && ticket.montoDescuento > 0) {
               this.registrarConsumoConvenio(ticket.convenio, ticket.montoDescuento)
             }
 
@@ -920,7 +920,7 @@ export default {
         })
         console.log('Consumo de convenio registrado con éxito')
       } catch (error) {
-        console.error('Error al registrar consumo de convenio:', error)
+        console.error('Error al registrar consumo de convenio:', error.response ? error.response.data : error.message)
       }
     },
 

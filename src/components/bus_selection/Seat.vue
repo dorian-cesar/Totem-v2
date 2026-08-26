@@ -171,7 +171,10 @@
             .$refs[['price', activeButton].join('-')][0]
             .dataset
 
-        const originalPriceVal = datasetObj[['originalPrice', this.numfloor].join('')] || datasetObj[['original-price', this.numfloor].join('-')]
+        const originalPriceVal =
+          datasetObj[['originalPrice', this.numfloor].join('-')] ||
+          datasetObj[['originalPrice', this.numfloor].join('')] ||
+          datasetObj[['original-price', this.numfloor].join('-')]
         const price =
           listBus
             .$refs[['price', activeButton].join('-')][0]
