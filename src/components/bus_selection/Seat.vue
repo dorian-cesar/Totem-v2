@@ -49,6 +49,20 @@
       status: {type: String, default: () => 'free',}, // (selected, free o busy)
       numfloor: {type: String, default: () => '1'}
     },
+    computed: {
+      /**
+       * Límite efectivo de asientos:
+       * - Si el convenio activo es Tarifa Plana: máximo 1 asiento por tramo
+       * - En cualquier otro caso: usa SEATS_LIMIT normal (de localStorage)
+       */
+      effectiveSeatLimit() {
+        const convenio = this.$store.state.TravelSelection.convenioSeleccionado
+        if (convenio && convenio.tipo_descuento === 'Tarifa Plana') {
+          return 1
+        }
+        return this.SEATS_LIMIT
+      }
+    },
     methods: {
       ...mapActions('BusSelection', [
         'addCountSeat',
@@ -66,11 +80,11 @@
 
       selectSeat() {
         if ('busy' !== this.statusSeat) {
-          if (this.getCountSeat() < this.SEATS_LIMIT || 'selected' === this.statusSeat) {
+          if (this.getCountSeat() < this.effectiveSeatLimit || 'selected' === this.statusSeat) {
             const state = ('free' === this.statusSeat) ? 'add' : 'delete'
             this.$emit('check', { state, num: this.num })
           } else {
-             this.$bvModal.msgBoxOk(`No puede seleccionar mas de ${this.SEATS_LIMIT} asientos`, {
+             this.$bvModal.msgBoxOk(`No puede seleccionar más de ${this.effectiveSeatLimit} asiento${this.effectiveSeatLimit > 1 ? 's' : ''}`, {
               title: 'Información',
               size: 'sm',
               buttonSize: 'lg',

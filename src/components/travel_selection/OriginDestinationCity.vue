@@ -58,9 +58,7 @@
                   <div style="font-size: 28px; color: #ffffff; font-weight: bold">
                     ¿Tienes convenio o código de descuento?
                   </div>
-                  <div style="font-size: 20px; color: #dbeafe">
-                    Toca aquí para validar tu beneficio institucional o cupón
-                  </div>
+                  <div style="font-size: 20px; color: #dbeafe">Toca aquí para validar tu beneficio institucional</div>
                 </div>
               </div>
               <b-button class="convenio-btn-action text-white" @click.stop="toggleConvenio"> Tengo Convenio </b-button>
@@ -177,6 +175,7 @@ import ImgDestiny from '@/assets/img/destination.svg'
 import ImgRut from '@/assets/img/usuario-rut.png'
 import ImgLogoConvenios from '@/assets/img/logo-convenios-blanco.png'
 import info from '@/info'
+import { getCiudadesConvenio } from '@/lib/convenioUtils'
 
 export default {
   name: 'OriginDestination',
@@ -229,10 +228,16 @@ export default {
     teclasFila2: ['6', '7', '8', '9', '0'],
     holdTimeout: null,
     deleteInterval: null,
-    info
+    info,
+    // Guarda el listado completo de ciudades para poder restaurar al quitar convenio
+    todasLasCiudades: []
   }),
   components: { selectInput: Select, vSelect },
   computed: {
+    // Acceso reactivo al convenio activo en Vuex
+    convenioSeleccionado() {
+      return this.$store.state.TravelSelection.convenioSeleccionado
+    },
     tipoEntrada() {
       if (this.convenioSeleccionadoInput && this.convenioSeleccionadoInput.value) {
         return this.convenioSeleccionadoInput.value.tipo_consulta === 'CODIGO_DESCUENTO' ? 'codigo' : 'rut'
@@ -299,6 +304,11 @@ export default {
         localStorage.removeItem('rut')
         this.setRut('')
       }
+    },
+
+    // Cuando el convenio validado cambia, filtramos las ciudades disponibles
+    convenioSeleccionado(nuevoConvenio) {
+      this.aplicarFiltroConvenio(nuevoConvenio)
     }
   },
   mounted() {
@@ -402,10 +412,52 @@ export default {
         }
         data = data.filter((item) => !item.label.toLowerCase().includes('hackedbykode'))
         let dataFiltered = this.eliminarRepetidos(data)
-        this.propsDepartureCity.options = dataFiltered
-        this.propsArrivalCity.options = dataFiltered
+
+        // Guardamos todas las ciudades antes de aplicar cualquier filtro de convenio
+        this.todasLasCiudades = [...dataFiltered]
+
+        // Aplicar filtro de convenio si ya hay uno activo
+        this.aplicarFiltroConvenio(this.convenioSeleccionado)
       } catch (error) {
         console.error(error)
+      }
+    },
+
+    /**
+     * Filtra los selectores de ciudad según las rutas del convenio activo.
+     * Si el convenio tiene rutas específicas, solo muestra esas ciudades.
+     * Si no hay convenio o no tiene rutas, restaura todas las ciudades.
+     */
+    aplicarFiltroConvenio(convenio) {
+      if (!this.todasLasCiudades.length) return
+
+      const codigos = getCiudadesConvenio(convenio)
+
+      if (codigos.length > 0) {
+        // Filtrar a solo las ciudades dentro de las rutas del convenio
+        const filtradas = this.todasLasCiudades.filter((c) => codigos.includes(String(c.value)))
+        this.propsDepartureCity.options = filtradas
+        this.propsArrivalCity.options = filtradas
+
+        // Resetear selección si la ciudad elegida ya no está en las opciones filtradas
+        if (
+          this.propsDepartureCity.selected &&
+          this.propsDepartureCity.selected.value &&
+          !codigos.includes(String(this.propsDepartureCity.selected.value))
+        ) {
+          this.propsDepartureCity.selected = ''
+        }
+        if (
+          this.propsArrivalCity.selected &&
+          this.propsArrivalCity.selected.value &&
+          !codigos.includes(String(this.propsArrivalCity.selected.value))
+        ) {
+          this.propsArrivalCity.selected = ''
+        }
+      } else {
+        // Sin restricción de rutas: mostrar todas las ciudades
+        this.propsDepartureCity.options = [...this.todasLasCiudades]
+        this.propsArrivalCity.options = [...this.todasLasCiudades]
       }
     },
 
@@ -778,6 +830,7 @@ export default {
   font-size: 30px !important;
   width: 100% !important;
   max-width: 100% !important;
+  border-radius: 10px !important;
 }
 
 .convenio-select .vs__dropdown-toggle {

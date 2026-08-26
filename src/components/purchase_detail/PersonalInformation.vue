@@ -14,6 +14,15 @@
         CANTIDAD: {{tickets.length}}
       </b-col>
     </b-row>
+    <!-- Badge de convenio activo -->
+    <b-row v-if="convenioActivo" class="px-3">
+      <b-col cols="12" class="py-3" style="background:#1f2937; color:#fff; font-size:22px; display:flex; align-items:center; gap:16px">
+        <strong>{{ convenioActivo.nombre }}</strong>
+        <span style="background:rgba(255,255,255,0.15); border-radius:8px; padding:4px 16px; font-size:20px; font-weight:600">
+          {{ textoDescuentoActivo }}
+        </span>
+      </b-col>
+    </b-row>
     <!-- Tickets -->
     <div role="tablist" class="px-4 py-2">
       <b-card no-body class="mb-1" v-for="(ticket, index) in tickets " :key="index">
@@ -68,6 +77,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
   export default {
     name: 'PersonalInformation',
@@ -75,6 +85,21 @@
       tickets: {type: Array, default: () => ([])},
       total: {type: String, default: () => ('0')},
     },
+    computed: {
+      ...mapGetters('TravelSelection', ['getConvenioSeleccionado', 'getDescuentoValor', 'getDescuentoTipo']),
+      convenioActivo() {
+        return this.getConvenioSeleccionado
+      },
+      textoDescuentoActivo() {
+        if (!this.convenioActivo) return ''
+        const val = this.getDescuentoValor
+        const tipo = this.getDescuentoTipo
+        if (tipo === 'Porcentaje') return `${val}% dcto.`
+        if (tipo === 'Tarifa Plana') return `Tarifa $${Number(val).toLocaleString('es-CL')}`
+        if (tipo === 'Monto Fijo') return `$${Number(val).toLocaleString('es-CL')} dcto.`
+        return tipo
+      }
+    }
   }
 </script>
 

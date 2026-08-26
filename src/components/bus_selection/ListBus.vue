@@ -74,11 +74,17 @@
                 class="text-info font-weight-bold"
                 :id="['price',buttonType,bus.idServicio, bus.idTerminalOrigen, bus.idTerminalDestino].join('-')"
                 :ref="['price',buttonType,bus.idServicio, bus.idTerminalOrigen, bus.idTerminalDestino].join('-')"
-                :data-price-1="bus.tarifaPrimerPisoInternet"
+                :data-price-1="bus.tarifaConDescuento || bus.tarifaPrimerPisoInternet"
                 :data-price-2="(bus.tarifaSegundoPisoInternet)?bus.tarifaSegundoPisoInternet:''"
               >
-                <h5 class="font-weight-bold">${{ bus.tarifaPrimerPisoInternet }}</h5>
-                <!-- <h5 class="font-weight-bold">{{ (bus.tarifaSegundoPisoInternet) ? ['$', bus.tarifaSegundoPisoInternet].join('') : '' }}</h5> -->
+                <!-- Precio con descuento -->
+                <h5 class="font-weight-bold mb-0" :style="bus.tarifaConDescuento ? 'color:#16a34a' : ''">
+                  ${{ bus.tarifaConDescuento || bus.tarifaPrimerPisoInternet }}
+                </h5>
+                <!-- Precio original tachado cuando hay descuento -->
+                <small v-if="bus.tarifaConDescuento" style="text-decoration:line-through; color:#9ca3af; font-size:13px">
+                  ${{ bus.tarifaPrimerPisoInternet }}
+                </small>
               </span>
             </b-col>
 

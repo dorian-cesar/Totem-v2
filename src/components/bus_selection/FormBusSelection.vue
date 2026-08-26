@@ -40,6 +40,7 @@ import ToolbarButtonNew3 from '@/components/ToolbarButtonNew3'
 import { mapGetters, mapActions } from 'vuex'
 import { changeFormatDate } from '@/lib/calculateDays'
 import formatDate from '@/mixins/formatDate'
+import { aplicarDescuentoConvenio } from '@/lib/convenioUtils'
 
 export default {
   name: 'FormBusSelection',
@@ -102,9 +103,14 @@ export default {
       if ('Right-Button' === name) {
         if (this.mostrarIdas === true && this.isRoundTrip) {
           this.mostrarIdas = false
-          const currentLimit = parseInt(localStorage.getItem('SEATS_LIMIT')) || 4
-          const newLimit = currentLimit * 2
-          localStorage.setItem('SEATS_LIMIT', newLimit)
+          // Para Tarifa Plana: 1 asiento por tramo, no duplicar el límite
+          const convenio = this.$store.state.TravelSelection.convenioSeleccionado
+          const isTarifaPlana = convenio && convenio.tipo_descuento === 'Tarifa Plana'
+          if (!isTarifaPlana) {
+            const currentLimit = parseInt(localStorage.getItem('SEATS_LIMIT')) || 4
+            const newLimit = currentLimit * 2
+            localStorage.setItem('SEATS_LIMIT', newLimit)
+          }
         } else {
           this.$router.push({ name: 'PurchaseDetail' })
         }
@@ -208,6 +214,22 @@ export default {
           costo: result[15].split(',')[0],
           rutaId: result[7]
         }
+
+        // Aplicar descuento del convenio (no toca tarifaPrimerPisoInternet para GDS)
+        const convenio = this.$store.state.TravelSelection.convenioSeleccionado
+        const origenCodigo = this.getCodeDepartureCity()
+        const destinoCodigo = this.getCodeArrivalCity()
+        const descuento = aplicarDescuentoConvenio(
+          Number(r.tarifaPrimerPisoInternet),
+          convenio,
+          origenCodigo,
+          destinoCodigo
+        )
+        if (descuento.tieneDescuento) {
+          r.tarifaConDescuento = String(descuento.precioFinal)
+          r.textoDescuento = descuento.textoDescuento
+        }
+
         this.propsListBusDeparture.schedules.push(r)
         // console.log("r", r)
       }
@@ -283,6 +305,21 @@ export default {
           tipoBus: result[8],
           costo: result[15].split(',')[0],
           rutaId: result[7]
+        }
+
+        // Aplicar descuento del convenio para el viaje de vuelta
+        const convenio = this.$store.state.TravelSelection.convenioSeleccionado
+        const origenCodigo = this.getCodeArrivalCity()   // vuelta: origen es el destino original
+        const destinoCodigo = this.getCodeDepartureCity() // vuelta: destino es el origen original
+        const descuento = aplicarDescuentoConvenio(
+          Number(r.tarifaPrimerPisoInternet),
+          convenio,
+          origenCodigo,
+          destinoCodigo
+        )
+        if (descuento.tieneDescuento) {
+          r.tarifaConDescuento = String(descuento.precioFinal)
+          r.textoDescuento = descuento.textoDescuento
         }
 
         this.propsListBusDestination.schedules.push(r)

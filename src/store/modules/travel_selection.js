@@ -59,7 +59,9 @@ export default {
     getConvenioCodigo: state => state.convenioCodigo,
     getDescuentoValor: state => state.descuentoValor,
     getDescuentoTipo: state => state.descuentoTipo,
-    getRut: state => state.rut
+    getRut: state => state.rut,
+    // Retorna las rutas del convenio activo (para Tarifa Plana y filtrado de ciudades)
+    getConvenioRutas: state => (state.convenioSeleccionado && state.convenioSeleccionado.rutas) || []
   },
   mutations: {
     setDepartureCity (state, value = {code:'',name:''}) {
