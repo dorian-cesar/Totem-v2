@@ -55,20 +55,15 @@
                   alt="Logo Convenios"
                 />
                 <div class="text-left">
-                  <div style="font-size: 28px; color: #ffffff; font-weight: bold;">
+                  <div style="font-size: 28px; color: #ffffff; font-weight: bold">
                     ¿Tienes convenio o código de descuento?
                   </div>
-                  <div style="font-size: 20px; color: #dbeafe;">
+                  <div style="font-size: 20px; color: #dbeafe">
                     Toca aquí para validar tu beneficio institucional o cupón
                   </div>
                 </div>
               </div>
-              <b-button
-                class="convenio-btn-action text-white"
-                @click.stop="toggleConvenio"
-              >
-                Tengo Convenio
-              </b-button>
+              <b-button class="convenio-btn-action text-white" @click.stop="toggleConvenio"> Tengo Convenio </b-button>
             </div>
           </div>
 
@@ -82,9 +77,7 @@
                   style="max-height: 65px; width: auto; object-fit: contain; margin-right: 20px"
                   alt="Logo Convenios"
                 />
-                <span style="font-size: 28px; color: #ffffff; font-weight: bold;">
-                  Validación de Convenios
-                </span>
+                <span style="font-size: 28px; color: #ffffff; font-weight: bold"> Validación de Convenios </span>
               </div>
               <b-button
                 variant="outline-light"
@@ -152,7 +145,8 @@
               @click="iniciarValidacion"
               class="w-100 py-3 mt-3 border-0 text-white font-weight-bold d-flex align-items-center justify-content-center text-center"
               :style="{
-                backgroundColor: validationSuccess === false ? '#dc2626' : (validationSuccess === true ? '#16a34a' : '#ff5200'),
+                backgroundColor:
+                  validationSuccess === false ? '#dc2626' : validationSuccess === true ? '#16a34a' : '#ff5200',
                 borderRadius: '10px',
                 minHeight: '80px',
                 height: 'auto',
@@ -248,7 +242,9 @@ export default {
     opcionesConvenios() {
       return this.listaConvenios.map((c) => {
         const val = Number(c.valor_descuento) || 0
-        const esPorcentaje = String(c.tipo_descuento || '').toLowerCase().includes('porcent')
+        const esPorcentaje = String(c.tipo_descuento || '')
+          .toLowerCase()
+          .includes('porcent')
         const descTexto = esPorcentaje ? `${val}%` : `$${val}`
         return {
           label: `${c.nombre} (${descTexto} dcto.)`,
@@ -618,7 +614,7 @@ export default {
       // Caso 2: Seleccionó una institución / convenio específico
       const agreement = this.convenioSeleccionadoInput.value
       this.isValidating = true
-      this.validationMessage = `Verificando afiliación en ${agreement.nombre}...`
+      this.validationMessage = `Verificando afiliación a convenio...`
       this.validationSuccess = null
 
       try {
@@ -630,9 +626,7 @@ export default {
         })
 
         if (dispRes.data?.valido) {
-          const requestUrl = agreement.endpoint.startsWith('http')
-            ? agreement.endpoint
-            : `${url}${agreement.endpoint}`
+          const requestUrl = agreement.endpoint.startsWith('http') ? agreement.endpoint : `${url}${agreement.endpoint}`
           const valRes = await this.axios.post(
             requestUrl,
             {
