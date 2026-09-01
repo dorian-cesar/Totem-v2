@@ -7,21 +7,32 @@
       @touchstart="onScreenTouch"
       @click="onScreenTouch"
     >
+      <!-- Reproductor A -->
       <video
-        ref="videoPlayer"
-        v-show="!hasError && currentVideoUrl"
-        :src="currentVideoUrl"
+        ref="videoPlayerA"
+        :src="urlA"
         autoplay
         muted
         playsinline
-        class="ad-video"
-        @ended="nextVideo"
-        @playing="onPlaying"
-        @error="onVideoError"
+        :class="['ad-video', { 'is-active': activePlayer === 'A' }]"
+        @ended="onVideoEnded('A')"
+        @error="onVideoError('A')"
       ></video>
 
-      <!-- Pantalla promocional fallback SOLO si el video realmente falla en cargar -->
-      <div v-if="hasError || !currentVideoUrl" class="ad-fallback-banner">
+      <!-- Reproductor B -->
+      <video
+        ref="videoPlayerB"
+        :src="urlB"
+        autoplay
+        muted
+        playsinline
+        :class="['ad-video', { 'is-active': activePlayer === 'B' }]"
+        @ended="onVideoEnded('B')"
+        @error="onVideoError('B')"
+      ></video>
+
+      <!-- Pantalla promocional fallback SOLO si realmente no hay videos funcionales -->
+      <div v-if="hasError || validVideos.length === 0" class="ad-fallback-banner">
         <div class="ad-banner-content">
           <div class="ad-logo-icon">🚌</div>
           <h1 class="ad-title">BIENVENIDO AL TÓTEM DE AUTOSERVICIO</h1>
@@ -54,8 +65,10 @@ export default {
   data() {
     return {
       currentIndex: 0,
-      hasError: false,
-      hasLoggedPlaying: false
+      activePlayer: 'A', // 'A' o 'B'
+      urlA: '',
+      urlB: '',
+      hasError: false
     }
   },
   computed: {
@@ -65,11 +78,6 @@ export default {
         const u = typeof v === 'string' ? v : v.url || v.path || ''
         return u && u.trim() !== ''
       })
-    },
-    currentVideoUrl() {
-      if (!this.validVideos || this.validVideos.length === 0) return ''
-      const item = this.validVideos[this.currentIndex % this.validVideos.length]
-      return typeof item === 'string' ? item : item.url || item.path || ''
     }
   },
   watch: {
@@ -77,63 +85,92 @@ export default {
       if (val) {
         this.currentIndex = 0
         this.hasError = false
-        this.hasLoggedPlaying = false
-        this.$nextTick(() => {
-          this.playVideo()
-        })
-      } else if (this.$refs.videoPlayer) {
-        this.$refs.videoPlayer.pause()
+        this.activePlayer = 'A'
+        this.preparePlayback()
+      } else {
+        this.stopAllVideos()
       }
-    },
-    currentIndex() {
-      this.hasError = false
-      this.hasLoggedPlaying = false
-      this.$nextTick(() => {
-        this.playVideo()
-      })
     }
   },
   methods: {
-    playVideo() {
-      const video = this.$refs.videoPlayer
+    getUrlAtIndex(index) {
+      if (!this.validVideos || this.validVideos.length === 0) return ''
+      const item = this.validVideos[index % this.validVideos.length]
+      return typeof item === 'string' ? item : item.url || item.path || ''
+    },
+    preparePlayback() {
+      if (this.validVideos.length === 0) {
+        this.hasError = true
+        return
+      }
+
+      this.urlA = this.getUrlAtIndex(this.currentIndex)
+      this.urlB = this.getUrlAtIndex(this.currentIndex + 1)
+      this.activePlayer = 'A'
+
+      this.$nextTick(() => {
+        this.playPlayer('A')
+      })
+    },
+    playPlayer(playerKey) {
+      const video = playerKey === 'A' ? this.$refs.videoPlayerA : this.$refs.videoPlayerB
       if (video) {
         video.muted = true
         video.volume = 0
         const p = video.play()
         if (p && typeof p.catch === 'function') {
           p.catch((err) => {
-            console.warn('[AdScreenSaver] Carga diferida de video:', err)
+            console.warn(`[AdScreenSaver] Reproductor ${playerKey} diferido:`, err)
           })
         }
       }
     },
-    onPlaying() {
-      if (!this.hasLoggedPlaying) {
-        console.log('[AdScreenSaver] Reproduciendo video:', this.currentVideoUrl)
-        this.hasLoggedPlaying = true
+    onVideoEnded(playerKey) {
+      // Solo respondemos cuando termina el reproductor activo
+      if (playerKey !== this.activePlayer) return
+
+      if (this.validVideos.length <= 1) {
+        // Si hay un solo vídeo, reiniciar reproducción continua
+        this.playPlayer(this.activePlayer)
+        return
       }
-      this.hasError = false
-    },
-    nextVideo() {
-      console.log('[AdScreenSaver] Video finalizado. Avanzando al siguiente...')
-      if (this.validVideos && this.validVideos.length > 1) {
-        this.currentIndex = (this.currentIndex + 1) % this.validVideos.length
+
+      this.currentIndex = (this.currentIndex + 1) % this.validVideos.length
+      const nextUrl = this.getUrlAtIndex(this.currentIndex + 1)
+
+      if (this.activePlayer === 'A') {
+        // Transición fluida a B
+        this.activePlayer = 'B'
+        this.playPlayer('B')
+        // Pre-cargar el siguiente video en A en segundo plano
+        setTimeout(() => {
+          this.urlA = nextUrl
+        }, 300)
       } else {
-        this.playVideo()
+        // Transición fluida a A
+        this.activePlayer = 'A'
+        this.playPlayer('A')
+        // Pre-cargar el siguiente video en B en segundo plano
+        setTimeout(() => {
+          this.urlB = nextUrl
+        }, 300)
       }
     },
-    onVideoError(e) {
-      console.warn('[AdScreenSaver] Error en fuente de video:', this.currentVideoUrl, e)
-      if (this.validVideos && this.validVideos.length > 1) {
-        this.nextVideo()
-      } else {
-        this.hasError = true
+    onVideoError(playerKey) {
+      if (playerKey === this.activePlayer) {
+        console.warn(`[AdScreenSaver] Error en reproductor ${playerKey}, avanzando al siguiente...`)
+        this.onVideoEnded(playerKey)
       }
+    },
+    stopAllVideos() {
+      if (this.$refs.videoPlayerA) this.$refs.videoPlayerA.pause()
+      if (this.$refs.videoPlayerB) this.$refs.videoPlayerB.pause()
     },
     onScreenTouch(e) {
       if (e) {
         e.stopPropagation()
       }
+      this.stopAllVideos()
       this.$emit('close')
     }
   }
@@ -148,7 +185,7 @@ export default {
   width: 100vw;
   height: 100vh;
   z-index: 999999;
-  background-color: #012873;
+  background-color: #000000; /* Fondo negro puro sin destellos de color */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,12 +195,25 @@ export default {
 }
 
 .ad-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out; /* Transición crossfade suelta de 300ms */
+  pointer-events: none;
+}
+
+.ad-video.is-active {
+  opacity: 1;
 }
 
 .ad-fallback-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -172,6 +222,7 @@ export default {
   background: linear-gradient(135deg, #012873 0%, #013ba7 50%, #0056b3 100%);
   text-align: center;
   padding: 40px;
+  z-index: 10;
 }
 
 .ad-banner-content {
@@ -216,6 +267,7 @@ export default {
   display: flex;
   justify-content: center;
   pointer-events: none;
+  z-index: 20;
 }
 
 .prompt-badge {
