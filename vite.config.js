@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
     plugins: [vue()],
     define: {
       'process.env.NODE_ENV': JSON.stringify(mode),
+      'process.env.VUE_APP_GDS_MODE': JSON.stringify(gdsMode),
       'process.env.VUE_APP_USERNAME': JSON.stringify(env.VITE_APP_USERNAME),
       'process.env.VUE_APP_PASSWORD': JSON.stringify(env.VITE_APP_PASSWORD),
       'process.env.VUE_APP_GDS_PROXY': JSON.stringify(gdsProxy),

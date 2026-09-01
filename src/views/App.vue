@@ -7,20 +7,29 @@
         <router-view />
       </b-col>
     </b-row>
+    <idle-ad-screen-saver
+      :show="showAdScreenSaver"
+      :videos="adVideos"
+      @close="closeAdScreenSaver"
+    />
   </div>
 </template>
 
 <script>
 import Logo from '@/components/Logo.vue'
 import DateAndTime from '@/components/DateAndTime.vue'
+import IdleAdScreenSaver from '@/components/IdleAdScreenSaver.vue'
+import idleTimer from '@/mixins/idleTimer'
 import axios from 'axios'
 import infoData from '@/info'
 
 export default {
   name: 'App',
+  mixins: [idleTimer],
   components: {
     Logo,
-    DateAndTime
+    DateAndTime,
+    IdleAdScreenSaver
   },
 
   data() {

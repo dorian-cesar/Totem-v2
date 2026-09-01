@@ -84,7 +84,7 @@ export default {
       console.log('Verificando servidor en IP:', monitorIp)
 
       axios
-        .get(`https://${monitorIp}:3000/monitor`, { timeout: 2500 })
+        .get(`https://${monitorIp}:3000/api/monitor`, { timeout: 2500 })
         .then((response) => {
           console.log('Estado del servidor:', response.data)
           const isAvailable = response.data.server === true

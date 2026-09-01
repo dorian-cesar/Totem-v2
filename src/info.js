@@ -5,5 +5,6 @@ export default {
   urlLogs1: process.env.VUE_APP_URL_LOGS1,
   urlLogin: process.env.VUE_APP_URL_LOGIN,
   urlLogs: process.env.VUE_APP_URL_LOGS,
-  urlBoleto: process.env.VUE_APP_URL_BOLETO
+  urlBoleto: process.env.VUE_APP_URL_BOLETO,
+  gdsMode: process.env.VUE_APP_GDS_MODE
 }

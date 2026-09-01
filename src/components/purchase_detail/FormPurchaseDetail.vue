@@ -117,10 +117,23 @@ export default {
       this.setTotalAmount = total
     },
 
-    //simulacion POS
+    // Método principal de pago POS: conmuta entre real (prod) y simulado (dev) según GDS_MODE en .env
     pagarPOS() {
-      console.log('- methods:pagar', this.propsPersonalInformation.tickets)
-      console.log('- methods:pagar', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
+      const mode = (this.info && this.info.gdsMode) || process.env.VUE_APP_GDS_MODE || 'dev'
+      console.log(`[PAGO POS] Modo GDS en .env: '${mode}'`)
+      if (mode === 'prod') {
+        console.log('[PAGO POS] Ejecutando pago POS REAL')
+        this.pagarPOSReal()
+      } else {
+        console.log('[PAGO POS] Ejecutando pago POS SIMULADO')
+        this.pagarPOSSimulado()
+      }
+    },
+
+    // Simulacion POS (modo dev)
+    pagarPOSSimulado() {
+      console.log('- methods:pagarPOSSimulado', this.propsPersonalInformation.tickets)
+      console.log('- methods:pagarPOSSimulado', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
       this.$bvModal.show('modal-payment-control')
       clearTimeout(this.timeClose)
       this.timeChangeEstatus = false
@@ -281,217 +294,217 @@ export default {
       }
     },
 
-    //inicio del proceso de pago
-    // pagarPOS() {
-    //   console.log('- methods:pagar', this.propsPersonalInformation.tickets)
-    //   console.log('- methods:pagar', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
-    //   this.$bvModal.show('modal-payment-control') //<- Pantalla modal de espera
-    //   clearTimeout(this.timeClose) //<- Borrar variable de tiempo de espera
-    //   this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
+    // Pago POS Real (modo prod)
+    pagarPOSReal() {
+      console.log('- methods:pagarPOSReal', this.propsPersonalInformation.tickets)
+      console.log('- methods:pagarPOSReal', '! Fijar el tiempo de espera con setTimeout 150*1000', '-> checkStatusConn')
+      this.$bvModal.show('modal-payment-control') //<- Pantalla modal de espera
+      clearTimeout(this.timeClose) //<- Borrar variable de tiempo de espera
+      this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
 
-    //   const ipServer = localStorage.getItem('ipServer')
-    //   const url = `https://${ipServer}:3000`
-    //   const api = '/api/payment'
+      const ipServer = localStorage.getItem('ipServer')
+      const url = `https://${ipServer}:3000`
+      const api = '/api/payment'
 
-    //   this.isErrorTerminarTransaccionPOS(false)
+      this.isErrorTerminarTransaccionPOS(false)
 
-    //   this.axios
-    //     .post(url + api, {
-    //       amount: this.propsPersonalInformation.total.replace('.', ''),
-    //       ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
-    //     })
-    //     .then((response) => {
-    //       console.log('Pago procesado:', response.data)
+      this.axios
+        .post(url + api, {
+          amount: this.propsPersonalInformation.total.replace('.', ''),
+          ticketNumber: this.propsPersonalInformation.tickets[0].codeReservation.slice(-10)
+        })
+        .then((response) => {
+          console.log('Pago procesado:', response.data)
 
-    //       const apiResponse = response.data
-    //       const apiData = apiResponse.data || {}
-    //       const rawData = apiData.rawData || {}
+          const apiResponse = response.data
+          const apiData = apiResponse.data || {}
+          const rawData = apiData.rawData || {}
 
-    //       // Determinamos si el pago fue exitoso (soportando ambas estructuras)
-    //       const isSuccessful = apiResponse.success && (apiData.approved || rawData.successful || apiData.successful)
+          // Determinamos si el pago fue exitoso (soportando ambas estructuras)
+          const isSuccessful = apiResponse.success && (apiData.approved || rawData.successful || apiData.successful)
 
-    //       console.log('successful: ', isSuccessful)
+          console.log('successful: ', isSuccessful)
 
-    //       // inicializar variables
-    //       const bookingData = {
-    //         sitio: this.info.sitio,
-    //         numTotem: localStorage.getItem('ipServer'),
-    //         rut: localStorage.getItem('rut') || 'Sin RUT',
-    //         origen: this.$store.state.TravelSelection.nameDepartureCity,
-    //         destino: this.$store.state.TravelSelection.nameArrivalCity,
-    //         fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-    //         hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-    //         asiento: this.propsPersonalInformation.tickets[0].seat,
-    //         codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-    //         numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
-    //         estado_boleto: 'Reservado',
-    //         id_pos: rawData.terminalId || '',
-    //         id_bus: this.propsPersonalInformation.tickets[0].servicio,
-    //         codigo_transaccion: rawData.ticket || '',
-    //         tipo_tarjeta: rawData.cardType || apiData.cardType || '',
-    //         tarjeta_marca: rawData.cardBrand || apiData.cardBrand || '',
-    //         codigo_autorizacion: apiData.authorizationCode || rawData.authorizationCode || '',
-    //         estado_transaccion: '',
-    //         numero_transaccion: apiData.operationNumber || rawData.operationNumber || '',
-    //         fecha_transaccion: '',
-    //         hora_transaccion: '',
-    //         total_transaccion: apiData.amount || rawData.amount || ''
-    //       }
+          // inicializar variables
+          const bookingData = {
+            sitio: this.info.sitio,
+            numTotem: localStorage.getItem('ipServer'),
+            rut: localStorage.getItem('rut') || 'Sin RUT',
+            origen: this.$store.state.TravelSelection.nameDepartureCity,
+            destino: this.$store.state.TravelSelection.nameArrivalCity,
+            fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+            hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+            asiento: this.propsPersonalInformation.tickets[0].seat,
+            codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+            numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+            estado_boleto: 'Reservado',
+            id_pos: rawData.terminalId || '',
+            id_bus: this.propsPersonalInformation.tickets[0].servicio,
+            codigo_transaccion: rawData.ticket || '',
+            tipo_tarjeta: rawData.cardType || apiData.cardType || '',
+            tarjeta_marca: rawData.cardBrand || apiData.cardBrand || '',
+            codigo_autorizacion: apiData.authorizationCode || rawData.authorizationCode || '',
+            estado_transaccion: '',
+            numero_transaccion: apiData.operationNumber || rawData.operationNumber || '',
+            fecha_transaccion: '',
+            hora_transaccion: '',
+            total_transaccion: apiData.amount || rawData.amount || ''
+          }
 
-    //       if (isSuccessful === true) {
-    //         console.log('transbank successful response: ', response.data)
+          if (isSuccessful === true) {
+            console.log('transbank successful response: ', response.data)
 
-    //         // Usamos rawData si está disponible, sino el objeto data (compatibilidad)
-    //         this.dataPOS = Object.keys(rawData).length > 0 ? rawData : apiData
+            // Usamos rawData si está disponible, sino el objeto data (compatibilidad)
+            this.dataPOS = Object.keys(rawData).length > 0 ? rawData : apiData
 
-    //         // formatear fecha y hora para DB
-    //         let formattedDate = ''
-    //         let formattedTime = ''
+            // formatear fecha y hora para DB
+            let formattedDate = ''
+            let formattedTime = ''
 
-    //         if (this.dataPOS.realDate && this.dataPOS.realDate.length === 8) {
-    //           const rawDate = this.dataPOS.realDate
-    //           formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
-    //         } else if (apiData.timestamp) {
-    //           const [d] = apiData.timestamp.split(' ')
-    //           formattedDate = `${d.slice(4, 8)}-${d.slice(2, 4)}-${d.slice(0, 2)}`
-    //         }
+            if (this.dataPOS.realDate && this.dataPOS.realDate.length === 8) {
+              const rawDate = this.dataPOS.realDate
+              formattedDate = `${rawDate.slice(4, 8)}-${rawDate.slice(2, 4)}-${rawDate.slice(0, 2)}`
+            } else if (apiData.timestamp) {
+              const [d] = apiData.timestamp.split(' ')
+              formattedDate = `${d.slice(4, 8)}-${d.slice(2, 4)}-${d.slice(0, 2)}`
+            }
 
-    //         if (this.dataPOS.realTime && this.dataPOS.realTime.length === 6) {
-    //           const rawTime = this.dataPOS.realTime
-    //           formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
-    //         } else if (apiData.timestamp) {
-    //           const [, t] = apiData.timestamp.split(' ')
-    //           formattedTime = `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`
-    //         }
+            if (this.dataPOS.realTime && this.dataPOS.realTime.length === 6) {
+              const rawTime = this.dataPOS.realTime
+              formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
+            } else if (apiData.timestamp) {
+              const [, t] = apiData.timestamp.split(' ')
+              formattedTime = `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`
+            }
 
-    //         // Mensaje para el modal (Priorizamos el mensaje específico de Transbank)
-    //         this.propsPaymentControl.msg = rawData.responseMessage || apiResponse.message || 'Pago Aprobado'
+            // Mensaje para el modal (Priorizamos el mensaje específico de Transbank)
+            this.propsPaymentControl.msg = rawData.responseMessage || apiResponse.message || 'Pago Aprobado'
 
-    //         bookingData.estado_transaccion = 'Pago realizado'
-    //         bookingData.fecha_transaccion = formattedDate
-    //         bookingData.hora_transaccion = formattedTime
+            bookingData.estado_transaccion = 'Pago realizado'
+            bookingData.fecha_transaccion = formattedDate
+            bookingData.hora_transaccion = formattedTime
 
-    //         this.axios
-    //           .post(
-    //             this.info.urlLogs,
-    //             { bookingData },
-    //             {
-    //               headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: `Bearer ${this.token}`
-    //               }
-    //             }
-    //           )
-    //           .then(() => {
-    //             console.log('Guardado exitoso en DB (pagarPos)')
-    //             console.log('Datos para DB pagarPOS: ', bookingData)
-    //           })
-    //           .catch((error) => {
-    //             console.error('Error al guardar en DB, pagarPOS: ', error)
-    //           })
-    //         setTimeout(() => {
-    //           this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
-    //         }, 2000)
-    //         this.isErrorPOS = false
-    //         this.ballotNumberPOS = Number(bookingData.codigo_autorizacion)
-    //         this.paymentPOS = this.dataPOS
-    //         this.amountPOS = bookingData.total_transaccion
-    //         this.endTransactionPOS(true)
-    //       } else {
-    //         // Caso de fallo o cancelación
-    //         bookingData.estado_transaccion = rawData.responseMessage || 'Pago fallido'
-    //         bookingData.total_transaccion =
-    //           bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
+            this.axios
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
+              .then(() => {
+                console.log('Guardado exitoso en DB (pagarPos)')
+                console.log('Datos para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, pagarPOS: ', error)
+              })
+            setTimeout(() => {
+              this.propsPaymentControl.msg += '\nEspere mientras confirmamos sus pasajes'
+            }, 2000)
+            this.isErrorPOS = false
+            this.ballotNumberPOS = Number(bookingData.codigo_autorizacion)
+            this.paymentPOS = this.dataPOS
+            this.amountPOS = bookingData.total_transaccion
+            this.endTransactionPOS(true)
+          } else {
+            // Caso de fallo o cancelación
+            bookingData.estado_transaccion = rawData.responseMessage || 'Pago fallido'
+            bookingData.total_transaccion =
+              bookingData.total_transaccion || this.propsPersonalInformation.total.replace('.', '')
 
-    //         this.axios
-    //           .post(
-    //             this.info.urlLogs,
-    //             { bookingData },
-    //             {
-    //               headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: `Bearer ${this.token}`
-    //               }
-    //             }
-    //           )
-    //           .then(() => {
-    //             console.log('Error guardado en DB (pagarPos)')
-    //             console.log('Datos del error para DB pagarPOS: ', bookingData)
-    //           })
-    //           .catch((error) => {
-    //             console.error('Error al guardar en DB, pagarPOS : ', error)
-    //           })
+            this.axios
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
+              .then(() => {
+                console.log('Error guardado en DB (pagarPos)')
+                console.log('Datos del error para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, pagarPOS : ', error)
+              })
 
-    //         // Mensaje de error para el modal (Priorizamos el mensaje de Transbank como "Transacción Cancelada")
-    //         this.propsPaymentControl.msgError =
-    //           rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
-    //         this.isErrorPOS = true
-    //         this.isErrorTerminarTransaccionPOS(true)
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error('Error en la conexión con POS:', error.message)
-    //       if (
-    //         (error.response && error.response.status === 500) ||
-    //         error.message === 'Network Error' ||
-    //         error.code === 'ECONNABORTED' ||
-    //         error.message.includes('timeout') ||
-    //         error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
-    //         error.message.includes('ERR_CONNECTION_REFUSED')
-    //       ) {
-    //         const bookingData = {
-    //           sitio: this.info.sitio,
-    //           numTotem: localStorage.getItem('ipServer'),
-    //           rut: localStorage.getItem('rut') || 'Sin RUT',
-    //           origen: this.$store.state.TravelSelection.nameDepartureCity,
-    //           destino: this.$store.state.TravelSelection.nameArrivalCity,
-    //           fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-    //           hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-    //           asiento: this.propsPersonalInformation.tickets[0].seat,
-    //           codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-    //           numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
-    //           estado_boleto: 'Reservado',
-    //           id_pos: '',
-    //           id_bus: this.propsPersonalInformation.tickets[0].servicio,
-    //           codigo_transaccion: '',
-    //           tipo_tarjeta: '',
-    //           tarjeta_marca: '',
-    //           codigo_autorizacion: '',
-    //           estado_transaccion: 'Error de conexión POS',
-    //           numero_transaccion: '',
-    //           fecha_transaccion: '',
-    //           hora_transaccion: '',
-    //           total_transaccion: ''
-    //         }
-    //         this.axios
-    //           .post(
-    //             this.info.urlLogs,
-    //             { bookingData },
-    //             {
-    //               headers: {
-    //                 'Content-Type': 'application/json',
-    //                 Authorization: `Bearer ${this.token}`
-    //               }
-    //             }
-    //           )
-    //           .then(() => {
-    //             console.log('Error guardado en DB (pagarPos)')
-    //             console.log('Datos para DB pagarPOS: ', bookingData)
-    //           })
-    //           .catch((error) => {
-    //             console.error('Error al guardar en DB, pagarPOS: ', error)
-    //           })
-    //         this.propsPaymentControl.msgError = 'No existe conexión con el POS\nPOS desconectado'
-    //       } else {
-    //         this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS'
-    //       }
-    //       this.isErrorPOS = true
-    //       this.isErrorTerminarTransaccionPOS(true)
-    //     })
-    //   this.timeClose = setTimeout(() => {
-    //     this.timeChangeEstatus = true // Tiempo agotado para el cambio de estado
-    //   }, 150 * 1000) // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
-    // },
+            // Mensaje de error para el modal (Priorizamos el mensaje de Transbank como "Transacción Cancelada")
+            this.propsPaymentControl.msgError =
+              rawData.responseMessage || apiResponse.message || 'Transacción rechazada'
+            this.isErrorPOS = true
+            this.isErrorTerminarTransaccionPOS(true)
+          }
+        })
+        .catch((error) => {
+          console.error('Error en la conexión con POS:', error.message)
+          if (
+            (error.response && error.response.status === 500) ||
+            error.message === 'Network Error' ||
+            error.code === 'ECONNABORTED' ||
+            error.message.includes('timeout') ||
+            error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
+            error.message.includes('ERR_CONNECTION_REFUSED')
+          ) {
+            const bookingData = {
+              sitio: this.info.sitio,
+              numTotem: localStorage.getItem('ipServer'),
+              rut: localStorage.getItem('rut') || 'Sin RUT',
+              origen: this.$store.state.TravelSelection.nameDepartureCity,
+              destino: this.$store.state.TravelSelection.nameArrivalCity,
+              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+              asiento: this.propsPersonalInformation.tickets[0].seat,
+              codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+              numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+              estado_boleto: 'Reservado',
+              id_pos: '',
+              id_bus: this.propsPersonalInformation.tickets[0].servicio,
+              codigo_transaccion: '',
+              tipo_tarjeta: '',
+              tarjeta_marca: '',
+              codigo_autorizacion: '',
+              estado_transaccion: 'Error de conexión POS',
+              numero_transaccion: '',
+              fecha_transaccion: '',
+              hora_transaccion: '',
+              total_transaccion: ''
+            }
+            this.axios
+              .post(
+                this.info.urlLogs,
+                { bookingData },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${this.token}`
+                  }
+                }
+              )
+              .then(() => {
+                console.log('Error guardado en DB (pagarPos)')
+                console.log('Datos para DB pagarPOS: ', bookingData)
+              })
+              .catch((error) => {
+                console.error('Error al guardar en DB, pagarPOS: ', error)
+              })
+            this.propsPaymentControl.msgError = 'No existe conexión con el POS\nPOS desconectado'
+          } else {
+            this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS'
+          }
+          this.isErrorPOS = true
+          this.isErrorTerminarTransaccionPOS(true)
+        })
+      this.timeClose = setTimeout(() => {
+        this.timeChangeEstatus = true // Tiempo agotado para el cambio de estado
+      }, 150 * 1000) // <- 150 segundos Tiempo máximo de espera para cambiar el estado del modal
+    },
 
     //fin de transacción del POS
     endTransactionPOS: function (val) {
