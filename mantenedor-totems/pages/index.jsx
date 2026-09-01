@@ -87,18 +87,15 @@ export default function Home() {
       console.warn('No se pudo verificar la duración del vídeo:', err);
     }
 
-    // 3. Subida directa a AWS S3 mediante URL firmada (Presigned URL)
+    // 3. Subida directa a AWS S3 mediante URL firmada (Presigned URL) sin cabeceras restrictivas
     try {
       const res = await fetch(`/api/upload?fileName=${encodeURIComponent(file.name)}`);
       const data = await res.json();
 
       if (data.success && data.uploadUrl) {
-        // Petición PUT directa del navegador a AWS S3
+        // Petición PUT limpia directa del navegador a AWS S3
         const uploadRes = await fetch(data.uploadUrl, {
           method: 'PUT',
-          headers: {
-            'Content-Type': file.type || 'video/mp4'
-          },
           body: file
         });
 
