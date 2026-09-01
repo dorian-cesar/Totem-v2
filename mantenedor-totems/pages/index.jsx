@@ -24,8 +24,8 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
 
   // Parámetros configurables desde variables de entorno (.env.local)
-  const maxSizeMB = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE_MB) || 10;
-  const maxDurationSec = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_DURATION_SEC) || 10;
+  const maxSizeMB = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_SIZE_MB) || 15;
+  const maxDurationSec = Number(process.env.NEXT_PUBLIC_MAX_VIDEO_DURATION_SEC) || 20;
 
   useEffect(() => {
     fetchTotemsFromDB();
@@ -87,27 +87,34 @@ export default function Home() {
       console.warn('No se pudo verificar la duración del vídeo:', err);
     }
 
-    // 3. Subida a AWS S3
+    // 3. Subida directa a AWS S3 mediante URL firmada (Presigned URL)
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'x-file-name': encodeURIComponent(file.name)
-        },
-        body: file
-      });
+      const res = await fetch(`/api/upload?fileName=${encodeURIComponent(file.name)}`);
       const data = await res.json();
-      if (data.success && data.url) {
-        setVideoSlotEdit({
-          ...videoSlotEdit,
-          name: videoSlotEdit.name || file.name,
-          url: data.url,
-          fileName: file.name
+
+      if (data.success && data.uploadUrl) {
+        // Petición PUT directa del navegador a AWS S3
+        const uploadRes = await fetch(data.uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type || 'video/mp4'
+          },
+          body: file
         });
-        alert(`¡Vídeo ${file.name} subido exitosamente a AWS S3!`);
+
+        if (uploadRes.ok) {
+          setVideoSlotEdit({
+            ...videoSlotEdit,
+            name: videoSlotEdit.name || file.name,
+            url: data.publicUrl,
+            fileName: file.name
+          });
+          alert(`¡Vídeo ${file.name} subido exitosamente a AWS S3!`);
+        } else {
+          alert(`Error transfiriendo vídeo a AWS S3 (Código HTTP: ${uploadRes.status})`);
+        }
       } else {
-        alert('Error al subir vídeo: ' + (data.error || 'Fallo del servidor'));
+        alert('Error al solicitar firma de subida a AWS S3: ' + (data.error || 'Fallo del servidor'));
       }
     } catch (err) {
       alert('Error en la subida: ' + err.message);
@@ -348,7 +355,7 @@ export default function Home() {
                 />
                 {uploading && (
                   <p style={{ margin: '8px 0 0', color: '#eab308', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                    ⏳ Validando y subiendo vídeo a AWS S3...
+                    ⏳ Subiendo vídeo directamente a AWS S3...
                   </p>
                 )}
                 {videoSlotEdit.fileName && !uploading && (
