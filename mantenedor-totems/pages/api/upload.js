@@ -3,11 +3,15 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const region = 'us-east-1';
 
+// Usamos S3_ACCESS_KEY_ID y S3_SECRET_ACCESS_KEY para evitar que Netlify sobreescriba con credenciales temporales de su runtime (ASIA...)
+const accessKeyId = process.env.S3_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+
 const s3Client = new S3Client({
   region: 'us-east-1',
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    accessKeyId,
+    secretAccessKey
   }
 });
 
@@ -31,7 +35,6 @@ export default async function handler(req, res) {
     const safeName = decodeURIComponent(rawFileName).replace(/[^a-zA-Z0-9_.-]/g, '_');
     const s3Key = `videos/${safeName}`;
 
-    // Omitir ContentType en el comando firmado para evitar error 403 (SignatureDoesNotMatch / AccessDenied)
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: s3Key
