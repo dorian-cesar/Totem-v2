@@ -79,9 +79,9 @@ export default {
         return
       }
 
-      // 1. Consultar primero el Mantenedor BBDD Central (PostgreSQL / AWS S3)
+      // 1. Consultar primero el Mantenedor BBDD Central en Netlify (PostgreSQL / AWS S3)
       try {
-        const mantenedorUrl = 'http://localhost:3001/api/totems'
+        const mantenedorUrl = 'https://mantenedor-totems-alameda.netlify.app/api/totems'
         const response = await axios.get(mantenedorUrl, { timeout: 3000 })
         if (response.data && response.data.success && Array.isArray(response.data.totems)) {
           const currentIp = localStorage.getItem('ipServer') || '172.26.10.66'
@@ -93,7 +93,7 @@ export default {
               .filter(url => url && url.trim() !== '')
               .map(url => {
                 if (url.startsWith('/uploads/')) {
-                  return `http://localhost:3001${url}`
+                  return `https://mantenedor-totems-alameda.netlify.app${url}`
                 }
                 return url
               })
