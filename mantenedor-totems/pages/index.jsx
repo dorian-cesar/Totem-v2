@@ -1,5 +1,80 @@
 import { useState, useEffect } from 'react';
 
+function VideoPreviewCard({ videoUrl, videoName, slotNum, showPlayer = true }) {
+  const [meta, setMeta] = useState({ duration: 0, width: 0, height: 0, loaded: false, error: false });
+
+  useEffect(() => {
+    setMeta({ duration: 0, width: 0, height: 0, loaded: false, error: false });
+  }, [videoUrl]);
+
+  const handleLoadedMetadata = (e) => {
+    const v = e.target;
+    setMeta({
+      duration: v.duration || 0,
+      width: v.videoWidth || 0,
+      height: v.videoHeight || 0,
+      loaded: true,
+      error: false
+    });
+  };
+
+  const handleError = () => {
+    setMeta({ duration: 0, width: 0, height: 0, loaded: false, error: true });
+  };
+
+  if (!videoUrl) {
+    return (
+      <div style={{ background: '#0f172a60', border: '1px dashed #334155', borderRadius: '8px', padding: '10px 14px', color: '#64748b', fontSize: '0.85rem' }}>
+        <span>Slot {slotNum}: Sin vídeo asignado (Vacío)</span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '10px', padding: '12px', display: 'flex', gap: '15px', alignItems: 'center', margin: '8px 0' }}>
+      {showPlayer && (
+        <video
+          src={videoUrl}
+          muted
+          controls
+          preload="metadata"
+          onLoadedMetadata={handleLoadedMetadata}
+          onError={handleError}
+          style={{ width: '140px', height: '80px', objectFit: 'cover', borderRadius: '6px', background: '#000', border: '1px solid #1e293b' }}
+        ></video>
+      )}
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+          <strong style={{ color: '#38bdf8', fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            Slot {slotNum}: {videoName || 'Vídeo Publicitario'}
+          </strong>
+        </div>
+        <p style={{ margin: '0 0 6px', fontSize: '0.75rem', color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          🔗 {videoUrl}
+        </p>
+
+        {meta.loaded && (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ background: '#1e293b', color: '#38bdf8', border: '1px solid #0284c7', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+              📐 {meta.width} x {meta.height} {meta.width >= 3840 ? '(4K UHD)' : meta.width >= 1920 ? '(1080p FHD)' : meta.width > 0 ? '(HD)' : ''}
+            </span>
+            <span style={{ background: '#1e293b', color: '#eab308', border: '1px solid #ca8a04', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+              ⏱️ {meta.duration.toFixed(1)} seg
+            </span>
+          </div>
+        )}
+        {meta.error && (
+          <span style={{ fontSize: '0.75rem', color: '#f87171' }}>⚠️ Error leyendo metadatos del vídeo</span>
+        )}
+        {!meta.loaded && !meta.error && (
+          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>⏳ Leyendo resolución y duración...</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [totems, setTotems] = useState([
     {
@@ -249,7 +324,7 @@ export default function Home() {
       </header>
 
       {/* Grid de Tótems */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '40px' }}>
         {totems.map((totem) => (
           <div
             key={totem.id}
@@ -276,14 +351,20 @@ export default function Home() {
             <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>🌐 IP Local: <code>{totem.ip}</code></p>
 
             <div style={{ borderTop: '1px dashed #334155', paddingTop: '10px' }}>
-              <strong style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Vídeos asignados ({totem.videos ? totem.videos.filter(v => v.url).length : 0}/3):</strong>
-              <ul style={{ margin: '5px 0 0', paddingLeft: '20px', fontSize: '0.85rem', color: '#e2e8f0' }}>
+              <strong style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+                Vídeos Asignados ({totem.videos ? totem.videos.filter(v => v.url).length : 0}/3):
+              </strong>
+              <div style={{ marginTop: '8px' }}>
                 {totem.videos && totem.videos.map((v) => (
-                  <li key={v.slot} style={{ color: v.url ? '#38bdf8' : '#64748b' }}>
-                    Slot {v.slot}: {v.name || 'Vacío'}
-                  </li>
+                  <VideoPreviewCard
+                    key={v.slot}
+                    slotNum={v.slot}
+                    videoName={v.name}
+                    videoUrl={v.url}
+                    showPlayer={selectedTotem?.id === totem.id}
+                  />
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         ))}
@@ -293,7 +374,7 @@ export default function Home() {
       {selectedTotem && (
         <div style={{ background: '#1e293b', border: '1px solid #38bdf8', borderRadius: '12px', padding: '25px', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0, color: '#38bdf8' }}>⚙️ Administrar Vídeos de Publicidad: {selectedTotem.identificador}</h2>
+            <h2 style={{ margin: 0, color: '#38bdf8' }}>⚙️ Administrar y Pre-visualizar Vídeos: {selectedTotem.identificador}</h2>
             <button
               onClick={() => handleDeleteTotem(selectedTotem.id)}
               style={{ background: '#991b1b', color: '#fca5a5', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -302,99 +383,118 @@ export default function Home() {
             </button>
           </div>
 
-          <form onSubmit={handleSaveVideoSlot} style={{ display: 'grid', gap: '15px', maxWidth: '600px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem', color: '#cbd5e1' }}>Seleccionar Slot de Vídeo:</label>
-              <select
-                value={videoSlotEdit.slot}
-                onChange={(e) => {
-                  const slotNum = Number(e.target.value);
-                  const found = selectedTotem.videos.find((v) => v.slot === slotNum) || { slot: slotNum, name: '', url: '' };
-                  setVideoSlotEdit(found);
-                }}
-                style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
-              >
-                <option value={1}>Slot 1 - Vídeo Promocional Principal</option>
-                <option value={2}>Slot 2 - Vídeo Secundario</option>
-                <option value={3}>Slot 3 - Vídeo Terciario</option>
-              </select>
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem', color: '#cbd5e1' }}>Nombre / Descripción del Vídeo:</label>
-              <input
-                type="text"
-                value={videoSlotEdit.name}
-                onChange={(e) => setVideoSlotEdit({ ...videoSlotEdit, name: e.target.value })}
-                placeholder="Ej. Campaña Verano 2026 - Descuentos"
-                style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#cbd5e1' }}>Seleccionar / Cargar Vídeo MP4:</label>
-
-              {/* Opción 1: Buscar y Subir archivo local con validaciones por env */}
-              <div style={{ background: '#0f172a', border: '1px dashed #38bdf8', padding: '15px', borderRadius: '8px', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 'bold' }}>
-                    📁 Seleccionar y subir archivo desde tu equipo:
-                  </label>
-                  <span style={{ fontSize: '0.75rem', color: '#eab308', background: 'rgba(234,179,8,0.15)', padding: '2px 8px', borderRadius: '4px' }}>
-                    ⚠️ Máx. {maxSizeMB} MB | Máx. {maxDurationSec} seg
-                  </span>
-                </div>
-                <input
-                  type="file"
-                  accept="video/mp4,video/webm,video/*"
-                  onChange={handleFileUpload}
-                  style={{ width: '100%', color: '#94a3b8', fontSize: '0.9rem', cursor: 'pointer' }}
-                />
-                {uploading && (
-                  <p style={{ margin: '8px 0 0', color: '#eab308', fontSize: '0.85rem', fontWeight: 'bold' }}>
-                    ⏳ Subiendo vídeo directamente a AWS S3...
-                  </p>
-                )}
-                {videoSlotEdit.fileName && !uploading && (
-                  <p style={{ margin: '8px 0 0', color: '#86efac', fontSize: '0.85rem' }}>
-                    ✓ Archivo procesado: <strong>{videoSlotEdit.fileName}</strong>
-                  </p>
-                )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
+            {/* Formulario de Edición */}
+            <form onSubmit={handleSaveVideoSlot} style={{ display: 'grid', gap: '15px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem', color: '#cbd5e1' }}>Seleccionar Slot de Vídeo:</label>
+                <select
+                  value={videoSlotEdit.slot}
+                  onChange={(e) => {
+                    const slotNum = Number(e.target.value);
+                    const found = selectedTotem.videos.find((v) => v.slot === slotNum) || { slot: slotNum, name: '', url: '' };
+                    setVideoSlotEdit(found);
+                  }}
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                >
+                  <option value={1}>Slot 1 - Vídeo Promocional Principal</option>
+                  <option value={2}>Slot 2 - Vídeo Secundario</option>
+                  <option value={3}>Slot 3 - Vídeo Terciario</option>
+                </select>
               </div>
 
-              {/* Opción 2: Ingresar URL directamente */}
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#94a3b8' }}>
-                  🔗 O dirección/URL guardada del vídeo:
-                </label>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem', color: '#cbd5e1' }}>Nombre / Descripción del Vídeo:</label>
                 <input
                   type="text"
-                  value={videoSlotEdit.url}
-                  onChange={(e) => setVideoSlotEdit({ ...videoSlotEdit, url: e.target.value })}
-                  placeholder="https://totem-publicidad-media.s3.us-east-1.amazonaws.com/videos/campana.mp4"
+                  value={videoSlotEdit.name}
+                  onChange={(e) => setVideoSlotEdit({ ...videoSlotEdit, name: e.target.value })}
+                  placeholder="Ej. Campaña Verano 2026 - Descuentos"
                   style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
                 />
               </div>
-            </div>
 
-            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-              <button
-                type="submit"
-                disabled={uploading}
-                style={{ flex: 2, background: uploading ? '#475569' : '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: uploading ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
-              >
-                💾 Guardar y Asignar Vídeo a este Slot
-              </button>
-              <button
-                type="button"
-                onClick={handleClearVideoSlot}
-                disabled={uploading}
-                style={{ flex: 1, background: '#991b1b', color: '#fca5a5', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-              >
-                🗑️ Vaciar / Borrar Slot
-              </button>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: '#cbd5e1' }}>Seleccionar / Cargar Vídeo MP4:</label>
+
+                {/* Opción 1: Buscar y Subir archivo local con validaciones por env */}
+                <div style={{ background: '#0f172a', border: '1px dashed #38bdf8', padding: '15px', borderRadius: '8px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label style={{ fontSize: '0.85rem', color: '#38bdf8', fontWeight: 'bold' }}>
+                      📁 Seleccionar y subir archivo desde tu equipo:
+                    </label>
+                    <span style={{ fontSize: '0.75rem', color: '#eab308', background: 'rgba(234,179,8,0.15)', padding: '2px 8px', borderRadius: '4px' }}>
+                      ⚠️ Máx. {maxSizeMB} MB | Máx. {maxDurationSec} seg
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="video/mp4,video/webm,video/*"
+                    onChange={handleFileUpload}
+                    style={{ width: '100%', color: '#94a3b8', fontSize: '0.9rem', cursor: 'pointer' }}
+                  />
+                  {uploading && (
+                    <p style={{ margin: '8px 0 0', color: '#eab308', fontSize: '0.85rem', fontWeight: 'bold' }}>
+                      ⏳ Subiendo vídeo directamente a AWS S3...
+                    </p>
+                  )}
+                  {videoSlotEdit.fileName && !uploading && (
+                    <p style={{ margin: '8px 0 0', color: '#86efac', fontSize: '0.85rem' }}>
+                      ✓ Archivo procesado: <strong>{videoSlotEdit.fileName}</strong>
+                    </p>
+                  )}
+                </div>
+
+                {/* Opción 2: Ingresar URL directamente */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#94a3b8' }}>
+                    🔗 O dirección/URL guardada del vídeo:
+                  </label>
+                  <input
+                    type="text"
+                    value={videoSlotEdit.url}
+                    onChange={(e) => setVideoSlotEdit({ ...videoSlotEdit, url: e.target.value })}
+                    placeholder="https://totem-publicidad-media.s3.us-east-1.amazonaws.com/videos/campana.mp4"
+                    style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button
+                  type="submit"
+                  disabled={uploading}
+                  style={{ flex: 2, background: uploading ? '#475569' : '#16a34a', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: uploading ? 'not-allowed' : 'pointer', fontWeight: 'bold' }}
+                >
+                  💾 Guardar y Asignar Vídeo a este Slot
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearVideoSlot}
+                  disabled={uploading}
+                  style={{ flex: 1, background: '#991b1b', color: '#fca5a5', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  🗑️ Vaciar / Borrar Slot
+                </button>
+              </div>
+            </form>
+
+            {/* Pre-visualización interactiva con resolución y segundos */}
+            <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '10px', padding: '20px' }}>
+              <h3 style={{ margin: '0 0 10px', color: '#38bdf8', fontSize: '1rem' }}>
+                🎬 Pre-visualización del Slot {videoSlotEdit.slot}
+              </h3>
+              <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
+                Muestra la vista previa del vídeo con su resolución exacta en píxeles y duración total en segundos:
+              </p>
+              <VideoPreviewCard
+                slotNum={videoSlotEdit.slot}
+                videoName={videoSlotEdit.name}
+                videoUrl={videoSlotEdit.url}
+                showPlayer={true}
+              />
             </div>
-          </form>
+          </div>
         </div>
       )}
 
