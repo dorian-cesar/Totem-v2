@@ -94,6 +94,9 @@ export default function Home() {
   const [selectedTotem, setSelectedTotem] = useState(null);
   const [newTotem, setNewTotem] = useState({ identificador: '', ubicacion: '' });
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [totemEditForm, setTotemEditForm] = useState({ id: null, identificador: '', ip: '', ubicacion: '', status: 'online' });
+
   const [videoSlotEdit, setVideoSlotEdit] = useState({ slot: 1, name: '', url: '' });
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -216,8 +219,7 @@ export default function Home() {
         body: JSON.stringify(totemObj)
       });
       const data = await res.json();
-      if (data.success && data.totem) {
-        // Refrescar desde la BBDD para traer la IP autodetectada desde la tabla dispositivos
+      if (data.success) {
         fetchTotemsFromDB();
       } else {
         setTotems([...totems, { ...totemObj, id: Date.now(), ip: 'Sin IP' }]);
@@ -230,8 +232,50 @@ export default function Home() {
     setShowAddModal(false);
   };
 
-  const handleDeleteTotem = async (id) => {
-    if (confirm('¿Está seguro de eliminar este Tótem?')) {
+  const openEditModal = (totem, e) => {
+    if (e) e.stopPropagation();
+    setTotemEditForm({
+      id: totem.id,
+      identificador: totem.identificador,
+      ip: totem.ip || '',
+      ubicacion: totem.ubicacion || '',
+      status: totem.status || 'online',
+      videos: totem.videos
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveTotemEdit = async (e) => {
+    e.preventDefault();
+    if (!totemEditForm.identificador) return;
+
+    try {
+      const res = await fetch('/api/totems', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(totemEditForm)
+      });
+      const data = await res.json();
+      if (data.success && data.totem) {
+        fetchTotemsFromDB();
+        if (selectedTotem && selectedTotem.id === totemEditForm.id) {
+          setSelectedTotem(data.totem);
+        }
+        alert(`¡Tótem '${totemEditForm.identificador}' actualizado correctamente!`);
+      } else {
+        alert('Error al guardar datos del Tótem');
+      }
+    } catch (err) {
+      alert('Error guardando cambios del Tótem: ' + err.message);
+    }
+
+    setShowEditModal(false);
+  };
+
+  const handleDeleteTotem = async (id, identificador, e) => {
+    if (e) e.stopPropagation();
+    const name = identificador || 'este Tótem';
+    if (confirm(`¿Está seguro de eliminar definitivamente el tótem '${name}'?`)) {
       try {
         await fetch(`/api/totems?id=${id}`, { method: 'DELETE' });
       } catch (e) {}
@@ -240,6 +284,7 @@ export default function Home() {
       if (selectedTotem && selectedTotem.id === id) {
         setSelectedTotem(null);
       }
+      alert(`Tótem '${name}' eliminado con éxito.`);
     }
   };
 
@@ -338,7 +383,8 @@ export default function Home() {
               borderRadius: '12px',
               padding: '20px',
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              position: 'relative'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
@@ -348,9 +394,25 @@ export default function Home() {
                 </span>
                 <h3 style={{ margin: 0, color: '#f1f5f9', fontSize: '1.15rem' }}>{totem.identificador}</h3>
               </div>
-              <span style={{ background: '#166534', color: '#86efac', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                🟢 {totem.status}
-              </span>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <span style={{ background: totem.status === 'online' ? '#166534' : '#854d0e', color: totem.status === 'online' ? '#86efac' : '#fef08a', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                  🟢 {totem.status}
+                </span>
+                <button
+                  onClick={(e) => openEditModal(totem, e)}
+                  title="Editar Datos del Tótem"
+                  style={{ background: '#334155', color: '#38bdf8', border: '1px solid #0284c7', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                >
+                  ✏️
+                </button>
+                <button
+                  onClick={(e) => handleDeleteTotem(totem.id, totem.identificador, e)}
+                  title="Eliminar Tótem"
+                  style={{ background: '#7f1d1d', color: '#fca5a5', border: '1px solid #991b1b', borderRadius: '6px', padding: '3px 8px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
             <p style={{ margin: '0 0 5px', color: '#cbd5e1', fontSize: '0.9rem' }}>📍 Ubicación: <strong>{totem.ubicacion}</strong></p>
             <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
@@ -387,12 +449,20 @@ export default function Home() {
                 ID Fijo Permanente: <code>{selectedTotem.identificador}</code> | IP Autodetectada: <code>{selectedTotem.ip}</code> | Ubicación: {selectedTotem.ubicacion}
               </p>
             </div>
-            <button
-              onClick={() => handleDeleteTotem(selectedTotem.id)}
-              style={{ background: '#991b1b', color: '#fca5a5', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-            >
-              🗑️ Eliminar Tótem
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={(e) => openEditModal(selectedTotem, e)}
+                style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                ✏️ Editar Campos del Tótem
+              </button>
+              <button
+                onClick={(e) => handleDeleteTotem(selectedTotem.id, selectedTotem.identificador, e)}
+                style={{ background: '#991b1b', color: '#fca5a5', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                🗑️ Eliminar Tótem
+              </button>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '25px' }}>
@@ -555,6 +625,82 @@ export default function Home() {
                   Guardar
                 </button>
                 <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, background: '#475569', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}>
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Editar Tótem Existent */}
+      {showEditModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 }}>
+          <div style={{ background: '#1e293b', border: '1px solid #38bdf8', borderRadius: '12px', padding: '30px', width: '420px' }}>
+            <h3 style={{ margin: '0 0 10px', color: '#38bdf8' }}>✏️ Editar Campos del Tótem</h3>
+            <p style={{ margin: '0 0 20px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              Modifica los campos del tótem en la BBDD PostgreSQL (RDS).
+            </p>
+            <form onSubmit={handleSaveTotemEdit} style={{ display: 'grid', gap: '15px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Identificador Único (Permanente):
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={totemEditForm.identificador}
+                  onChange={(e) => setTotemEditForm({ ...totemEditForm, identificador: e.target.value })}
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Ubicación / Sucursal:
+                </label>
+                <input
+                  type="text"
+                  value={totemEditForm.ubicacion}
+                  onChange={(e) => setTotemEditForm({ ...totemEditForm, ubicacion: e.target.value })}
+                  placeholder="ej. Terminal Alameda - Nivel 1"
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Dirección IP (Manual / Autodetectada):
+                </label>
+                <input
+                  type="text"
+                  value={totemEditForm.ip}
+                  onChange={(e) => setTotemEditForm({ ...totemEditForm, ip: e.target.value })}
+                  placeholder="ej. 172.26.10.66"
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Estado de Operación:
+                </label>
+                <select
+                  value={totemEditForm.status}
+                  onChange={(e) => setTotemEditForm({ ...totemEditForm, status: e.target.value })}
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                >
+                  <option value="online">🟢 Online (Activo)</option>
+                  <option value="offline">🔴 Offline (Inactivo)</option>
+                  <option value="maintenance">🟡 Mantenimiento</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <button type="submit" style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  💾 Guardar Cambios
+                </button>
+                <button type="button" onClick={() => setShowEditModal(false)} style={{ flex: 1, background: '#475569', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}>
                   Cancelar
                 </button>
               </div>

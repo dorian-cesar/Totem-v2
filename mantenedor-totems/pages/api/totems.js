@@ -72,8 +72,8 @@ export default async function handler(req, res) {
     }
   }
 
-  if (req.method === 'POST') {
-    let { identificador, ip, ubicacion, status, videos } = req.body;
+  if (req.method === 'POST' || req.method === 'PUT') {
+    let { id, identificador, ip, ubicacion, status, videos } = req.body;
 
     if (!identificador) {
       return res.status(400).json({ success: false, error: 'El identificador único es requerido.' });
@@ -106,17 +106,29 @@ export default async function handler(req, res) {
     }
 
     try {
-      const result = await pool.query(
-        `INSERT INTO ${schema}.totems_publicidad (identificador, ip, ubicacion, status, videos)
-         VALUES ($1, $2, $3, $4, $5)
-         ON CONFLICT (identificador) 
-         DO UPDATE SET ip = EXCLUDED.ip, ubicacion = EXCLUDED.ubicacion, status = EXCLUDED.status, videos = EXCLUDED.videos, updated_at = NOW()
-         RETURNING *`,
-        [identificador, ip, ubicacion || 'Sin ubicación', status || 'online', JSON.stringify(videos || [])]
-      );
+      let result;
+      if (id) {
+        result = await pool.query(
+          `UPDATE ${schema}.totems_publicidad 
+           SET identificador = $1, ip = $2, ubicacion = $3, status = $4, videos = $5, updated_at = NOW()
+           WHERE id = $6
+           RETURNING *`,
+          [identificador, ip, ubicacion || 'Sin ubicación', status || 'online', JSON.stringify(videos || []), id]
+        );
+      } else {
+        result = await pool.query(
+          `INSERT INTO ${schema}.totems_publicidad (identificador, ip, ubicacion, status, videos)
+           VALUES ($1, $2, $3, $4, $5)
+           ON CONFLICT (identificador) 
+           DO UPDATE SET ip = EXCLUDED.ip, ubicacion = EXCLUDED.ubicacion, status = EXCLUDED.status, videos = EXCLUDED.videos, updated_at = NOW()
+           RETURNING *`,
+          [identificador, ip, ubicacion || 'Sin ubicación', status || 'online', JSON.stringify(videos || [])]
+        );
+      }
+
       return res.status(200).json({ success: true, totem: result.rows[0] });
     } catch (error) {
-      console.error('[DB POST Error]:', error.message);
+      console.error('[DB POST/PUT Error]:', error.message);
       return res.status(500).json({ success: false, error: error.message });
     }
   }
