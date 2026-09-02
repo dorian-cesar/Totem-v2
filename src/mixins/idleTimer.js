@@ -84,8 +84,23 @@ export default {
         const mantenedorUrl = 'https://mantenedor-totems-alameda.netlify.app/api/totems'
         const response = await axios.get(mantenedorUrl, { timeout: 3000 })
         if (response.data && response.data.success && Array.isArray(response.data.totems)) {
+          const currentIdentifier = localStorage.getItem('totemIdentifier') || localStorage.getItem('identificador') || 'totem-alameda-01'
           const currentIp = localStorage.getItem('ipServer') || '172.26.10.66'
-          const matchedTotem = response.data.totems.find(t => t.ip === currentIp) || response.data.totems[0]
+          
+          // 1. Coincidencia por Identificador (Fijo y persistente, resiste cambios de IP por DHCP)
+          let matchedTotem = response.data.totems.find(
+            t => t.identificador && t.identificador.toLowerCase() === currentIdentifier.toLowerCase()
+          )
+
+          // 2. Respaldo por IP si el identificador no coincide
+          if (!matchedTotem) {
+            matchedTotem = response.data.totems.find(t => t.ip === currentIp)
+          }
+
+          // 3. Respaldo al primer tótem si ninguno coincide
+          if (!matchedTotem) {
+            matchedTotem = response.data.totems[0]
+          }
           
           if (matchedTotem && Array.isArray(matchedTotem.videos)) {
             const assigned = matchedTotem.videos
@@ -99,7 +114,7 @@ export default {
               })
             
             if (assigned.length > 0) {
-              console.log('[IdleTimer] Videos actualizados desde la BBDD del Mantenedor:', assigned)
+              console.log(`[IdleTimer] Videos asignados para '${matchedTotem.identificador}' (IP: ${matchedTotem.ip}):`, assigned)
               this.adVideos = assigned
               this.lastFetchTime = now
               return
