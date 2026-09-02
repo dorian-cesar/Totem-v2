@@ -22,7 +22,7 @@ export default {
 
   methods: {
     startIdleMonitoring() {
-      // Monitoreamos eventos táctiles y de teclado (sin mousemove continuo)
+      // Monitoreamos eventos táctiles y de teclado
       const events = ['click', 'touchstart', 'mousedown', 'pointerdown', 'keydown']
       events.forEach((event) => {
         window.addEventListener(event, this.resetIdleTimer, { passive: true })
@@ -117,6 +117,9 @@ export default {
               console.log(`[IdleTimer] Videos asignados para '${matchedTotem.identificador}' (IP: ${matchedTotem.ip}):`, assigned)
               this.adVideos = assigned
               this.lastFetchTime = now
+              
+              // Pre-descarga silenciosa en segundo plano para evitar pegados por mala conexion
+              this.preloadAndCacheVideos(assigned)
               return
             }
           }
@@ -148,6 +151,27 @@ export default {
       } catch (error) {
         console.warn('[IdleTimer] No se pudieron cargar los videos del servidor local:', error.message)
         this.adVideos = []
+      }
+    },
+
+    // Pre-descarga inteligente y almacenamiento en caché del navegador (CacheStorage API)
+    async preloadAndCacheVideos(urls) {
+      if (!('caches' in window)) return
+      try {
+        const cache = await caches.open('totem-ad-videos-v1')
+        for (const url of urls) {
+          try {
+            const match = await cache.match(url)
+            if (!match) {
+              console.log(`[CacheManager] Pre-descargando vídeo para reproducción offline/lenta: ${url}`)
+              fetch(url, { mode: 'cors' }).then(res => {
+                if (res.ok) cache.put(url, res)
+              }).catch(() => {})
+            }
+          } catch (err) {}
+        }
+      } catch (e) {
+        console.warn('[CacheManager] Error inicializando caché de vídeos:', e)
       }
     },
 
