@@ -35,8 +35,8 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      // Cruzar totems_publicidad con la tabla dispositivos para obtener la IP dinamica mas reciente de la BBDD
-      const query = `
+      // 1. Obtener totems_publicidad cruzado con dispositivos
+      const totemsQuery = `
         SELECT 
           t.id, 
           t.identificador, 
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
           ON LOWER(t.identificador) = LOWER(d.identificador)
         ORDER BY t.id ASC
       `;
-      const result = await pool.query(query);
+      const result = await pool.query(totemsQuery);
 
       // Sanitizar URLs http:// -> https://
       const sanitizedRows = result.rows.map((row) => {
@@ -65,7 +65,21 @@ export default async function handler(req, res) {
         return row;
       });
 
-      return res.status(200).json({ success: true, totems: sanitizedRows });
+      // 2. Obtener lista de dispositivos unicos guardados en la BBDD (para visualizacion y seleccion)
+      let dispositivos = [];
+      try {
+        const devResult = await pool.query(`
+          SELECT DISTINCT ON (LOWER(identificador)) 
+            id, identificador, ip, ubicacion, ultima_conexion 
+          FROM ${schema}.dispositivos 
+          ORDER BY LOWER(identificador) ASC, id DESC
+        `);
+        dispositivos = devResult.rows;
+      } catch (devErr) {
+        console.warn('[DB] Error consultando lista de dispositivos:', devErr.message);
+      }
+
+      return res.status(200).json({ success: true, totems: sanitizedRows, dispositivos });
     } catch (error) {
       console.error('[DB GET Error]:', error.message);
       return res.status(500).json({ success: false, error: error.message });

@@ -91,8 +91,9 @@ export default function Home() {
     }
   ]);
 
+  const [dispositivos, setDispositivos] = useState([]);
   const [selectedTotem, setSelectedTotem] = useState(null);
-  const [newTotem, setNewTotem] = useState({ identificador: '', ubicacion: '' });
+  const [newTotem, setNewTotem] = useState({ identificador: '', ubicacion: '', selectedDevice: null });
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [totemEditForm, setTotemEditForm] = useState({ id: null, identificador: '', ip: '', ubicacion: '', status: 'online' });
@@ -114,8 +115,11 @@ export default function Home() {
       setLoading(true);
       const res = await fetch('/api/totems');
       const data = await res.json();
-      if (data.success && data.totems && data.totems.length > 0) {
+      if (data.success && data.totems) {
         setTotems(data.totems);
+      }
+      if (data.success && data.dispositivos) {
+        setDispositivos(data.dispositivos);
       }
     } catch (e) {
       console.warn('Usando tótems locales por defecto:', e.message);
@@ -228,7 +232,7 @@ export default function Home() {
       setTotems([...totems, { ...totemObj, id: Date.now(), ip: 'Sin IP' }]);
     }
 
-    setNewTotem({ identificador: '', ubicacion: '' });
+    setNewTotem({ identificador: '', ubicacion: '', selectedDevice: null });
     setShowAddModal(false);
   };
 
@@ -340,6 +344,23 @@ export default function Home() {
     setSelectedTotem(updatedTotem);
     setVideoSlotEdit({ slot: videoSlotEdit.slot, name: 'Vacío', url: '' });
     alert(`¡Vídeo del Slot ${videoSlotEdit.slot} eliminado con éxito!`);
+  };
+
+  const handleSelectDeviceOption = (ident) => {
+    if (!ident) {
+      setNewTotem({ identificador: '', ubicacion: '', selectedDevice: null });
+      return;
+    }
+    const dev = dispositivos.find((d) => d.identificador === ident);
+    if (dev) {
+      setNewTotem({
+        identificador: dev.identificador,
+        ubicacion: dev.ubicacion || '',
+        selectedDevice: dev
+      });
+    } else {
+      setNewTotem({ ...newTotem, identificador: ident });
+    }
   };
 
   return (
@@ -580,14 +601,68 @@ export default function Home() {
         </div>
       )}
 
-      {/* Modal para Agregar Tótem */}
+      {/* Modal para Agregar Tótem con Selector e Inspección de Dispositivos en BBDD */}
       {showAddModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 }}>
-          <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '30px', width: '420px' }}>
+          <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '30px', width: '540px', maxHeight: '90vh', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 10px', color: '#38bdf8' }}>+ Registrar Nuevo Tótem</h3>
-            <p style={{ margin: '0 0 20px', color: '#94a3b8', fontSize: '0.85rem' }}>
-              Ingresa el identificador único. La dirección IP se obtiene automáticamente de la base de datos (tabla <code>dispositivos</code>).
+            <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              Selecciona uno de los dispositivos autodetectados en la tabla <code>bano_autoservicio.dispositivos</code> o escribe uno manualmente.
             </p>
+
+            {/* Selector de Dispositivos Detectados */}
+            {dispositivos.length > 0 && (
+              <div style={{ marginBottom: '20px', background: '#0f172a', border: '1px solid #0284c7', borderRadius: '10px', padding: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.85rem', color: '#38bdf8', fontWeight: 'bold' }}>
+                  📡 Dispositivos Registrados en BBDD ({dispositivos.length} encontrados con su IP):
+                </label>
+                <select
+                  value={newTotem.selectedDevice?.identificador || ''}
+                  onChange={(e) => handleSelectDeviceOption(e.target.value)}
+                  style={{ width: '100%', padding: '10px', background: '#1e293b', color: '#fff', border: '1px solid #334155', borderRadius: '6px', fontSize: '0.85rem' }}
+                >
+                  <option value="">-- Seleccionar un Dispositivo Detectado --</option>
+                  {dispositivos.map((d) => {
+                    const isAlreadyRegistered = totems.some((t) => t.identificador?.toLowerCase() === d.identificador?.toLowerCase());
+                    return (
+                      <option key={d.id} value={d.identificador}>
+                        {isAlreadyRegistered ? '✅ [Ya asignado] ' : '✨ [Disponible] '}
+                        ID: {d.identificador} | IP: {d.ip} | Ubicación: {d.ubicacion || 'Sin ubicación'}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* Lista visual de Badges / Tarjetas rápidas */}
+                <div style={{ marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: '6px', maxHeight: '130px', overflowY: 'auto' }}>
+                  {dispositivos.map((d) => {
+                    const isSelected = newTotem.identificador === d.identificador;
+                    const isAlreadyRegistered = totems.some((t) => t.identificador?.toLowerCase() === d.identificador?.toLowerCase());
+                    return (
+                      <button
+                        key={d.id}
+                        type="button"
+                        onClick={() => handleSelectDeviceOption(d.identificador)}
+                        style={{
+                          background: isSelected ? '#0284c7' : isAlreadyRegistered ? '#1e293b' : '#0f172a',
+                          color: isSelected ? '#fff' : isAlreadyRegistered ? '#94a3b8' : '#38bdf8',
+                          border: isSelected ? '1px solid #38bdf8' : '1px solid #334155',
+                          borderRadius: '6px',
+                          padding: '4px 8px',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <strong>ID: {d.identificador}</strong> ({d.ip})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Formulario */}
             <form onSubmit={handleAddTotem} style={{ display: 'grid', gap: '15px' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
@@ -616,13 +691,18 @@ export default function Home() {
                 />
               </div>
 
-              <div style={{ background: '#0f172a80', border: '1px solid #0284c740', padding: '10px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#38bdf8' }}>
-                ✨ <strong>Autodetección de IP:</strong> El sistema asociará dinámicamente la IP registrada por el conector en <code>bano_autoservicio.dispositivos</code>.
-              </div>
+              {/* Caja resumen si se seleccionó un dispositivo */}
+              {newTotem.selectedDevice && (
+                <div style={{ background: '#16653430', border: '1px solid #16a34a', padding: '12px', borderRadius: '8px', fontSize: '0.82rem', color: '#86efac' }}>
+                  <div><strong>🟢 Dispositivo Detectado:</strong> <code>{newTotem.selectedDevice.identificador}</code></div>
+                  <div><strong>🌐 Dirección IP:</strong> <code>{newTotem.selectedDevice.ip}</code></div>
+                  <div><strong>📍 Ubicación en BBDD:</strong> {newTotem.selectedDevice.ubicacion || 'Sin ubicación'}</div>
+                </div>
+              )}
 
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button type="submit" style={{ flex: 1, background: '#0284c7', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-                  Guardar
+                  Guardar y Asignar Tótem
                 </button>
                 <button type="button" onClick={() => setShowAddModal(false)} style={{ flex: 1, background: '#475569', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer' }}>
                   Cancelar
