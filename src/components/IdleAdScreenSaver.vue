@@ -18,8 +18,6 @@
         :class="['ad-video', { 'is-active': activePlayer === 'A' }]"
         @ended="onVideoEnded('A')"
         @error="onVideoError('A')"
-        @waiting="onVideoStalled('A')"
-        @stalled="onVideoStalled('A')"
       ></video>
 
       <!-- Reproductor B -->
@@ -33,8 +31,6 @@
         :class="['ad-video', { 'is-active': activePlayer === 'B' }]"
         @ended="onVideoEnded('B')"
         @error="onVideoError('B')"
-        @waiting="onVideoStalled('B')"
-        @stalled="onVideoStalled('B')"
       ></video>
 
       <!-- Pantalla promocional fallback SOLO si realmente no hay videos funcionales -->
@@ -74,8 +70,7 @@ export default {
       activePlayer: 'A', // 'A' o 'B'
       urlA: '',
       urlB: '',
-      hasError: false,
-      stallTimer: null
+      hasError: false
     }
   },
   computed: {
@@ -133,8 +128,6 @@ export default {
       }
     },
     onVideoEnded(playerKey) {
-      this.clearStallTimer()
-
       // Solo respondemos cuando termina el reproductor activo
       if (playerKey !== this.activePlayer) return
 
@@ -171,23 +164,7 @@ export default {
         this.onVideoEnded(playerKey)
       }
     },
-    onVideoStalled(playerKey) {
-      // Si la señal de internet es muy lenta y el video activo se congela por > 2.5 seg, avanzar al siguiente
-      if (playerKey !== this.activePlayer) return
-      this.clearStallTimer()
-      this.stallTimer = setTimeout(() => {
-        console.warn(`[AdScreenSaver] Conexión lenta detectada (vídeo ${playerKey} congelado). Saltando al siguiente vídeo...`)
-        this.onVideoEnded(playerKey)
-      }, 2500)
-    },
-    clearStallTimer() {
-      if (this.stallTimer) {
-        clearTimeout(this.stallTimer)
-        this.stallTimer = null
-      }
-    },
     stopAllVideos() {
-      this.clearStallTimer()
       if (this.$refs.videoPlayerA) this.$refs.videoPlayerA.pause()
       if (this.$refs.videoPlayerB) this.$refs.videoPlayerB.pause()
     },
