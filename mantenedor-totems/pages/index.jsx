@@ -81,7 +81,7 @@ export default function Home() {
       id: 1,
       identificador: 'totem-alameda-01',
       ip: '172.26.10.66',
-      ubicacion: 'Terminal Alameda - Principal (http://172.26.10.66:8081)',
+      ubicacion: 'Terminal Alameda - Principal',
       status: 'online',
       videos: [
         { slot: 1, name: 'Promoción Verano Slot 1', url: 'https://vjs.zencdn.net/v/oceans.mp4' },
@@ -342,13 +342,20 @@ export default function Home() {
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ margin: 0, color: '#f1f5f9' }}>{totem.identificador}</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ background: '#0284c7', color: '#fff', padding: '3px 8px', borderRadius: '6px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                  🏷️ ID Fijo
+                </span>
+                <h3 style={{ margin: 0, color: '#f1f5f9', fontSize: '1.15rem' }}>{totem.identificador}</h3>
+              </div>
               <span style={{ background: '#166534', color: '#86efac', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold' }}>
                 🟢 {totem.status}
               </span>
             </div>
-            <p style={{ margin: '0 0 5px', color: '#cbd5e1', fontSize: '0.9rem' }}>📍 {totem.ubicacion}</p>
-            <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>🌐 IP Local: <code>{totem.ip}</code></p>
+            <p style={{ margin: '0 0 5px', color: '#cbd5e1', fontSize: '0.9rem' }}>📍 Ubicación: <strong>{totem.ubicacion}</strong></p>
+            <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              🌐 IP Local Actual (DHCP): <code>{totem.ip}</code>
+            </p>
 
             <div style={{ borderTop: '1px dashed #334155', paddingTop: '10px' }}>
               <strong style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
@@ -374,7 +381,12 @@ export default function Home() {
       {selectedTotem && (
         <div style={{ background: '#1e293b', border: '1px solid #38bdf8', borderRadius: '12px', padding: '25px', marginBottom: '30px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ margin: 0, color: '#38bdf8' }}>⚙️ Administrar y Pre-visualizar Vídeos: {selectedTotem.identificador}</h2>
+            <div>
+              <h2 style={{ margin: 0, color: '#38bdf8' }}>⚙️ Administrar Vídeos para: {selectedTotem.identificador}</h2>
+              <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '0.85rem' }}>
+                ID Fijo Permanente: <code>{selectedTotem.identificador}</code> | IP Actual: <code>{selectedTotem.ip}</code> | Ubicación: {selectedTotem.ubicacion}
+              </p>
+            </div>
             <button
               onClick={() => handleDeleteTotem(selectedTotem.id)}
               style={{ background: '#991b1b', color: '#fca5a5', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
@@ -482,7 +494,7 @@ export default function Home() {
             {/* Pre-visualización interactiva con resolución y segundos */}
             <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '10px', padding: '20px' }}>
               <h3 style={{ margin: '0 0 10px', color: '#38bdf8', fontSize: '1rem' }}>
-                🎬 Pre-visualización del Slot {videoSlotEdit.slot}
+                🎬 Pre-visualización del Slot {videoSlotEdit.slot} ({selectedTotem.identificador})
               </h3>
               <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
                 Muestra la vista previa del vídeo con su resolución exacta en píxeles y duración total en segundos:
@@ -501,11 +513,16 @@ export default function Home() {
       {/* Modal para Agregar Tótem */}
       {showAddModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10000 }}>
-          <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '30px', width: '400px' }}>
-            <h3 style={{ margin: '0 0 20px', color: '#38bdf8' }}>+ Registrar Nuevo Tótem</h3>
+          <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '30px', width: '420px' }}>
+            <h3 style={{ margin: '0 0 10px', color: '#38bdf8' }}>+ Registrar Nuevo Tótem</h3>
+            <p style={{ margin: '0 0 20px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              El identificador único será la referencia fija e invariable en la BBDD.
+            </p>
             <form onSubmit={handleAddTotem} style={{ display: 'grid', gap: '15px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem' }}>Identificador:</label>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Identificador Único (Permanente):
+                </label>
                 <input
                   type="text"
                   required
@@ -516,7 +533,9 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem' }}>IP Red Local:</label>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Dirección IP Red Local (Dinámica):
+                </label>
                 <input
                   type="text"
                   required
@@ -527,7 +546,9 @@ export default function Home() {
                 />
               </div>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem' }}>Ubicación / Sucursal:</label>
+                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
+                  Ubicación / Sucursal:
+                </label>
                 <input
                   type="text"
                   placeholder="ej. Terminal Sur - Nivel 1"
