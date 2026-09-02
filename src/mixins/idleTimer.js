@@ -58,13 +58,11 @@ export default {
       console.log('[IdleTimer] 30 segundos de inactividad detectados. Verificando videos asignados...')
       await this.fetchLocalAdVideos()
 
-      // Si no hay videos devueltos, usamos los videos de muestra por defecto
+      // Si no hay videos devueltos, usamos el video de muestra por defecto como fallback unico
       if (!this.adVideos || this.adVideos.length === 0) {
-        console.log('[IdleTimer] Cargando videos de muestra por defecto.')
+        console.log('[IdleTimer] Cargando video de muestra por defecto (fallback unico).')
         this.adVideos = [
-          'https://vjs.zencdn.net/v/oceans.mp4',
-          'https://www.w3schools.com/html/mov_bbb.mp4',
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4'
+          'https://vjs.zencdn.net/v/oceans.mp4'
         ]
       }
       this.showAdScreenSaver = true
