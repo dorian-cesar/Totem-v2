@@ -7,6 +7,11 @@
       @touchstart="onScreenTouch"
       @click="onScreenTouch"
     >
+      <!-- Badge con temporizador en segundos y avance del vídeo en vivo -->
+      <div v-if="validVideos.length > 0" class="ad-timer-badge">
+        ⏱️ {{ currentFormattedTime }} / {{ durationFormattedTime }} (Slot {{ currentSlotIndex + 1 }}/{{ validVideos.length }})
+      </div>
+
       <!-- Reproductor A -->
       <video
         ref="videoPlayerA"
@@ -18,6 +23,8 @@
         :class="['ad-video', { 'is-active': activePlayer === 'A' }]"
         @ended="onVideoEnded('A')"
         @error="onVideoError('A')"
+        @timeupdate="onTimeUpdate('A')"
+        @loadedmetadata="onLoadedMetadata('A')"
       ></video>
 
       <!-- Reproductor B -->
@@ -31,6 +38,8 @@
         :class="['ad-video', { 'is-active': activePlayer === 'B' }]"
         @ended="onVideoEnded('B')"
         @error="onVideoError('B')"
+        @timeupdate="onTimeUpdate('B')"
+        @loadedmetadata="onLoadedMetadata('B')"
       ></video>
 
       <!-- Pantalla promocional fallback SOLO si realmente no hay videos funcionales -->
@@ -70,7 +79,9 @@ export default {
       activePlayer: 'A', // 'A' o 'B'
       urlA: '',
       urlB: '',
-      hasError: false
+      hasError: false,
+      currentTime: 0,
+      videoDuration: 0
     }
   },
   computed: {
@@ -80,6 +91,16 @@ export default {
         const u = typeof v === 'string' ? v : v.url || v.path || ''
         return u && u.trim() !== ''
       })
+    },
+    currentSlotIndex() {
+      if (!this.validVideos.length) return 0
+      return this.currentIndex % this.validVideos.length
+    },
+    currentFormattedTime() {
+      return this.formatTime(this.currentTime)
+    },
+    durationFormattedTime() {
+      return this.formatTime(this.videoDuration)
     }
   },
   watch: {
@@ -88,6 +109,8 @@ export default {
         this.currentIndex = 0
         this.hasError = false
         this.activePlayer = 'A'
+        this.currentTime = 0
+        this.videoDuration = 0
         this.preparePlayback()
       } else {
         this.stopAllVideos()
@@ -95,6 +118,14 @@ export default {
     }
   },
   methods: {
+    formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '00:00'
+      const mins = Math.floor(seconds / 60)
+      const secs = Math.floor(seconds % 60)
+      const padMins = String(mins).padStart(2, '0')
+      const padSecs = String(secs).padStart(2, '0')
+      return `${padMins}:${padSecs}`
+    },
     getUrlAtIndex(index) {
       if (!this.validVideos || this.validVideos.length === 0) return ''
       const item = this.validVideos[index % this.validVideos.length]
@@ -127,6 +158,23 @@ export default {
         }
       }
     },
+    onTimeUpdate(playerKey) {
+      if (playerKey !== this.activePlayer) return
+      const v = playerKey === 'A' ? this.$refs.videoPlayerA : this.$refs.videoPlayerB
+      if (v) {
+        this.currentTime = v.currentTime || 0
+        if (v.duration && !isNaN(v.duration) && v.duration > 0) {
+          this.videoDuration = v.duration
+        }
+      }
+    },
+    onLoadedMetadata(playerKey) {
+      if (playerKey !== this.activePlayer) return
+      const v = playerKey === 'A' ? this.$refs.videoPlayerA : this.$refs.videoPlayerB
+      if (v && v.duration && !isNaN(v.duration)) {
+        this.videoDuration = v.duration
+      }
+    },
     onVideoEnded(playerKey) {
       // Solo respondemos cuando termina el reproductor activo
       if (playerKey !== this.activePlayer) return
@@ -139,6 +187,9 @@ export default {
 
       this.currentIndex = (this.currentIndex + 1) % this.validVideos.length
       const nextUrl = this.getUrlAtIndex(this.currentIndex + 1)
+
+      this.currentTime = 0
+      this.videoDuration = 0
 
       if (this.activePlayer === 'A') {
         // Transición fluida a B
@@ -194,6 +245,25 @@ export default {
   overflow: hidden;
   cursor: pointer;
   user-select: none;
+}
+
+.ad-timer-badge {
+  position: absolute;
+  top: 35px;
+  right: 35px;
+  z-index: 30;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid #38bdf8;
+  border-radius: 30px;
+  padding: 10px 22px;
+  color: #38bdf8;
+  font-family: monospace, 'Courier New', Courier;
+  font-size: 1.25rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
 }
 
 .ad-video {
