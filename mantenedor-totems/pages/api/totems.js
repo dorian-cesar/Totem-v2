@@ -1,7 +1,7 @@
 import pool from '../../lib/db';
 
 export default async function handler(req, res) {
-  // Cabeceras CORS explicitas
+  // Cabeceras CORS explícitas
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       CREATE TABLE IF NOT EXISTS ${schema}.totems_publicidad (
         id SERIAL PRIMARY KEY,
         identificador VARCHAR(100) UNIQUE NOT NULL,
-        ip VARCHAR(50) NOT NULL,
+        ip VARCHAR(50) DEFAULT 'Sin IP',
         ubicacion VARCHAR(255) DEFAULT 'Sin ubicación',
         status VARCHAR(20) DEFAULT 'online',
         videos JSONB DEFAULT '[]'::jsonb,
@@ -35,8 +35,37 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const result = await pool.query(`SELECT * FROM ${schema}.totems_publicidad ORDER BY id ASC`);
-      return res.status(200).json({ success: true, totems: result.rows });
+      // Cruzar totems_publicidad con la tabla dispositivos para obtener la IP dinamica mas reciente de la BBDD
+      const query = `
+        SELECT 
+          t.id, 
+          t.identificador, 
+          COALESCE(d.ip, t.ip, 'Sin IP') as ip, 
+          COALESCE(d.ubicacion, t.ubicacion, 'Sin ubicación') as ubicacion, 
+          t.status, 
+          t.videos, 
+          t.updated_at
+        FROM ${schema}.totems_publicidad t
+        LEFT JOIN ${schema}.dispositivos d 
+          ON LOWER(t.identificador) = LOWER(d.identificador)
+        ORDER BY t.id ASC
+      `;
+      const result = await pool.query(query);
+
+      // Sanitizar URLs http:// -> https://
+      const sanitizedRows = result.rows.map((row) => {
+        if (row.videos && Array.isArray(row.videos)) {
+          row.videos = row.videos.map((v) => {
+            if (v && v.url && v.url.startsWith('http://')) {
+              v.url = v.url.replace(/^http:\/\//i, 'https://');
+            }
+            return v;
+          });
+        }
+        return row;
+      });
+
+      return res.status(200).json({ success: true, totems: sanitizedRows });
     } catch (error) {
       console.error('[DB GET Error]:', error.message);
       return res.status(500).json({ success: false, error: error.message });
@@ -44,7 +73,38 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { identificador, ip, ubicacion, status, videos } = req.body;
+    let { identificador, ip, ubicacion, status, videos } = req.body;
+
+    if (!identificador) {
+      return res.status(400).json({ success: false, error: 'El identificador único es requerido.' });
+    }
+
+    // Buscar automaticamente la IP y Ubicacion mas reciente en la tabla 'dispositivos' si no viene especificada
+    try {
+      const devRes = await pool.query(
+        `SELECT ip, ubicacion FROM ${schema}.dispositivos WHERE LOWER(identificador) = LOWER($1) ORDER BY id DESC LIMIT 1`,
+        [identificador]
+      );
+      if (devRes.rows.length > 0) {
+        if (!ip || ip === 'Sin IP') ip = devRes.rows[0].ip;
+        if (!ubicacion || ubicacion === 'Sin ubicación') ubicacion = devRes.rows[0].ubicacion;
+      }
+    } catch (devErr) {
+      console.warn('[DB] No se pudo autocompletar desde la tabla dispositivos:', devErr.message);
+    }
+
+    if (!ip) ip = 'Sin IP';
+
+    // Sanitizar URLs de vídeos recibidas a https://
+    if (videos && Array.isArray(videos)) {
+      videos = videos.map((v) => {
+        if (v && v.url && v.url.startsWith('http://')) {
+          v.url = v.url.replace(/^http:\/\//i, 'https://');
+        }
+        return v;
+      });
+    }
+
     try {
       const result = await pool.query(
         `INSERT INTO ${schema}.totems_publicidad (identificador, ip, ubicacion, status, videos)

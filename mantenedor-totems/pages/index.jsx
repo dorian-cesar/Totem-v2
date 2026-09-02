@@ -92,7 +92,7 @@ export default function Home() {
   ]);
 
   const [selectedTotem, setSelectedTotem] = useState(null);
-  const [newTotem, setNewTotem] = useState({ identificador: '', ip: '', ubicacion: '' });
+  const [newTotem, setNewTotem] = useState({ identificador: '', ubicacion: '' });
   const [showAddModal, setShowAddModal] = useState(false);
   const [videoSlotEdit, setVideoSlotEdit] = useState({ slot: 1, name: '', url: '' });
   const [loading, setLoading] = useState(false);
@@ -197,10 +197,9 @@ export default function Home() {
 
   const handleAddTotem = async (e) => {
     e.preventDefault();
-    if (!newTotem.identificador || !newTotem.ip) return;
+    if (!newTotem.identificador) return;
     const totemObj = {
-      identificador: newTotem.identificador,
-      ip: newTotem.ip,
+      identificador: newTotem.identificador.trim(),
       ubicacion: newTotem.ubicacion || 'Sin ubicación',
       status: 'online',
       videos: [
@@ -218,15 +217,16 @@ export default function Home() {
       });
       const data = await res.json();
       if (data.success && data.totem) {
-        setTotems([...totems, data.totem]);
+        // Refrescar desde la BBDD para traer la IP autodetectada desde la tabla dispositivos
+        fetchTotemsFromDB();
       } else {
-        setTotems([...totems, { ...totemObj, id: Date.now() }]);
+        setTotems([...totems, { ...totemObj, id: Date.now(), ip: 'Sin IP' }]);
       }
     } catch (err) {
-      setTotems([...totems, { ...totemObj, id: Date.now() }]);
+      setTotems([...totems, { ...totemObj, id: Date.now(), ip: 'Sin IP' }]);
     }
 
-    setNewTotem({ identificador: '', ip: '', ubicacion: '' });
+    setNewTotem({ identificador: '', ubicacion: '' });
     setShowAddModal(false);
   };
 
@@ -354,7 +354,7 @@ export default function Home() {
             </div>
             <p style={{ margin: '0 0 5px', color: '#cbd5e1', fontSize: '0.9rem' }}>📍 Ubicación: <strong>{totem.ubicacion}</strong></p>
             <p style={{ margin: '0 0 15px', color: '#94a3b8', fontSize: '0.85rem' }}>
-              🌐 IP Local Actual (DHCP): <code>{totem.ip}</code>
+              🌐 IP Autodetectada (BBDD): <code>{totem.ip}</code>
             </p>
 
             <div style={{ borderTop: '1px dashed #334155', paddingTop: '10px' }}>
@@ -384,7 +384,7 @@ export default function Home() {
             <div>
               <h2 style={{ margin: 0, color: '#38bdf8' }}>⚙️ Administrar Vídeos para: {selectedTotem.identificador}</h2>
               <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '0.85rem' }}>
-                ID Fijo Permanente: <code>{selectedTotem.identificador}</code> | IP Actual: <code>{selectedTotem.ip}</code> | Ubicación: {selectedTotem.ubicacion}
+                ID Fijo Permanente: <code>{selectedTotem.identificador}</code> | IP Autodetectada: <code>{selectedTotem.ip}</code> | Ubicación: {selectedTotem.ubicacion}
               </p>
             </div>
             <button
@@ -516,7 +516,7 @@ export default function Home() {
           <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '12px', padding: '30px', width: '420px' }}>
             <h3 style={{ margin: '0 0 10px', color: '#38bdf8' }}>+ Registrar Nuevo Tótem</h3>
             <p style={{ margin: '0 0 20px', color: '#94a3b8', fontSize: '0.85rem' }}>
-              El identificador único será la referencia fija e invariable en la BBDD.
+              Ingresa el identificador único. La dirección IP se obtiene automáticamente de la base de datos (tabla <code>dispositivos</code>).
             </p>
             <form onSubmit={handleAddTotem} style={{ display: 'grid', gap: '15px' }}>
               <div>
@@ -526,37 +526,30 @@ export default function Home() {
                 <input
                   type="text"
                   required
-                  placeholder="ej. totem-alameda-02"
+                  placeholder="ej. 1006, 3000 o totem-alameda-02"
                   value={newTotem.identificador}
                   onChange={(e) => setNewTotem({ ...newTotem, identificador: e.target.value })}
-                  style={{ width: '100%', padding: '8px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
                 />
               </div>
+
               <div>
                 <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
-                  Dirección IP Red Local (Dinámica):
+                  Ubicación / Sucursal (Opcional):
                 </label>
                 <input
                   type="text"
-                  required
-                  placeholder="ej. 192.168.1.52"
-                  value={newTotem.ip}
-                  onChange={(e) => setNewTotem({ ...newTotem, ip: e.target.value })}
-                  style={{ width: '100%', padding: '8px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: '#cbd5e1' }}>
-                  Ubicación / Sucursal:
-                </label>
-                <input
-                  type="text"
-                  placeholder="ej. Terminal Sur - Nivel 1"
+                  placeholder="ej. Terminal Sur - Nivel 1 (Se autodetectará de BBDD si existe)"
                   value={newTotem.ubicacion}
                   onChange={(e) => setNewTotem({ ...newTotem, ubicacion: e.target.value })}
-                  style={{ width: '100%', padding: '8px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
+                  style={{ width: '100%', padding: '10px', background: '#0f172a', color: '#fff', border: '1px solid #334155', borderRadius: '6px' }}
                 />
               </div>
+
+              <div style={{ background: '#0f172a80', border: '1px solid #0284c740', padding: '10px 14px', borderRadius: '6px', fontSize: '0.78rem', color: '#38bdf8' }}>
+                ✨ <strong>Autodetección de IP:</strong> El sistema asociará dinámicamente la IP registrada por el conector en <code>bano_autoservicio.dispositivos</code>.
+              </div>
+
               <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                 <button type="submit" style={{ flex: 1, background: '#0284c7', color: '#fff', border: 'none', padding: '10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Guardar
