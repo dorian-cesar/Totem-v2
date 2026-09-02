@@ -113,11 +113,11 @@ export default {
             
             if (assigned.length > 0) {
               console.log(`[IdleTimer] Videos asignados para '${matchedTotem.identificador}' (IP: ${matchedTotem.ip}):`, assigned)
-              this.adVideos = assigned
-              this.lastFetchTime = now
               
-              // Pre-descarga silenciosa en segundo plano para evitar pegados por mala conexion
-              this.preloadAndCacheVideos(assigned)
+              // Filtrar y mostrar SOLO los vídeos 100% listos en caché local. Los nuevos se descargan en background.
+              const readyVideos = await this.filterAndDownloadVideos(assigned)
+              this.adVideos = readyVideos
+              this.lastFetchTime = now
               return
             }
           }
@@ -133,15 +133,13 @@ export default {
 
         const response = await axios.get(url, { timeout: 3000 })
         if (response.data && Array.isArray(response.data.videos) && response.data.videos.length > 0) {
-          this.adVideos = response.data.videos.map((item) => {
+          const localUrls = response.data.videos.map((item) => {
             if (typeof item === 'string') {
               return item.startsWith('http') ? item : `https://${ipServer}:3000${item}`
             }
-            return {
-              ...item,
-              url: item.url.startsWith('http') ? item.url : `https://${ipServer}:3000${item.url}`
-            }
+            return item.url.startsWith('http') ? item.url : `https://${ipServer}:3000${item.url}`
           })
+          this.adVideos = await this.filterAndDownloadVideos(localUrls)
           this.lastFetchTime = now
         } else {
           this.adVideos = []
@@ -152,24 +150,55 @@ export default {
       }
     },
 
-    // Pre-descarga inteligente y almacenamiento en caché del navegador (CacheStorage API)
-    async preloadAndCacheVideos(urls) {
-      if (!('caches' in window)) return
+    // Filtra para reproducir de inmediato unicamente los vídeos 100% en caché. Los nuevos se descargan en segundo plano.
+    async filterAndDownloadVideos(assignedUrls) {
+      if (!('caches' in window) || !assignedUrls || assignedUrls.length === 0) {
+        return assignedUrls
+      }
+
       try {
         const cache = await caches.open('totem-ad-videos-v1')
-        for (const url of urls) {
-          try {
-            const match = await cache.match(url)
-            if (!match) {
-              console.log(`[CacheManager] Pre-descargando vídeo para reproducción offline/lenta: ${url}`)
-              fetch(url, { mode: 'cors' }).then(res => {
-                if (res.ok) cache.put(url, res)
-              }).catch(() => {})
-            }
-          } catch (err) {}
+        const readyUrls = []
+        const pendingUrls = []
+
+        for (const url of assignedUrls) {
+          const match = await cache.match(url)
+          if (match) {
+            readyUrls.push(url)
+          } else {
+            pendingUrls.push(url)
+          }
+        }
+
+        if (pendingUrls.length > 0) {
+          console.log('[CacheManager] Detectados vídeos nuevos no guardados en caché local:', pendingUrls)
+          pendingUrls.forEach((url) => {
+            console.log(`[CacheManager] Descargando 100% en segundo plano: ${url}`)
+            fetch(url, { mode: 'cors' })
+              .then((res) => {
+                if (res.ok) {
+                  return cache.put(url, res).then(() => {
+                    console.log(`[CacheManager] ¡Vídeo ${url} cargado 100% en caché local! Disponible para reproducción.`)
+                    if (!this.adVideos.includes(url)) {
+                      this.adVideos.push(url)
+                    }
+                  })
+                }
+              })
+              .catch((err) => {
+                console.warn(`[CacheManager] Error descarga en segundo plano ${url}:`, err.message)
+              })
+          })
+        }
+
+        if (readyUrls.length > 0) {
+          return readyUrls
+        } else {
+          return assignedUrls
         }
       } catch (e) {
-        console.warn('[CacheManager] Error inicializando caché de vídeos:', e)
+        console.warn('[CacheManager] Error procesando caché:', e)
+        return assignedUrls
       }
     },
 
