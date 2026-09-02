@@ -12,11 +12,10 @@
         ⏱️ {{ currentFormattedTime }} / {{ durationFormattedTime }} (Slot {{ currentSlotIndex + 1 }}/{{ validVideos.length }})
       </div>
 
-      <!-- Reproductor A -->
+      <!-- Reproductor A (Sin attribute autoplay para evitar reproduccion silenciosa prematura) -->
       <video
         ref="videoPlayerA"
         :src="urlA"
-        autoplay
         muted
         playsinline
         preload="auto"
@@ -27,11 +26,10 @@
         @loadedmetadata="onLoadedMetadata('A')"
       ></video>
 
-      <!-- Reproductor B -->
+      <!-- Reproductor B (Sin attribute autoplay para evitar reproduccion silenciosa prematura) -->
       <video
         ref="videoPlayerB"
         :src="urlB"
-        autoplay
         muted
         playsinline
         preload="auto"
@@ -148,6 +146,9 @@ export default {
     playPlayer(playerKey) {
       const video = playerKey === 'A' ? this.$refs.videoPlayerA : this.$refs.videoPlayerB
       if (video) {
+        try {
+          video.currentTime = 0 // Resetear tiempo obligatoriamente a 0.0 seg
+        } catch (err) {}
         video.muted = true
         video.volume = 0
         const p = video.play()
@@ -180,7 +181,7 @@ export default {
       if (playerKey !== this.activePlayer) return
 
       if (this.validVideos.length <= 1) {
-        // Si hay un solo vídeo, reiniciar reproducción continua
+        // Si hay un solo vídeo, reiniciar reproducción continua desde el segundo 0
         this.playPlayer(this.activePlayer)
         return
       }
@@ -195,7 +196,7 @@ export default {
         // Transición fluida a B
         this.activePlayer = 'B'
         this.playPlayer('B')
-        // Pre-cargar el siguiente video en A en segundo plano
+        // Actualizar la URL del reproductor inactivo (A) en segundo plano sin reproducir
         setTimeout(() => {
           this.urlA = nextUrl
         }, 300)
@@ -203,7 +204,7 @@ export default {
         // Transición fluida a A
         this.activePlayer = 'A'
         this.playPlayer('A')
-        // Pre-cargar el siguiente video en B en segundo plano
+        // Actualizar la URL del reproductor inactivo (B) en segundo plano sin reproducir
         setTimeout(() => {
           this.urlB = nextUrl
         }, 300)
