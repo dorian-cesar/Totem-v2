@@ -4,7 +4,7 @@ import router from '../router'
 
 const eventsHub = new Vue()
 
-// Variable global de control
+// Bandera global de estado
 window.isIdleResetting = false
 
 const options = {
@@ -19,10 +19,10 @@ eventsHub.$on('idle', () => {
   const targetHomeName = (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home'
 
   if (router.currentRoute.name !== targetHomeName && router.currentRoute.path !== '/') {
-    // Activa el escudo de bloqueo de navegación
+    // Activa el escudo de bloqueo
     window.isIdleResetting = true
 
-    // Redirige reemplazando la vista para no dejar rastro en el historial
+    // Redirección directa reemplazando la vista actual en el historial
     router.replace({ name: targetHomeName }).catch(() => { }).finally(() => {
       setTimeout(() => {
         window.isIdleResetting = false
