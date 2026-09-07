@@ -90,23 +90,22 @@ export default {
   },
   async mounted() {
     const savedId = localStorage.getItem('totemIdentifier')
-    const autoReload = sessionStorage.getItem('autoReload')
 
     if (savedId) {
       this.totemId = savedId
-      
-      if (autoReload === 'true') {
-        // Estamos en el paso intermedio: se hizo router.push('/') pero aún no se ejecuta window.location.reload()
-        // Cambiamos el estado para que la próxima carga (el reload real) haga la validación.
-        sessionStorage.setItem('autoReload', 'pending')
-      } else if (autoReload === 'pending') {
-        // Este es el reload real de la página. Ahora sí auto-validamos.
-        sessionStorage.removeItem('autoReload')
-        await this.identifyTotem()
-      } else {
-        // Es un inicio manual o F5, mostrar formulario
-        this.initialCheck = false
+
+      // Si ya tenemos guardada la información en localStorage, auto-validamos inmediatamente
+      if (localStorage.getItem('ipServer')) {
+        this.$emit('identified', {
+          ip: localStorage.getItem('ipServer'),
+          identificador: savedId,
+          ubicacion: localStorage.getItem('totemLocation') || '',
+          id: localStorage.getItem('totemId') || ''
+        })
+        return
       }
+
+      await this.identifyTotem()
     } else {
       this.initialCheck = false
     }
@@ -138,11 +137,27 @@ export default {
           console.log('Totem identificado correctamente:', deviceData)
           this.$emit('identified', deviceData)
         } else {
-          this.error = 'No se encontró información para este ID.'
+          if (localStorage.getItem('ipServer')) {
+            this.$emit('identified', {
+              ip: localStorage.getItem('ipServer'),
+              identificador: this.totemId
+            })
+          } else {
+            this.error = 'No se encontró información para este ID.'
+            this.initialCheck = false
+          }
         }
       } catch (err) {
         console.error('Error identificando totem:', err)
-        this.error = 'Error de conexión o ID inválido. Intente nuevamente.'
+        if (localStorage.getItem('ipServer')) {
+          this.$emit('identified', {
+            ip: localStorage.getItem('ipServer'),
+            identificador: this.totemId
+          })
+        } else {
+          this.error = 'Error de conexión o ID inválido. Intente nuevamente.'
+          this.initialCheck = false
+        }
       } finally {
         this.loading = false
       }

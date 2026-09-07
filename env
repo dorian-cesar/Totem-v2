@@ -1,0 +1,26 @@
+VITE_APP_USERNAME=admin
+VITE_APP_PASSWORD=errordecors2025
+
+# GDS Mode
+VITE_APP_GDS_MODE=prod
+
+# GDS DEV
+VITE_APP_GDS_PROXY_DEV=https://newstg3-gdsbus.kupos.cl
+VITE_APP_GDS_API_KEY_DEV=TSXFQYAPI25766888
+
+# GDS PROD
+VITE_APP_GDS_PROXY_PROD=https://gds.kupos.com
+VITE_APP_GDS_API_KEY_PROD=TSFEFSAPI80085614
+
+# App Settings
+VITE_APP_SITIO=Terminal-Alameda
+VITE_APP_URL_GET_IP=https://localhost:3000/get_ip
+VITE_APP_URL_PRINT=https://localhost:3000/print
+VITE_APP_URL_LOGIN=https://new-backend-totem.dev-wit.com
+VITE_APP_URL_LOGS=https://new-backend-totem.dev-wit.com/api/totem
+VITE_APP_URL_LOGS1=https://log-totem.dev-wit.com/backend-log-totem-transbank/api.php
+VITE_APP_URL_BOLETO=https://new-backend-totem.dev-wit.com/api/boletos
+
+# Convenios Backend
+VITE_APP_BACKEND_CONVENIOS_URL=https://new-backend-convenios.dev-wit.com
+VITE_APP_BACKEND_CONVENIOS_API_KEY=pb_768e0beaeb8727a7e608a28fa9a19346

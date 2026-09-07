@@ -55,7 +55,17 @@ export default {
     },
 
     async onIdleTimeout() {
-      console.log('[IdleTimer] 30 segundos de inactividad detectados. Verificando videos asignados...')
+      console.log('[IdleTimer] 30 segundos de inactividad detectados. Preparando retorno a inicio y save screen...')
+
+      // Limpiar datos temporales de compra residuales
+      localStorage.removeItem('rut')
+      localStorage.removeItem('id_bus')
+
+      // Redirigir a Home en segundo plano si estaba en otro flujo de compra
+      if (this.$router && this.$route && this.$route.name !== 'Home') {
+        this.$router.push({ name: 'Home' }).catch(() => {})
+      }
+
       await this.fetchLocalAdVideos()
 
       // Si no hay videos devueltos, usamos el video de muestra por defecto como fallback unico

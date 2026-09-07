@@ -11,10 +11,9 @@
     name: 'BusSelection',
     components: {FormBusSelection},
     onIdle() {
-      sessionStorage.setItem('autoReload', 'true')
-      this.$router.push({name: 'Home'}).then(() => {
-        window.location.reload()
-      })
+      if (this.$router && this.$route && this.$route.name !== 'Home') {
+        this.$router.push({name: 'Home'})
+      }
     },
     onActive() {
       this.messageStr = 'Hello'

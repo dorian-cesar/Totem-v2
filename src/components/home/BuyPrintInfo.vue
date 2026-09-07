@@ -67,7 +67,9 @@ export default {
       console.log('Identificación completada:', deviceData)
       this.isIdentified = true
       this.checkServerStatus()
-      this.monitorInterval = setInterval(this.checkServerStatus, 5000)
+      if (!this.monitorInterval) {
+        this.monitorInterval = setInterval(this.checkServerStatus, 5000)
+      }
     },
     checkServerStatus() {
       if (!this.isIdentified) return
@@ -99,10 +101,17 @@ export default {
     }
   },
   mounted() {
-    // Al refrescar, siempre pedimos identificación según requerimiento
-    this.isIdentified = false
     localStorage.removeItem('rut')
     localStorage.removeItem('id_bus')
+
+    const savedId = localStorage.getItem('totemIdentifier')
+    if (savedId) {
+      this.isIdentified = true
+      this.checkServerStatus()
+      this.monitorInterval = setInterval(this.checkServerStatus, 5000)
+    } else {
+      this.isIdentified = false
+    }
   },
   beforeDestroy() {
     if (this.monitorInterval) {
