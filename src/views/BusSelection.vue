@@ -5,18 +5,10 @@
 </template>
 
 <script>
-  import FormBusSelection from '@/components/bus_selection/FormBusSelection'
+import FormBusSelection from '@/components/bus_selection/FormBusSelection'
 
-  export default {
-    name: 'BusSelection',
-    components: {FormBusSelection},
-    onIdle() {
-      if (this.$router && this.$route && this.$route.name !== 'Home') {
-        this.$router.push({name: 'Home'})
-      }
-    },
-    onActive() {
-      this.messageStr = 'Hello'
-    }
-  }
+export default {
+  name: 'BusSelection',
+  components: { FormBusSelection }
+}
 </script>

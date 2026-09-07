@@ -18,15 +18,20 @@
           <b-button
             variant="link"
             block
-            :href="serverAvailable ? './travelselection' : null"
             :disabled="!serverAvailable"
+            @click="irAComprar"
           >
             <b-img :src="BtnBuyTicket" fluid alt="Buy Ticket" />
           </b-button>
         </div>
         <!-- Button Print Ticket -->
         <div class="btn-img">
-          <b-button variant="link" block :href="serverAvailable ? './print' : null" :disabled="!serverAvailable">
+          <b-button 
+            variant="link" 
+            block 
+            :disabled="!serverAvailable"
+            @click="irAImprimir"
+          >
             <b-img :src="BtnPrintTicket" fluid alt="Print Ticket image" />
           </b-button>
         </div>
@@ -63,6 +68,16 @@ export default {
     monitorInterval: null
   }),
   methods: {
+    irAComprar() {
+      if (this.serverAvailable) {
+        this.$router.push({ name: 'TravelSelection' }).catch(() => {})
+      }
+    },
+    irAImprimir() {
+      if (this.serverAvailable) {
+        this.$router.push({ name: 'PrintTicket' }).catch(() => {})
+      }
+    },
     onTotemIdentified(deviceData) {
       console.log('Identificación completada:', deviceData)
       this.isIdentified = true

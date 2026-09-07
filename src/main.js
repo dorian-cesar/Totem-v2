@@ -10,7 +10,7 @@ import './plugins/VueAxios'
 import './plugins/BootstrapVue'
 import './plugins/VueFontawesome'
 import './plugins/vueScrollTo'
-import './plugins/IdleVue'
+// import './plugins/IdleVue'
 
 /* eslint-disable no-new */
 new Vue({

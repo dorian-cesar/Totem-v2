@@ -8,17 +8,17 @@ import BusSelection from '@/views/BusSelection'
 import PayAmount from '@/views/PayAmount'
 import PurchaseDetail from '@/views/PurchaseDetail'
 import OutOfService from "@/views/OutOfService"
-import PrintTicket from "@/views/PrintTicket";
+import PrintTicket from "@/views/PrintTicket"
 
-Vue.use(Router);
+Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
-      name: (IS_STANDBY) ? 'Proximamente' : 'Home',
-      component: (IS_STANDBY) ? Proximamente : Home
+      name: (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home',
+      component: (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? Proximamente : Home
     },
     {
       path: '/travelselection',
@@ -52,3 +52,16 @@ export default new Router({
     }
   ]
 })
+
+// GUARDIA GLOBAL: Bloquea cualquier redirección intermedia mientras se reinicia la app
+router.beforeEach((to, from, next) => {
+  const targetHomeName = (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home'
+
+  if (window.isIdleResetting && to.name !== targetHomeName && to.path !== '/') {
+    next(false) // Cancela cualquier navegación no deseada
+  } else {
+    next()
+  }
+})
+
+export default router
