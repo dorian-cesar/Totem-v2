@@ -1,5 +1,5 @@
 <template>
-  <div class="screensaver-wrapper" @click="salirScreensaver">
+  <div>
     <buy-print-info/>
     
     <!-- <b-button
@@ -28,29 +28,7 @@
       key2: false
     }),
     components: { BuyPrintInfo },
-    mounted() {
-      // Guardamos la IP e ID del tótem para no desconfigurar la identificación
-      const ipServer = localStorage.getItem('ipServer')
-      const totemIdentifier = localStorage.getItem('totemIdentifier')
-
-      // Limpiamos la memoria local y de sesión para borrar la compra anterior
-      localStorage.clear()
-      sessionStorage.clear()
-
-      // Restauramos las credenciales del equipo si existían
-      if (ipServer) localStorage.setItem('ipServer', ipServer)
-      if (totemIdentifier) localStorage.setItem('totemIdentifier', totemIdentifier)
-    },
     methods: {
-      salirScreensaver(event) {
-        // Evita interferir si se presiona el modal de cierre de caja
-        if (event.target.closest('#modal-center')) return;
-
-        // Redirige explícitamente a la pantalla de selección de viaje
-        if (this.$route.name !== 'TravelSelection') {
-          this.$router.push({ name: 'TravelSelection' }).catch(() => {})
-        }
-      },
       onClick() {
         this.cont++
         this.texto = '@'
@@ -80,11 +58,3 @@
     }
   }
 </script>
-
-<style scoped>
-.screensaver-wrapper {
-  width: 100%;
-  min-height: 100vh;
-  cursor: pointer;
-}
-</style>
