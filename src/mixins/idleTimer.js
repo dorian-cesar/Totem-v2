@@ -6,14 +6,21 @@ export default {
       idleTimeoutDuration: 30000, // 30 segundos de inactividad
       idleTimer: null,
       showAdScreenSaver: false,
-      adVideos: [],
+      adVideos: [
+        'https://vjs.zencdn.net/v/oceans.mp4'
+      ],
       lastFetchTime: 0,
-      cacheDurationMs: 300000 // Cache inteligente de 5 minutos (300.000 ms)
+      cacheDurationMs: 300000, // Cache inteligente de 5 minutos (300.000 ms)
+      isFetchingVideos: false
     }
   },
 
   mounted() {
     this.startIdleMonitoring()
+    // Carga preventiva de videos al montar el componente para tenerlos en memoria/caché antes de que expire el tiempo
+    this.fetchLocalAdVideos().catch((err) => {
+      console.warn('[IdleTimer] Error en carga preventiva de videos:', err)
+    })
   },
 
   beforeDestroy() {
@@ -22,7 +29,6 @@ export default {
 
   methods: {
     startIdleMonitoring() {
-      // Monitoreamos eventos táctiles y de teclado
       const events = ['click', 'touchstart', 'mousedown', 'pointerdown', 'keydown']
       events.forEach((event) => {
         window.addEventListener(event, this.resetIdleTimer, { passive: true })
@@ -42,7 +48,7 @@ export default {
     },
 
     resetIdleTimer() {
-      // Si la publicidad está visible, el timer permanece pausado hasta que el usuario toque la pantalla
+      // Si la publicidad está visible, el timer permanece en espera hasta que el usuario toque la pantalla
       if (this.showAdScreenSaver) return
 
       if (this.idleTimer) {
@@ -54,36 +60,49 @@ export default {
       }, this.idleTimeoutDuration)
     },
 
-    async onIdleTimeout() {
-      console.log('[IdleTimer] 30 segundos de inactividad detectados. Preparando retorno a inicio y save screen...')
-
-      // Limpiar datos temporales de compra residuales
-      localStorage.removeItem('rut')
-      localStorage.removeItem('id_bus')
-
-      // Redirigir a Home en segundo plano si estaba en otro flujo de compra
-      if (this.$router && this.$route && this.$route.name !== 'Home') {
-        this.$router.push({ name: 'Home' }).catch(() => {})
+    clearTemporaryPurchaseData() {
+      try {
+        localStorage.removeItem('rut')
+        localStorage.removeItem('id_bus')
+      } catch (e) {
+        console.warn('[IdleTimer] Error al limpiar datos de compra:', e)
       }
+    },
 
-      await this.fetchLocalAdVideos()
+    onIdleTimeout() {
+      console.log('[IdleTimer] 30 segundos de inactividad detectados. Mostrando screensaver de inmediato...')
 
-      // Si no hay videos devueltos, usamos el video de muestra por defecto como fallback unico
-      if (!this.adVideos || this.adVideos.length === 0) {
-        console.log('[IdleTimer] Cargando video de muestra por defecto (fallback unico).')
-        this.adVideos = [
-          'https://vjs.zencdn.net/v/oceans.mp4'
-        ]
-      }
+      // 1. ACTIVACIÓN SÍNCRONA INMEDIATA
+      // Se activa en este instante exacto para cubrir el 100% de la pantalla sin parpadeo
       this.showAdScreenSaver = true
+
+      // 2. Limpieza de variables temporales de compra
+      this.clearTemporaryPurchaseData()
+
+      // 3. Redirección en segundo plano a Home mientras el overlay ya cubre la pantalla
+      const targetHomeName = (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home'
+      setTimeout(() => {
+        if (this.showAdScreenSaver && this.$router && this.$route && this.$route.name !== targetHomeName) {
+          this.$router.replace({ name: targetHomeName }).catch(() => {})
+        }
+      }, 350)
+
+      // 4. Refresco preventivo de videos en segundo plano sin bloquear el renderizado
+      this.fetchLocalAdVideos().catch((err) => {
+        console.warn('[IdleTimer] Error refrescando videos:', err)
+      })
     },
 
     async fetchLocalAdVideos() {
       const now = Date.now()
 
-      // 0. Si ya tenemos la lista de vídeos y han pasado menos de 5 minutos, usamos la lista en caché (0 peticiones)
-      if (this.adVideos && this.adVideos.length > 0 && (now - this.lastFetchTime < this.cacheDurationMs)) {
+      if (this.isFetchingVideos) return
+      this.isFetchingVideos = true
+
+      // 0. Si ya tenemos vídeos y están dentro del tiempo de caché (5 min), no hacemos peticiones de red
+      if (this.adVideos && this.adVideos.length > 0 && this.lastFetchTime > 0 && (now - this.lastFetchTime < this.cacheDurationMs)) {
         console.log('[IdleTimer] Usando lista de vídeos en caché local (0 consumo de red).')
+        this.isFetchingVideos = false
         return
       }
 
@@ -95,17 +114,17 @@ export default {
           const currentIdentifier = localStorage.getItem('totemIdentifier') || localStorage.getItem('identificador') || 'totem-alameda-01'
           const currentIp = localStorage.getItem('ipServer') || '172.26.10.66'
           
-          // 1. Coincidencia por Identificador (Fijo y persistente, resiste cambios de IP por DHCP)
+          // Coincidencia por Identificador
           let matchedTotem = response.data.totems.find(
             t => t.identificador && t.identificador.toLowerCase() === currentIdentifier.toLowerCase()
           )
 
-          // 2. Respaldo por IP si el identificador no coincide
+          // Respaldo por IP si el identificador no coincide
           if (!matchedTotem) {
             matchedTotem = response.data.totems.find(t => t.ip === currentIp)
           }
 
-          // 3. Respaldo al primer tótem si ninguno coincide
+          // Respaldo al primer tótem si ninguno coincide
           if (!matchedTotem) {
             matchedTotem = response.data.totems[0]
           }
@@ -124,10 +143,13 @@ export default {
             if (assigned.length > 0) {
               console.log(`[IdleTimer] Videos asignados para '${matchedTotem.identificador}' (IP: ${matchedTotem.ip}):`, assigned)
               
-              // Filtrar y mostrar SOLO los vídeos 100% listos en caché local. Los nuevos se descargan en background.
+              // Filtrar y descargar en segundo plano
               const readyVideos = await this.filterAndDownloadVideos(assigned)
-              this.adVideos = readyVideos
+              if (readyVideos && readyVideos.length > 0) {
+                this.adVideos = readyVideos
+              }
               this.lastFetchTime = now
+              this.isFetchingVideos = false
               return
             }
           }
@@ -136,7 +158,7 @@ export default {
         console.warn('[IdleTimer] No se pudo obtener videos del Mantenedor central:', e.message)
       }
 
-      // 2. Fallback: Consultar al servidor local de la máquina
+      // 2. Fallback: Servidor local de la máquina
       try {
         const ipServer = localStorage.getItem('ipServer') || 'localhost'
         const url = `https://${ipServer}:3000/api/videos/list`
@@ -149,18 +171,25 @@ export default {
             }
             return item.url.startsWith('http') ? item.url : `https://${ipServer}:3000${item.url}`
           })
-          this.adVideos = await this.filterAndDownloadVideos(localUrls)
+          const readyVideos = await this.filterAndDownloadVideos(localUrls)
+          if (readyVideos && readyVideos.length > 0) {
+            this.adVideos = readyVideos
+          }
           this.lastFetchTime = now
-        } else {
-          this.adVideos = []
         }
       } catch (error) {
         console.warn('[IdleTimer] No se pudieron cargar los videos del servidor local:', error.message)
-        this.adVideos = []
+      } finally {
+        this.isFetchingVideos = false
+      }
+
+      // 3. Fallback seguro final si no hay vídeos
+      if (!this.adVideos || this.adVideos.length === 0) {
+        this.adVideos = ['https://vjs.zencdn.net/v/oceans.mp4']
       }
     },
 
-    // Filtra para reproducir de inmediato unicamente los vídeos 100% en caché. Los nuevos se descargan en segundo plano.
+    // Filtra para reproducir los vídeos en caché local y descarga los pendientes en segundo plano
     async filterAndDownloadVideos(assignedUrls) {
       if (!('caches' in window) || !assignedUrls || assignedUrls.length === 0) {
         return assignedUrls
@@ -188,7 +217,7 @@ export default {
               .then((res) => {
                 if (res.ok) {
                   return cache.put(url, res).then(() => {
-                    console.log(`[CacheManager] ¡Vídeo ${url} cargado 100% en caché local! Disponible para reproducción.`)
+                    console.log(`[CacheManager] ¡Vídeo ${url} cargado 100% en caché local!`)
                     if (!this.adVideos.includes(url)) {
                       this.adVideos.push(url)
                     }
@@ -201,11 +230,7 @@ export default {
           })
         }
 
-        if (readyUrls.length > 0) {
-          return readyUrls
-        } else {
-          return assignedUrls
-        }
+        return readyUrls.length > 0 ? readyUrls : assignedUrls
       } catch (e) {
         console.warn('[CacheManager] Error procesando caché:', e)
         return assignedUrls
@@ -213,13 +238,21 @@ export default {
     },
 
     closeAdScreenSaver() {
-      console.log('[IdleTimer] Interrupción de publicidad. Retornando inmediatamente a Home...')
+      console.log('[IdleTimer] Despertando tótem. Ocultando screensaver...')
+      
+      // 1. Ocultar screensaver
       this.showAdScreenSaver = false
 
-      if (this.$router && this.$route && this.$route.name !== 'Home') {
-        this.$router.push({ name: 'Home' }).catch(() => {})
+      // 2. Limpieza de datos temporales
+      this.clearTemporaryPurchaseData()
+
+      // 3. Garantizar que quede en Home sin saltos bruscos
+      const targetHomeName = (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home'
+      if (this.$router && this.$route && this.$route.name !== targetHomeName) {
+        this.$router.replace({ name: targetHomeName }).catch(() => {})
       }
 
+      // 4. Reiniciar temporizador
       this.resetIdleTimer()
     }
   }

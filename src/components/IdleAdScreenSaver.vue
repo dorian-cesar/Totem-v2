@@ -113,6 +113,15 @@ export default {
       } else {
         this.stopAllVideos()
       }
+    },
+    videos: {
+      deep: true,
+      handler(newVideos) {
+        if (this.show && (!this.urlA || this.hasError) && newVideos && newVideos.length > 0) {
+          this.hasError = false
+          this.preparePlayback()
+        }
+      }
     }
   },
   methods: {
@@ -222,6 +231,9 @@ export default {
     },
     onScreenTouch(e) {
       if (e) {
+        if (e.cancelable && e.type === 'touchstart') {
+          e.preventDefault()
+        }
         e.stopPropagation()
       }
       this.stopAllVideos()

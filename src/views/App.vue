@@ -1,83 +1,142 @@
 <template>
   <div id="app">
-    <!-- Capa limpia del Screensaver sin botones ni lógica de Home -->
-    <div v-if="isIdle" class="screensaver-layer" @click="despertar">
-      <div class="screensaver-content">
-        <!-- Si tienes un componente de video/slideshow para el screensaver, va aquí -->
-        <h1 class="text-white text-center">Toca la pantalla para comenzar</h1>
-      </div>
-    </div>
-
-    <!-- La aplicación normal funciona en segundo plano sin redirigir de URL -->
-    <router-view v-show="!isIdle" />
+    <logo class="p-3" />
+    <DateAndTime />
+    <b-row align-h="center">
+      <b-col cols="11">
+        <router-view />
+      </b-col>
+    </b-row>
+    <idle-ad-screen-saver
+      :show="showAdScreenSaver"
+      :videos="adVideos"
+      @close="closeAdScreenSaver"
+    />
   </div>
 </template>
 
 <script>
+import Logo from '@/components/Logo.vue'
+import DateAndTime from '@/components/DateAndTime.vue'
+import IdleAdScreenSaver from '@/components/IdleAdScreenSaver.vue'
+import idleTimer from '@/mixins/idleTimer'
+import infoData from '@/info'
+
 export default {
   name: 'App',
-  data: () => ({
-    isIdle: false,
-    idleTimer: null,
-    timeoutDuration: 30000 // 30 segundos
-  }),
+  mixins: [idleTimer],
+  components: {
+    Logo,
+    DateAndTime,
+    IdleAdScreenSaver
+  },
+
+  data() {
+    return {
+      info: { ...infoData }
+    }
+  },
+
   mounted() {
-    const events = ['mousemove', 'mousedown', 'touchstart', 'click', 'keypress', 'scroll']
-    events.forEach(event => {
-      window.addEventListener(event, this.resetTimer, { passive: true })
-    })
-    this.startTimer()
+    document.addEventListener('contextmenu', (e) => e.preventDefault())
+
+    if (!sessionStorage.getItem('welcome_printed')) {
+      this.printWelcome()
+      sessionStorage.setItem('welcome_printed', 'true')
+    }
+
+    window.addEventListener('touchstart', this.showTouchCircle)
   },
   beforeDestroy() {
-    const events = ['mousemove', 'mousedown', 'touchstart', 'click', 'keypress', 'scroll']
-    events.forEach(event => {
-      window.removeEventListener(event, this.resetTimer)
-    })
-    this.clearTimer()
+    window.removeEventListener('touchstart', this.showTouchCircle)
   },
   methods: {
-    startTimer() {
-      this.clearTimer()
-      this.idleTimer = setTimeout(() => {
-        this.isIdle = true
-      }, this.timeoutDuration)
+    showTouchCircle(e) {
+      if (!e.touches || !e.touches[0]) return
+      const touch = e.touches[0]
+      const circle = document.createElement('div')
+      circle.classList.add('touch-circle')
+      circle.style.top = `${touch.clientY - 30}px`
+      circle.style.left = `${touch.clientX - 30}px`
+      document.body.appendChild(circle)
+      setTimeout(() => {
+        if (circle.parentNode) {
+          circle.parentNode.removeChild(circle)
+        }
+      }, 600)
     },
-    clearTimer() {
-      if (this.idleTimer) {
-        clearTimeout(this.idleTimer)
-        this.idleTimer = null
-      }
-    },
-    resetTimer() {
-      if (!this.isIdle) {
-        this.startTimer()
-      }
-    },
-    despertar() {
-      this.isIdle = false
-      this.startTimer()
+    printWelcome() {
+      try {
+        const encoder = new TextEncoder()
+        
+        function append(arr1, arr2) {
+          const m = new Uint8Array(arr1.length + arr2.length)
+          m.set(arr1)
+          m.set(arr2, arr1.length)
+          return m
+        }
 
-      // Redirección explícita e instantánea únicamente al tocar la pantalla
-      if (this.$route.name !== 'TravelSelection') {
-        this.$router.replace({ name: 'TravelSelection' }).catch(() => {})
+        let escPos = new Uint8Array([0x1B, 0x40]) // Init
+        escPos = append(escPos, new Uint8Array([0x1B, 0x61, 0x01])) // Center
+        escPos = append(escPos, encoder.encode('\n\n\n--------------------------------\n      BIENVENIDO AL TOTEM       \n        DE AUTOSERVICIO         \n--------------------------------\n\n\n\n\n'))
+        escPos = append(escPos, new Uint8Array([0x1D, 0x56, 0x00])) // Cut
+
+        let binary = ''
+        for (let i = 0; i < escPos.length; i++) {
+          binary += String.fromCharCode(escPos[i])
+        }
+        
+        window.location.href = `rawbt:base64,${btoa(binary)}`
+      } catch (error) {
+        console.error('Error printing welcome message:', error)
       }
     }
   }
 }
 </script>
 
-<style>
-.screensaver-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 9999999;
-  background-color: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+<style lang="scss">
+/*#app*/
+
+body {
+  // background-image: url("../assets/img/background.jpg");
+  background: #013ba7 !important;
+  width: 1060px;
+  height: 1910px;
+  margin: 0px;
 }
+
+* {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
+    'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  touch-action: manipulation;
+}
+
+.touch-circle {
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  background: rgba(241, 241, 241, 0.45);
+  border: 2px solid #e2e2e2;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fadeOut 0.5s ease-out forwards;
+  z-index: 9999;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@import '../assets/style/app';
 </style>

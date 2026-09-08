@@ -53,15 +53,4 @@ const router = new Router({
   ]
 })
 
-// GUARDIA GLOBAL: Bloquea cualquier redirección intermedia mientras se reinicia la app
-router.beforeEach((to, from, next) => {
-  const targetHomeName = (typeof IS_STANDBY !== 'undefined' && IS_STANDBY) ? 'Proximamente' : 'Home'
-
-  if (window.isIdleResetting && to.name !== targetHomeName && to.path !== '/') {
-    next(false) // Cancela cualquier navegación no deseada
-  } else {
-    next()
-  }
-})
-
 export default router
