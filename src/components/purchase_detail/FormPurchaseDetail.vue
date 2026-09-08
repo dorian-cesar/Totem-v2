@@ -101,6 +101,21 @@ export default {
 
   methods: {
     ...mapGetters('BusSelection', ['getTravelBus']),
+    getConvenioInfoForLog(ticket) {
+      const t = ticket || (this.propsPersonalInformation && this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
+      const convenioGlobal = this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado
+      const valorNormal = t.valor_normal != null ? Number(t.valor_normal) : (Number(t.precio) + (Number(t.montoDescuento) || 0))
+      const valorDescuento = t.valor_descuento != null ? Number(t.valor_descuento) : (Number(t.montoDescuento) || 0)
+      const valorTotal = t.valor_total != null ? Number(t.valor_total) : (Number(t.precio) || 0)
+      const convenioNombre = t.convenio_nombre || (convenioGlobal ? (convenioGlobal.nombre || convenioGlobal.institucion || '') : '')
+
+      return {
+        valor_normal: valorNormal,
+        valor_descuento: valorDescuento,
+        valor_total: valorTotal,
+        convenio_nombre: convenioNombre
+      }
+    },
     //calcular el total del monto
     calculateTotal() {
       let total = 0
@@ -211,7 +226,8 @@ export default {
           hora_transaccion: simulatePOSResponse ? formattedTime : '',
           total_transaccion: simulatePOSResponse
             ? this.dataPOS.amount
-            : this.propsPersonalInformation.total.replace('.', '')
+            : this.propsPersonalInformation.total.replace('.', ''),
+          ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
         }
         this.axios
           .post(
@@ -264,7 +280,8 @@ export default {
             numero_transaccion: '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: ''
+            total_transaccion: '',
+            ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
           }
           this.axios
             .post(
@@ -348,7 +365,8 @@ export default {
             numero_transaccion: apiData.operationNumber || rawData.operationNumber || '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: apiData.amount || rawData.amount || ''
+            total_transaccion: apiData.amount || rawData.amount || '',
+            ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
           }
 
           if (isSuccessful === true) {
@@ -474,7 +492,8 @@ export default {
               numero_transaccion: '',
               fecha_transaccion: '',
               hora_transaccion: '',
-              total_transaccion: ''
+              total_transaccion: '',
+              ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
             }
             this.axios
               .post(
@@ -662,7 +681,8 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+              ...this.getConvenioInfoForLog(ticket)
             }
 
             const bookingData = {
@@ -828,7 +848,8 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: formattedDate,
               hora_transaccion: formattedTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length
+              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+              ...this.getConvenioInfoForLog(ticket)
             }
 
             this.axios
@@ -877,6 +898,7 @@ export default {
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
               total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
+              ...this.getConvenioInfoForLog(ticket),
               error: {
                 message: error.message,
                 code: error.code,

@@ -94,7 +94,11 @@ export default {
             numero_transaccion: '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: ''
+            total_transaccion: '',
+            valor_normal: '',
+            valor_descuento: '',
+            valor_total: '',
+            convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
           }
           this.axios
             .post(
@@ -142,7 +146,11 @@ export default {
               numero_transaccion: '',
               fecha_transaccion: '',
               hora_transaccion: '',
-              total_transaccion: ''
+              total_transaccion: '',
+              valor_normal: '',
+              valor_descuento: '',
+              valor_total: '',
+              convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
             }
             this.axios
               .post(
@@ -194,7 +202,11 @@ export default {
           numero_transaccion: '',
           fecha_transaccion: '',
           hora_transaccion: '',
-          total_transaccion: ''
+          total_transaccion: '',
+          valor_normal: '',
+          valor_descuento: '',
+          valor_total: '',
+          convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
         }
 
         console.log('Datos para DB tentative booking:', bookingData)

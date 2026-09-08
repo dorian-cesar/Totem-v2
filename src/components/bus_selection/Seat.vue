@@ -183,6 +183,10 @@
         const convenio = this.$store.state.TravelSelection.convenioSeleccionado
         const convenioId = convenio ? convenio.id : ''
         const montoDescuento = convenio ? Math.max(0, Number(originalPriceVal) - Number(price)) : 0
+        const valorNormal = Number(originalPriceVal) || Number(price) || 0
+        const valorTotal = Number(price) || 0
+        const valorDescuento = montoDescuento
+        const convenioNombre = convenio ? (convenio.nombre || convenio.institucion || '') : ''
 
         // travel
         const props =
@@ -243,6 +247,10 @@
           seat: seat,
           station: station,
           price: price,
+          valor_normal: valorNormal,
+          valor_descuento: valorDescuento,
+          valor_total: valorTotal,
+          convenio_nombre: convenioNombre,
           type: type,
           trip: trip,
           date: date,
