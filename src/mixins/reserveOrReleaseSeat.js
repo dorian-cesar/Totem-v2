@@ -1,4 +1,5 @@
 import info from '@/info'
+import { aplicarDescuentoConvenio } from '@/lib/convenioUtils'
 
 export default {
   data() {
@@ -30,20 +31,44 @@ export default {
         // this.isLoadingReservation = false
         return Promise.resolve()
       } // liberar asiento
-      // else if (option === 'delete') api = 'integrador-web/rest/private/venta/liberarAsiento'
 
-      // console.log('param', param)
+      // Obtener detalles de tarifa y convenios para la reserva
+      const seatNum = (param && param.book_ticket && param.book_ticket.seat_details && param.book_ticket.seat_details.seat_detail && param.book_ticket.seat_details.seat_detail[0] && param.book_ticket.seat_details.seat_detail[0].seat_number) || ''
+      const busTickets = (this.getTravelBus && typeof this.getTravelBus === 'function' ? this.getTravelBus() : []) || []
+      const currentTicket = busTickets.find(t => String(t.seat) === String(seatNum)) || busTickets[0] || {}
+
+      const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
+      const origenCod = this.$store.state.TravelSelection.codeDepartureCity || ''
+      const destinoCod = this.$store.state.TravelSelection.codeArrivalCity || ''
+
+      let valNormal = currentTicket.valor_normal || currentTicket.precio || currentTicket.price || null
+      let valTotal = currentTicket.valor_total || currentTicket.precio || currentTicket.price || null
+      let valDescuento = currentTicket.valor_descuento !== undefined ? currentTicket.valor_descuento : (currentTicket.montoDescuento || 0)
+
+      if ((valNormal === null || valNormal === undefined || valNormal === '') && param && param.book_ticket && param.book_ticket.seat_details && param.book_ticket.seat_details.seat_detail && param.book_ticket.seat_details.seat_detail[0]) {
+        const fare = Number(param.book_ticket.seat_details.seat_detail[0].fare) || 0
+        if (fare > 0) {
+          if (convenioRes) {
+            const calc = aplicarDescuentoConvenio(fare, convenioRes, origenCod, destinoCod)
+            valNormal = calc.precioOriginal
+            valTotal = calc.precioFinal
+            valDescuento = calc.precioOriginal - calc.precioFinal
+          } else {
+            valNormal = fare
+            valTotal = fare
+            valDescuento = 0
+          }
+        }
+      }
+
       this.axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'
-      // console.log("parametros de tentative: ", param)
       const formatParams = {
         book_ticket: param.book_ticket,
-        // seat_number: param.book_ticket.seat_detail[0].seat_number,
         origin_id: param.origin_id,
         destination_id: param.destination_id,
         boarding_at: param.boarding_at,
         no_of_seats: param.no_of_seats,
         travel_date: param.travel_date,
-        // travel_time: param.travel_time,
         available_seats: param.available_seats,
         cost: param.cost,
         bus_type: param.bus_type,
@@ -72,7 +97,6 @@ export default {
           data = response.data
           success = true
         } catch (error) {
-          const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
           const bookingData = {
             sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
@@ -83,7 +107,6 @@ export default {
             hora_viaje: param.horaSalida,
             asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
             codigo_reserva: 'Reserva fallida',
-            // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
             estado_boleto: `Reserva fallida - Intento: ${attempt}`,
             id_convenio: convenioRes ? convenioRes.id : null,
             nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
@@ -97,10 +120,10 @@ export default {
             numero_transaccion: '',
             fecha_transaccion: '',
             hora_transaccion: '',
-            total_transaccion: '',
-            valor_normal: '',
-            valor_descuento: '',
-            valor_total: '',
+            total_transaccion: valTotal ? String(valTotal) : '',
+            valor_normal: valNormal !== null ? valNormal : '',
+            valor_descuento: valDescuento !== null ? valDescuento : '',
+            valor_total: valTotal !== null ? valTotal : '',
             convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
           }
           this.axios
@@ -127,7 +150,6 @@ export default {
             this.statusReservation = false
             this.codeReservation = ''
             this.isLoadingReservation = false
-            const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
             const bookingData = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -138,7 +160,6 @@ export default {
               hora_viaje: param.horaSalida,
               asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
               codigo_reserva: 'Reserva fallida',
-              // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
               estado_boleto: 'Reserva fallida - Máximo intentos',
               id_convenio: convenioRes ? convenioRes.id : null,
               nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
@@ -152,10 +173,10 @@ export default {
               numero_transaccion: '',
               fecha_transaccion: '',
               hora_transaccion: '',
-              total_transaccion: '',
-              valor_normal: '',
-              valor_descuento: '',
-              valor_total: '',
+              total_transaccion: valTotal ? String(valTotal) : '',
+              valor_normal: valNormal !== null ? valNormal : '',
+              valor_descuento: valDescuento !== null ? valDescuento : '',
+              valor_total: valTotal !== null ? valTotal : '',
               convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
             }
             this.axios
@@ -186,7 +207,6 @@ export default {
 
         const hasTicketDetails = data && data.result && data.result.ticket_details
 
-        const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
         const bookingData = {
           sitio: this.info.sitio,
           numTotem: localStorage.getItem('ipServer'),
@@ -197,7 +217,6 @@ export default {
           hora_viaje: param.horaSalida,
           asiento: param.book_ticket.seat_details.seat_detail[0].seat_number,
           codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
-          // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
           estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
           id_convenio: convenioRes ? convenioRes.id : null,
           nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
@@ -211,10 +230,10 @@ export default {
           numero_transaccion: '',
           fecha_transaccion: '',
           hora_transaccion: '',
-          total_transaccion: '',
-          valor_normal: '',
-          valor_descuento: '',
-          valor_total: '',
+          total_transaccion: valTotal ? String(valTotal) : '',
+          valor_normal: valNormal !== null ? valNormal : '',
+          valor_descuento: valDescuento !== null ? valDescuento : '',
+          valor_total: valTotal !== null ? valTotal : '',
           convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
         }
 
