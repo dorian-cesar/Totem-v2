@@ -72,6 +72,7 @@ export default {
           data = response.data
           success = true
         } catch (error) {
+          const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
           const bookingData = {
             sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
@@ -84,6 +85,8 @@ export default {
             codigo_reserva: 'Reserva fallida',
             // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
             estado_boleto: `Reserva fallida - Intento: ${attempt}`,
+            id_convenio: convenioRes ? convenioRes.id : null,
+            nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
             codigo_autorizacion: '',
             id_pos: '',
             id_bus: id_bus,
@@ -124,6 +127,7 @@ export default {
             this.statusReservation = false
             this.codeReservation = ''
             this.isLoadingReservation = false
+            const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
             const bookingData = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -136,6 +140,8 @@ export default {
               codigo_reserva: 'Reserva fallida',
               // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
               estado_boleto: 'Reserva fallida - Máximo intentos',
+              id_convenio: convenioRes ? convenioRes.id : null,
+              nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
               codigo_autorizacion: '',
               id_pos: '',
               id_bus: id_bus,
@@ -180,6 +186,7 @@ export default {
 
         const hasTicketDetails = data && data.result && data.result.ticket_details
 
+        const convenioRes = this.$store.state.TravelSelection.convenioSeleccionado || null
         const bookingData = {
           sitio: this.info.sitio,
           numTotem: localStorage.getItem('ipServer'),
@@ -192,6 +199,8 @@ export default {
           codigo_reserva: hasTicketDetails ? data.result.ticket_details.pnr_number : '',
           // numero_boleto: hasTicketDetails ? data.result.ticket_details.operator_pnr : '',
           estado_boleto: hasTicketDetails ? 'Reservado' : 'Reserva fallida',
+          id_convenio: convenioRes ? convenioRes.id : null,
+          nombre_convenio: convenioRes ? (convenioRes.nombre || convenioRes.nombre_convenio || null) : null,
           codigo_autorizacion: '',
           id_pos: '',
           id_bus: id_bus,

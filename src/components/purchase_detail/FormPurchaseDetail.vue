@@ -202,6 +202,12 @@ export default {
           formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
         }
         this.propsPaymentControl.msg = simulatedPOSResponse.data.data.responseMessage
+        const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
+        const firstTicket = (this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
+        const precioFinalSim = Number(firstTicket.price || 0)
+        const descuentoSim = Number(firstTicket.montoDescuento || 0)
+        const precioOriginalSim = Number(firstTicket.originalPrice || (precioFinalSim + descuentoSim))
+
         const bookingData = {
           sitio: this.info.sitio,
           numTotem: localStorage.getItem('ipServer'),
@@ -214,6 +220,11 @@ export default {
           codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
           // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
           estado_boleto: 'Reservado',
+          id_convenio: convenio ? convenio.id : null,
+          nombre_convenio: convenio ? (convenio.nombre || convenio.nombre_convenio || null) : null,
+          valorSinDescuento: precioOriginalSim,
+          valorDelDescuento: descuentoSim,
+          valorTransaccion: precioFinalSim,
           codigo_transaccion: simulatePOSResponse ? this.dataPOS.ticket : '',
           codigo_autorizacion: simulatePOSResponse ? this.dataPOS.authorizationCode : '',
           id_pos: simulatePOSResponse ? this.dataPOS.terminalId : '',
@@ -258,6 +269,12 @@ export default {
           this.endTransactionPOS(true)
         } else {
           this.propsPaymentControl.msgError = simulatedPOSResponse.data.data.responseMessage
+          const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
+          const firstTicket = (this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
+          const precioFinalSim = Number(firstTicket.price || 0)
+          const descuentoSim = Number(firstTicket.montoDescuento || 0)
+          const precioOriginalSim = Number(firstTicket.originalPrice || (precioFinalSim + descuentoSim))
+
           const bookingData = {
             sitio: this.info.sitio,
             numTotem: localStorage.getItem('ipServer'),
@@ -270,6 +287,11 @@ export default {
             codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
             // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
             estado_boleto: 'Reservado',
+            id_convenio: convenio ? convenio.id : null,
+            nombre_convenio: convenio ? (convenio.nombre || convenio.nombre_convenio || null) : null,
+            valorSinDescuento: precioOriginalSim,
+            valorDelDescuento: descuentoSim,
+            valorTransaccion: precioFinalSim,
             id_pos: '',
             id_bus: this.propsPersonalInformation.tickets[0].servicio,
             codigo_transaccion: '',
@@ -470,6 +492,12 @@ export default {
             error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
             error.message.includes('ERR_CONNECTION_REFUSED')
           ) {
+            const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
+            const firstTicket = (this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
+            const precioFinalErr = Number(firstTicket.price || 0)
+            const descuentoErr = Number(firstTicket.montoDescuento || 0)
+            const precioOriginalErr = Number(firstTicket.originalPrice || (precioFinalErr + descuentoErr))
+
             const bookingData = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -482,6 +510,11 @@ export default {
               codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
               numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Reservado',
+              id_convenio: convenio ? convenio.id : null,
+              nombre_convenio: convenio ? (convenio.nombre || convenio.nombre_convenio || null) : null,
+              valorSinDescuento: precioOriginalErr,
+              valorDelDescuento: descuentoErr,
+              valorTransaccion: precioFinalErr,
               id_pos: '',
               id_bus: this.propsPersonalInformation.tickets[0].servicio,
               codigo_transaccion: '',
@@ -660,7 +693,14 @@ export default {
           lastError = error
           const isServerDown = !error.response
 
+          const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
+
           for (const ticket of this.propsPersonalInformation.tickets) {
+            const convenioTicket = (ticket && ticket.convenio) || convenio
+            const precioFinalTkt = Number(ticket.price || 0)
+            const descuentoTkt = Number(ticket.montoDescuento || 0)
+            const precioOriginalTkt = Number(ticket.originalPrice || (precioFinalTkt + descuentoTkt))
+
             const bookingBase = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -671,6 +711,11 @@ export default {
               hora_viaje: ticket.horaSalida,
               asiento: ticket.seat,
               codigo_reserva: ticket.codeReservation,
+              id_convenio: convenioTicket ? convenioTicket.id : null,
+              nombre_convenio: convenioTicket ? (convenioTicket.nombre || convenioTicket.nombre_convenio || null) : null,
+              valorSinDescuento: precioOriginalTkt,
+              valorDelDescuento: descuentoTkt,
+              valorTransaccion: precioFinalTkt,
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
@@ -681,8 +726,7 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
-              ...this.getConvenioInfoForLog(ticket)
+              total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length)
             }
 
             const bookingData = {
@@ -826,6 +870,11 @@ export default {
             const rawTime = this.dataPOS.realTime
             const formattedTime = `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4, 6)}`
 
+            const convenioTicket = (ticket && ticket.convenio) || this.$store.state.TravelSelection.convenioSeleccionado || null
+            const precioFinalTkt = Number(ticket.price || response_ticket.total || 0)
+            const descuentoTkt = Number(ticket.montoDescuento || 0)
+            const precioOriginalTkt = Number(ticket.originalPrice || (precioFinalTkt + descuentoTkt))
+
             const bookingData = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -838,6 +887,11 @@ export default {
               codigo_reserva: response_ticket.boleto,
               numero_boleto: response_ticket.codigo,
               estado_boleto: 'Confirmado',
+              id_convenio: convenioTicket ? convenioTicket.id : null,
+              nombre_convenio: convenioTicket ? (convenioTicket.nombre || convenioTicket.nombre_convenio || null) : null,
+              valorSinDescuento: precioOriginalTkt,
+              valorDelDescuento: descuentoTkt,
+              valorTransaccion: precioFinalTkt,
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
@@ -848,8 +902,7 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: formattedDate,
               hora_transaccion: formattedTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
-              ...this.getConvenioInfoForLog(ticket)
+              total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length)
             }
 
             this.axios
@@ -875,6 +928,11 @@ export default {
             console.error(error)
             // total_processed += 1
 
+            const convenioTicket = (ticket && ticket.convenio) || this.$store.state.TravelSelection.convenioSeleccionado || null
+            const precioFinalTkt = Number(ticket.price || 0)
+            const descuentoTkt = Number(ticket.montoDescuento || 0)
+            const precioOriginalTkt = Number(ticket.originalPrice || (precioFinalTkt + descuentoTkt))
+
             const bookingData = {
               sitio: this.info.sitio,
               numTotem: localStorage.getItem('ipServer'),
@@ -887,6 +945,11 @@ export default {
               codigo_reserva: ticket.codeReservation,
               // numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
               estado_boleto: 'Confirmación fallida',
+              id_convenio: convenioTicket ? convenioTicket.id : null,
+              nombre_convenio: convenioTicket ? (convenioTicket.nombre || convenioTicket.nombre_convenio || null) : null,
+              valorSinDescuento: precioOriginalTkt,
+              valorDelDescuento: descuentoTkt,
+              valorTransaccion: precioFinalTkt,
               codigo_transaccion: this.dataPOS.ticket,
               codigo_autorizacion: this.dataPOS.authorizationCode,
               id_pos: this.dataPOS.terminalId,
@@ -897,8 +960,7 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
-              total_transaccion: this.dataPOS.amount / this.reservationCodes.length,
-              ...this.getConvenioInfoForLog(ticket),
+              total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length),
               error: {
                 message: error.message,
                 code: error.code,
