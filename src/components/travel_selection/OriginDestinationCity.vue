@@ -95,13 +95,17 @@
             <!-- Selector Previo de Convenio / Institución -->
             <div class="mb-3">
               <v-select
+                ref="convenioSelect"
                 v-model="convenioSeleccionadoInput"
                 :options="opcionesConvenios"
                 placeholder="Seleccione su Institución / Convenio"
                 class="convenio-select"
                 :clearable="true"
-                :searchable="false"
+                :searchable="true"
                 :disabled="cargandoConvenios"
+                @open="abrirTecladoConvenio"
+                @close="cerrarTecladoConvenio"
+                @input="onConvenioSeleccionado"
               >
                 <template #no-options>
                   <span style="font-size: 24px; padding: 10px; color: #666">
@@ -371,6 +375,33 @@ export default {
       }
       this.rut = this.rut.replace(/[^0-9kK.-]/g, '').toUpperCase()
       this.rut = this.formatearRut(this.rut)
+    },
+
+    obtenerInputConvenio() {
+      return this.$refs.convenioSelect && this.$refs.convenioSelect.$el
+        ? this.$refs.convenioSelect.$el.querySelector('.vs__search')
+        : null
+    },
+
+    abrirTecladoConvenio() {
+      this.mostrarTeclado = true
+      const input = this.obtenerInputConvenio()
+      if (input) {
+        input.focus({ preventScroll: true })
+      }
+    },
+
+    cerrarTecladoConvenio() {
+      this.ocultarTeclado()
+      const input = this.obtenerInputConvenio()
+      if (input && document.activeElement === input) {
+        input.blur()
+      }
+    },
+
+    onConvenioSeleccionado(val) {
+      this.convenioSeleccionadoInput = val
+      this.cerrarTecladoConvenio()
     },
 
     agregarCaracter(tecla) {
