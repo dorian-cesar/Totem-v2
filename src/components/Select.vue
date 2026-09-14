@@ -17,6 +17,7 @@
         <!-- Input select -->
         <img center :src="icon" :class="imgClass" fluid alt="Logo"/>
         <v-select
+          ref="vSelect"
           :options="options"
           :placeholder="placeholder"
           :resetOnOptionsChange="true"
@@ -70,6 +71,14 @@
         if (val) {
           this.value = val
           this.$emit('selectedValue', val)
+          this.$nextTick(() => {
+            const input = this.$refs.vSelect && this.$refs.vSelect.$el
+              ? this.$refs.vSelect.$el.querySelector('input')
+              : null
+            if (input) {
+              input.blur()
+            }
+          })
         }
       },
       status(name){

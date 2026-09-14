@@ -35,10 +35,10 @@ export function aplicarDescuentoConvenio(precioBase, convenio, origenCodigo = ''
   if (!convenio || !convenio.tipo_descuento) return resultado
 
   const valorDescuento = Number(convenio.valor_descuento) || 0
-  const tipo = String(convenio.tipo_descuento)
+  const tipo = String(convenio.tipo_descuento || '').trim().toLowerCase().replace(/[_-]+/g, ' ')
 
   switch (tipo) {
-    case 'Porcentaje': {
+    case 'porcentaje': {
       const descuento = Math.round(precioBase * (valorDescuento / 100))
       resultado.precioFinal = Math.max(0, precioBase - descuento)
       resultado.tieneDescuento = resultado.precioFinal !== precioBase
@@ -46,7 +46,7 @@ export function aplicarDescuentoConvenio(precioBase, convenio, origenCodigo = ''
       break
     }
 
-    case 'Tarifa Plana': {
+    case 'tarifa plana': {
       const rutas = Array.isArray(convenio.rutas) ? convenio.rutas : []
       const rutaCoincide = rutas.find(
         (r) =>
@@ -70,7 +70,7 @@ export function aplicarDescuentoConvenio(precioBase, convenio, origenCodigo = ''
       break
     }
 
-    case 'Monto Fijo': {
+    case 'monto fijo': {
       resultado.precioFinal = Math.max(0, precioBase - valorDescuento)
       resultado.tieneDescuento = resultado.precioFinal !== precioBase
       resultado.textoDescuento = `Descuento fijo: $${valorDescuento.toLocaleString('es-CL')}`

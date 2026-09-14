@@ -101,21 +101,6 @@ export default {
 
   methods: {
     ...mapGetters('BusSelection', ['getTravelBus']),
-    getConvenioInfoForLog(ticket) {
-      const t = ticket || (this.propsPersonalInformation && this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
-      const convenioGlobal = this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado
-      const valorNormal = t.valor_normal != null ? Number(t.valor_normal) : (Number(t.precio) + (Number(t.montoDescuento) || 0))
-      const valorDescuento = t.valor_descuento != null ? Number(t.valor_descuento) : (Number(t.montoDescuento) || 0)
-      const valorTotal = t.valor_total != null ? Number(t.valor_total) : (Number(t.precio) || 0)
-      const convenioNombre = t.convenio_nombre || (convenioGlobal ? (convenioGlobal.nombre || convenioGlobal.institucion || '') : '')
-
-      return {
-        valor_normal: valorNormal,
-        valor_descuento: valorDescuento,
-        valor_total: valorTotal,
-        convenio_nombre: convenioNombre
-      }
-    },
     //calcular el total del monto
     calculateTotal() {
       let total = 0
@@ -238,7 +223,9 @@ export default {
           total_transaccion: simulatePOSResponse
             ? this.dataPOS.amount
             : this.propsPersonalInformation.total.replace('.', ''),
-          ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
+          idConvenio: this.propsPersonalInformation.tickets[0].idConvenio ?? this.propsPersonalInformation.tickets[0].convenio ?? '',
+          valorDelDescuento: this.propsPersonalInformation.tickets[0].valorDelDescuento ?? this.propsPersonalInformation.tickets[0].montoDescuento ?? '',
+          valorSinDescuento: this.propsPersonalInformation.tickets[0].valorSinDescuento ?? this.propsPersonalInformation.tickets[0].precio ?? ''
         }
         this.axios
           .post(
@@ -303,7 +290,9 @@ export default {
             fecha_transaccion: '',
             hora_transaccion: '',
             total_transaccion: '',
-            ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
+            idConvenio: this.propsPersonalInformation.tickets[0].idConvenio ?? this.propsPersonalInformation.tickets[0].convenio ?? '',
+            valorDelDescuento: this.propsPersonalInformation.tickets[0].valorDelDescuento ?? this.propsPersonalInformation.tickets[0].montoDescuento ?? '',
+            valorSinDescuento: this.propsPersonalInformation.tickets[0].valorSinDescuento ?? this.propsPersonalInformation.tickets[0].precio ?? ''
           }
           this.axios
             .post(
@@ -342,7 +331,7 @@ export default {
       this.timeChangeEstatus = false //<- Variable de estado del vencimiento del tiempo de espera
 
       const ipServer = localStorage.getItem('ipServer')
-      const url = `https://${ipServer}:3000`
+      const url = `http://${ipServer}:3000`
       const api = '/api/payment'
 
       this.isErrorTerminarTransaccionPOS(false)
@@ -388,7 +377,9 @@ export default {
             fecha_transaccion: '',
             hora_transaccion: '',
             total_transaccion: apiData.amount || rawData.amount || '',
-            ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
+            idConvenio: this.propsPersonalInformation.tickets[0].idConvenio ?? this.propsPersonalInformation.tickets[0].convenio ?? '',
+            valorDelDescuento: this.propsPersonalInformation.tickets[0].valorDelDescuento ?? this.propsPersonalInformation.tickets[0].montoDescuento ?? '',
+            valorSinDescuento: this.propsPersonalInformation.tickets[0].valorSinDescuento ?? this.propsPersonalInformation.tickets[0].precio ?? ''
           }
 
           if (isSuccessful === true) {
@@ -483,51 +474,74 @@ export default {
           }
         })
         .catch((error) => {
-          console.error('Error en la conexión con POS:', error.message)
-          if (
-            (error.response && error.response.status === 500) ||
-            error.message === 'Network Error' ||
-            error.code === 'ECONNABORTED' ||
-            error.message.includes('timeout') ||
-            error.message.includes('ERR_CONNECTION_TIMED_OUT') ||
-            error.message.includes('ERR_CONNECTION_REFUSED')
-          ) {
-            const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
-            const firstTicket = (this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
-            const precioFinalErr = Number(firstTicket.price || 0)
-            const descuentoErr = Number(firstTicket.montoDescuento || 0)
-            const precioOriginalErr = Number(firstTicket.originalPrice || (precioFinalErr + descuentoErr))
+          console.error('Error en la conexión con POS:', error)
 
-            const bookingData = {
-              sitio: this.info.sitio,
-              numTotem: localStorage.getItem('ipServer'),
-              rut: localStorage.getItem('rut') || 'Sin RUT',
-              origen: this.$store.state.TravelSelection.nameDepartureCity,
-              destino: this.$store.state.TravelSelection.nameArrivalCity,
-              fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
-              hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
-              asiento: this.propsPersonalInformation.tickets[0].seat,
-              codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
-              numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
-              estado_boleto: 'Reservado',
-              id_convenio: convenio ? convenio.id : null,
-              nombre_convenio: convenio ? (convenio.nombre || convenio.nombre_convenio || null) : null,
-              valorSinDescuento: precioOriginalErr,
-              valorDelDescuento: descuentoErr,
-              valorTransaccion: precioFinalErr,
-              id_pos: '',
-              id_bus: this.propsPersonalInformation.tickets[0].servicio,
-              codigo_transaccion: '',
-              tipo_tarjeta: '',
-              tarjeta_marca: '',
-              codigo_autorizacion: '',
-              estado_transaccion: 'Error de conexión POS',
-              numero_transaccion: '',
-              fecha_transaccion: '',
-              hora_transaccion: '',
-              total_transaccion: '',
-              ...this.getConvenioInfoForLog(this.propsPersonalInformation.tickets[0])
-            }
+          const serverError = error?.response?.data?.error || error?.response?.data?.message || ''
+          const serverCode = error?.response?.data?.code || error?.response?.data?.responseCode || ''
+          const msgText = (error?.message || '').toLowerCase()
+          const isServerNetworkError =
+            error?.message === 'Network Error' ||
+            error?.code === 'ECONNABORTED' ||
+            error?.code === 'ERR_NETWORK' ||
+            error?.code === 'ERR_CONNECTION_REFUSED' ||
+            error?.code === 'ERR_CONNECTION_TIMED_OUT' ||
+            msgText.includes('timeout') ||
+            msgText.includes('err_connection_timed_out') ||
+            msgText.includes('connection refused') ||
+            msgText.includes('certificate') ||
+            msgText.includes('ssl') ||
+            msgText.includes('self signed') ||
+            msgText.includes('network error')
+
+          const looksLikePosDisconnected =
+            serverCode === 'POS_DISCONNECTED' ||
+            msgText.includes('pos no conectado') ||
+            msgText.includes('pos desconectado') ||
+            msgText.includes('desconectado') ||
+            serverError.toLowerCase().includes('pos no conectado') ||
+            serverError.toLowerCase().includes('pos desconectado') ||
+            serverError.toLowerCase().includes('desconectado')
+
+          const convenio = this.$store.state.TravelSelection.convenioSeleccionado || null
+          const firstTicket = (this.propsPersonalInformation.tickets && this.propsPersonalInformation.tickets[0]) || {}
+          const precioFinalErr = Number(firstTicket.price || 0)
+          const descuentoErr = Number(firstTicket.montoDescuento || 0)
+          const precioOriginalErr = Number(firstTicket.originalPrice || (precioFinalErr + descuentoErr))
+
+          const bookingData = {
+            sitio: this.info.sitio,
+            numTotem: localStorage.getItem('ipServer'),
+            rut: localStorage.getItem('rut') || 'Sin RUT',
+            origen: this.$store.state.TravelSelection.nameDepartureCity,
+            destino: this.$store.state.TravelSelection.nameArrivalCity,
+            fecha_viaje: this.propsPersonalInformation.tickets[0].fechaServicio,
+            hora_viaje: this.propsPersonalInformation.tickets[0].horaSalida,
+            asiento: this.propsPersonalInformation.tickets[0].seat,
+            codigo_reserva: this.propsPersonalInformation.tickets[0].codeReservation,
+            numero_boleto: this.propsPersonalInformation.tickets[0].operatorPnr,
+            estado_boleto: 'Reservado',
+            id_convenio: convenio ? convenio.id : null,
+            nombre_convenio: convenio ? (convenio.nombre || convenio.nombre_convenio || null) : null,
+            valorSinDescuento: precioOriginalErr,
+            valorDelDescuento: descuentoErr,
+            valorTransaccion: precioFinalErr,
+            id_pos: '',
+            id_bus: this.propsPersonalInformation.tickets[0].servicio,
+            codigo_transaccion: '',
+            tipo_tarjeta: '',
+            tarjeta_marca: '',
+            codigo_autorizacion: '',
+            estado_transaccion: 'Error de conexión POS',
+            numero_transaccion: '',
+            fecha_transaccion: '',
+            hora_transaccion: '',
+            total_transaccion: '',
+            idConvenio: this.propsPersonalInformation.tickets[0].idConvenio ?? this.propsPersonalInformation.tickets[0].convenio ?? '',
+            valorDelDescuento: this.propsPersonalInformation.tickets[0].valorDelDescuento ?? this.propsPersonalInformation.tickets[0].montoDescuento ?? '',
+            valorSinDescuento: this.propsPersonalInformation.tickets[0].valorSinDescuento ?? this.propsPersonalInformation.tickets[0].precio ?? ''
+          }
+
+          if (serverError || serverCode === 'POS_DISCONNECTED' || isServerNetworkError || looksLikePosDisconnected) {
             this.axios
               .post(
                 this.info.urlLogs,
@@ -543,13 +557,21 @@ export default {
                 console.log('Error guardado en DB (pagarPos)')
                 console.log('Datos para DB pagarPOS: ', bookingData)
               })
-              .catch((error) => {
-                console.error('Error al guardar en DB, pagarPOS: ', error)
+              .catch((logError) => {
+                console.error('Error al guardar en DB, pagarPOS: ', logError)
               })
-            this.propsPaymentControl.msgError = 'No existe conexión con el POS\nPOS desconectado'
+          }
+
+          if (serverError) {
+            this.propsPaymentControl.msgError = serverError
+          } else if (serverCode === 'POS_DISCONNECTED' || looksLikePosDisconnected) {
+            this.propsPaymentControl.msgError = 'El POS no está conectado'
+          } else if (isServerNetworkError) {
+            this.propsPaymentControl.msgError = 'No se pudo comunicar con el servidor del POS'
           } else {
             this.propsPaymentControl.msgError = 'Ocurrió un error al intentar pagar con POS'
           }
+
           this.isErrorPOS = true
           this.isErrorTerminarTransaccionPOS(true)
         })
@@ -902,7 +924,10 @@ export default {
               numero_transaccion: this.dataPOS.operationNumber,
               fecha_transaccion: formattedDate,
               hora_transaccion: formattedTime,
-              total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length)
+              total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length),
+              idConvenio: ticket.idConvenio ?? ticket.convenio ?? '',
+              valorDelDescuento: ticket.valorDelDescuento ?? ticket.montoDescuento ?? '',
+              valorSinDescuento: ticket.valorSinDescuento ?? ticket.precio ?? ''
             }
 
             this.axios
@@ -961,6 +986,9 @@ export default {
               fecha_transaccion: this.dataPOS.realDate,
               hora_transaccion: this.dataPOS.realTime,
               total_transaccion: precioFinalTkt || (this.dataPOS.amount / this.reservationCodes.length),
+              idConvenio: ticket.idConvenio ?? ticket.convenio ?? '',
+              valorDelDescuento: ticket.valorDelDescuento ?? ticket.montoDescuento ?? '',
+              valorSinDescuento: ticket.valorSinDescuento ?? ticket.precio ?? '',
               error: {
                 message: error.message,
                 code: error.code,

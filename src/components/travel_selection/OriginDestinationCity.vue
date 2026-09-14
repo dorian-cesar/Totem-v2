@@ -35,7 +35,12 @@
               v-bind="propsRut"
               v-model="rut"
               @focus="mostrarTeclado = true"
+              @blur="ocultarTeclado"
               @input="onInputRut"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9kK.-]*"
+              maxlength="13"
               style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
               autocomplete="off"
             />
@@ -95,6 +100,7 @@
                 placeholder="Seleccione su Institución / Convenio"
                 class="convenio-select"
                 :clearable="true"
+                :searchable="false"
                 :disabled="cargandoConvenios"
               >
                 <template #no-options>
@@ -112,7 +118,12 @@
                 v-bind="propsRut"
                 v-model="rut"
                 @focus="mostrarTeclado = true"
+                @blur="ocultarTeclado"
                 @input="onInputRut"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9kK.-]*"
+                maxlength="13"
                 style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
                 autocomplete="off"
               />
@@ -124,6 +135,7 @@
                 v-model="codigoConvenio"
                 placeholder="Ej: CONV-12345"
                 @focus="mostrarTeclado = true"
+                @blur="ocultarTeclado"
                 @input="onInputCodigo"
                 style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
                 autocomplete="off"
@@ -357,6 +369,7 @@ export default {
         this.validationMessage = ''
         this.validationSuccess = null
       }
+      this.rut = this.rut.replace(/[^0-9kK.-]/g, '').toUpperCase()
       this.rut = this.formatearRut(this.rut)
     },
 
@@ -478,9 +491,13 @@ export default {
     },
     action(name, val) {
       this.$emit('selectAction', { name: name, status: val })
+      if (val === 'open' || val === 'close') {
+        this.ocultarTeclado()
+      }
     },
 
     toggleConvenio() {
+      this.ocultarTeclado()
       this.tieneConvenio = !this.tieneConvenio
       if (!this.tieneConvenio) {
         this.clearConvenio()

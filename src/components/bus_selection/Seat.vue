@@ -172,21 +172,23 @@
             .dataset
 
         const originalPriceVal =
+          datasetObj[`originalPrice${this.numfloor}`] ||
+          datasetObj[`originalPrice-${this.numfloor}`] ||
           datasetObj[['originalPrice', this.numfloor].join('-')] ||
-          datasetObj[['originalPrice', this.numfloor].join('')] ||
-          datasetObj[['original-price', this.numfloor].join('-')]
+          datasetObj[['original-price', this.numfloor].join('-')] ||
+          0
+
         const price =
-          listBus
-            .$refs[['price', activeButton].join('-')][0]
-            .dataset[['price', this.numfloor].join('-')]
+          datasetObj[`price${this.numfloor}`] ||
+          datasetObj[`price-${this.numfloor}`] ||
+          datasetObj[['price', this.numfloor].join('-')] ||
+          0
 
         const convenio = this.$store.state.TravelSelection.convenioSeleccionado
         const convenioId = convenio ? convenio.id : ''
-        const montoDescuento = convenio ? Math.max(0, Number(originalPriceVal) - Number(price)) : 0
-        const valorNormal = Number(originalPriceVal) || Number(price) || 0
-        const valorTotal = Number(price) || 0
-        const valorDescuento = montoDescuento
-        const convenioNombre = convenio ? (convenio.nombre || convenio.institucion || '') : ''
+        const precioOriginal = Number(originalPriceVal) || 0
+        const precioFinal = Number(price) || 0
+        const montoDescuento = convenio ? Math.max(0, precioOriginal - precioFinal) : 0
 
         // travel
         const props =
@@ -247,10 +249,6 @@
           seat: seat,
           station: station,
           price: price,
-          valor_normal: valorNormal,
-          valor_descuento: valorDescuento,
-          valor_total: valorTotal,
-          convenio_nombre: convenioNombre,
           type: type,
           trip: trip,
           date: date,
@@ -267,7 +265,10 @@
           empresa: empresa,
           clase: clase,
           convenio: convenioId,
+          idConvenio: convenioId,
           montoDescuento: montoDescuento,
+          valorDelDescuento: montoDescuento ?? 0,
+          valorSinDescuento: precioOriginal || precioFinal || 0,
           datosConvenio: convenio ? JSON.stringify(convenio) : '',
           bus: bus,
           piso: piso,

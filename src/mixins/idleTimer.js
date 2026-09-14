@@ -161,15 +161,15 @@ export default {
       // 2. Fallback: Servidor local de la máquina
       try {
         const ipServer = localStorage.getItem('ipServer') || 'localhost'
-        const url = `https://${ipServer}:3000/api/videos/list`
+        const url = `http://${ipServer}:3000/api/videos/list`
 
         const response = await axios.get(url, { timeout: 3000 })
         if (response.data && Array.isArray(response.data.videos) && response.data.videos.length > 0) {
           const localUrls = response.data.videos.map((item) => {
             if (typeof item === 'string') {
-              return item.startsWith('http') ? item : `https://${ipServer}:3000${item}`
+              return item.startsWith('http') ? item : `http://${ipServer}:3000${item}`
             }
-            return item.url.startsWith('http') ? item.url : `https://${ipServer}:3000${item.url}`
+            return item.url.startsWith('http') ? item.url : `http://${ipServer}:3000${item.url}`
           })
           const readyVideos = await this.filterAndDownloadVideos(localUrls)
           if (readyVideos && readyVideos.length > 0) {

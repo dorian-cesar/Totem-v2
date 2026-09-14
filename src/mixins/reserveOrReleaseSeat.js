@@ -237,7 +237,6 @@ export default {
           convenio_nombre: (this.$store && this.$store.state && this.$store.state.TravelSelection && this.$store.state.TravelSelection.convenioSeleccionado && this.$store.state.TravelSelection.convenioSeleccionado.nombre) || ''
         }
 
-        console.log('Datos para DB tentative booking:', bookingData)
         if (hasTicketDetails) {
           this.axios
             .post(
