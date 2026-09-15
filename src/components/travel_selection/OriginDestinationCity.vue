@@ -118,26 +118,27 @@
             <!-- INPUTS -->
             <div v-show="tipoEntrada === 'rut'">
               <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-              <b-form-input
-                v-bind="propsRut"
-                v-model="rut"
-                ref="rutConvenioInput"
-                @focus="mostrarTeclado = true"
-                @click="mostrarTeclado = true"
-                @input="onInputRut"
-                type="text"
-                inputmode="none"
-                readonly
-                pattern="[0-9kK.-]*"
-                maxlength="13"
-                style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
-                autocomplete="off"
-              />
-              <keyboard-touch
-                v-show="mostrarTeclado"
-                :numeric="true"
-                @onKeyPress="onRutKeyboardPress"
-              />
+              <div @click="mostrarTeclado = true">
+                <b-form-input
+                  v-bind="propsRut"
+                  v-model="rut"
+                  ref="rutConvenioInput"
+                  @input="onInputRut"
+                  type="text"
+                  inputmode="none"
+                  readonly
+                  tabindex="-1"
+                  pattern="[0-9kK.-]*"
+                  maxlength="13"
+                  style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px; pointer-events: none"
+                  autocomplete="off"
+                />
+                <keyboard-touch
+                  v-show="mostrarTeclado"
+                  :numeric="true"
+                  @onKeyPress="onRutKeyboardPress"
+                />
+              </div>
             </div>
 
             <div v-show="tipoEntrada === 'codigo'">
