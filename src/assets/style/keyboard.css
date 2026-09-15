@@ -69,22 +69,40 @@
 }
 
 .hg-theme-default .hg-button {
-  box-shadow: 0 0 3px -1px rgba(0, 0, 0, .3);
-  height: 70px; /* tamaño del botón */
-  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+  height: 85px; /* tamaño táctil optimizado */
+  font-size: 32px;
+  font-weight: 600;
+  border-radius: 8px;
   box-sizing: border-box;
   padding: 5px;
   background: #fff;
-  border-bottom: 1px solid #b5b5b5;
+  border-bottom: 2px solid #b5b5b5;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  user-select: none;
 }
 
 .hg-theme-default .hg-button.hg-activeButton {
-  background: #efefef
+  background: #e2e8f0;
+  transform: translateY(2px);
+}
+
+.hg-theme-default .hg-button[data-skbtn="{bksp}"] {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-bottom-color: #fca5a5;
+  font-size: 26px;
+}
+
+.hg-theme-default .hg-button[data-skbtn="{close}"] {
+  background-color: #dcfce7;
+  color: #15803d;
+  border-bottom-color: #86efac;
+  font-size: 26px;
 }
 
 .hg-theme-default.hg-layout-numeric .hg-button {

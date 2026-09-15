@@ -31,19 +31,23 @@
           <div v-show="!tieneConvenio">
             <!-- INPUT RUT NORMAL -->
             <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-            <b-form-input
-              v-bind="propsRut"
-              v-model="rut"
-              @focus="mostrarTeclado = true"
-              @blur="ocultarTeclado"
-              @input="onInputRut"
-              type="text"
-              inputmode="numeric"
-              pattern="[0-9kK.-]*"
-              maxlength="13"
-              style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
-              autocomplete="off"
-            />
+            <div @click="abrirTecladoRut">
+              <b-form-input
+                v-bind="propsRut"
+                v-model="rut"
+                ref="rutInputNormal"
+                @input="onInputRut"
+                type="text"
+                inputmode="none"
+                readonly
+                tabindex="-1"
+                pattern="[0-9kK.-]*"
+                maxlength="13"
+                placeholder="Ej: 12.345.678-K"
+                style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px; cursor: pointer; pointer-events: none"
+                autocomplete="off"
+              />
+            </div>
             <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
               Ingrese su RUT para emitir su pasaje e imprimir en caso de pérdida.
             </p>
@@ -118,7 +122,7 @@
             <!-- INPUTS -->
             <div v-show="tipoEntrada === 'rut'">
               <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-              <div @click="mostrarTeclado = true">
+              <div @click="abrirTecladoRut">
                 <b-form-input
                   v-bind="propsRut"
                   v-model="rut"
@@ -130,13 +134,9 @@
                   tabindex="-1"
                   pattern="[0-9kK.-]*"
                   maxlength="13"
-                  style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px; pointer-events: none"
+                  placeholder="Ej: 12.345.678-K"
+                  style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px; cursor: pointer; pointer-events: none"
                   autocomplete="off"
-                />
-                <keyboard-touch
-                  v-show="mostrarTeclado"
-                  keyboard-mode="rut"
-                  @onKeyPress="onRutKeyboardPress"
                 />
               </div>
             </div>
@@ -187,6 +187,13 @@
         </b-form-group>
       </b-col>
     </b-row>
+    <!-- Teclado en pantalla táctil -->
+    <keyboard-touch
+      v-show="mostrarTeclado"
+      :keyboard-mode="tecladoActualMode"
+      @onKeyPress="onTecladoKeyPress"
+      @close="ocultarTeclado"
+    />
   </div>
 </template>
 
@@ -269,6 +276,12 @@ export default {
       }
       return 'rut'
     },
+    tecladoActualMode() {
+      if (this.tieneConvenio && this.tipoEntrada === 'codigo') {
+        return 'text'
+      }
+      return 'rut'
+    },
     opcionesConvenios() {
       return this.listaConvenios.map((c) => {
         const val = Number(c.valor_descuento) || 0
@@ -299,6 +312,7 @@ export default {
       this.clearConvenio()
     },
     'propsDepartureCity.selected'(newVal) {
+      this.ocultarTeclado()
       if (!newVal) {
         const codigos = getCiudadesConvenio(this.convenioSeleccionado)
         if (codigos.length === 0 || codigos.includes(String(PRESELECT_VALUE))) {
@@ -318,10 +332,15 @@ export default {
     },
 
     'propsArrivalCity.selected'(newVal) {
+      this.ocultarTeclado()
       if (newVal) {
         this.setValues()
         this.$emit('selected', true)
       }
+    },
+
+    tieneConvenio() {
+      this.ocultarTeclado()
     },
 
     rut(newRut) {
@@ -386,11 +405,46 @@ export default {
       this.rut = this.formatearRut(this.rut)
     },
 
+    abrirTecladoRut() {
+      this.mostrarTeclado = true
+    },
+
+    onTecladoKeyPress(key) {
+      if (this.tecladoActualMode === 'rut') {
+        this.onRutKeyboardPress(key)
+      } else {
+        if (key === '{bksp}') {
+          this.codigoConvenio = this.codigoConvenio.slice(0, -1)
+        } else if (key === '{sp}') {
+          this.codigoConvenio += ' '
+        } else {
+          this.codigoConvenio += key
+        }
+      }
+    },
+
     onRutKeyboardPress(key) {
       if (key === '{bksp}') {
         this.borrarUltimo()
-      } else if (/^[0-9kK]$/.test(key)) {
-        this.agregarCaracter(key.toUpperCase())
+        return
+      }
+
+      if (/^[0-9kK.-]$/.test(key)) {
+        const char = key.toUpperCase()
+        if (char === '.' || char === '-') {
+          return
+        }
+
+        const clean = this.rut.replace(/[^0-9kK]/g, '')
+        if (clean.length >= 9) {
+          return
+        }
+
+        if (char === 'K' && clean.length < 7) {
+          return
+        }
+
+        this.agregarCaracter(char)
       }
     },
 
@@ -422,14 +476,16 @@ export default {
     },
 
     agregarCaracter(tecla) {
-      this.rut += tecla
-      this.rut = this.formatearRut(this.rut)
+      const clean = this.rut.replace(/[^0-9kK]/g, '')
+      this.rut = this.formatearRut(clean + tecla)
     },
 
     borrarUltimo() {
-      if (this.rut.length > 0) {
-        this.rut = this.rut.slice(0, -1)
-        this.rut = this.formatearRut(this.rut)
+      const clean = this.rut.replace(/[^0-9kK]/g, '')
+      if (clean.length > 0) {
+        this.rut = this.formatearRut(clean.slice(0, -1))
+      } else {
+        this.rut = ''
       }
     },
 
@@ -812,7 +868,7 @@ export default {
       }
     },
     formatearRut(rut) {
-      rut = rut.replace(/[^0-9kK]/g, '').toUpperCase()
+      rut = String(rut || '').replace(/[^0-9kK]/g, '').toUpperCase()
       if (rut.length < 2) return rut
       let cuerpo = rut.slice(0, -1)
       let dv = rut.slice(-1)
