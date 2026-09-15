@@ -121,6 +121,7 @@
               <b-form-input
                 v-bind="propsRut"
                 v-model="rut"
+                ref="rutConvenioInput"
                 @focus="mostrarTeclado = true"
                 @blur="ocultarTeclado"
                 @input="onInputRut"
@@ -130,6 +131,11 @@
                 maxlength="13"
                 style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
                 autocomplete="off"
+              />
+              <keyboard-touch
+                v-show="mostrarTeclado"
+                :numeric="true"
+                @onKeyPress="onRutKeyboardPress"
               />
             </div>
 
@@ -192,6 +198,7 @@ import ImgRut from '@/assets/img/usuario-rut.png'
 import ImgLogoConvenios from '@/assets/img/logo-convenios-blanco.png'
 import info from '@/info'
 import { getCiudadesConvenio } from '@/lib/convenioUtils'
+import KeyboardTouch from '@/components/KeyboardTouch'
 
 export default {
   name: 'OriginDestination',
@@ -248,7 +255,7 @@ export default {
     // Guarda el listado completo de ciudades para poder restaurar al quitar convenio
     todasLasCiudades: []
   }),
-  components: { selectInput: Select, vSelect },
+  components: { selectInput: Select, vSelect, KeyboardTouch },
   computed: {
     // Acceso reactivo al convenio activo en Vuex
     convenioSeleccionado() {
@@ -377,6 +384,14 @@ export default {
       this.rut = this.formatearRut(this.rut)
     },
 
+    onRutKeyboardPress(key) {
+      if (key === '{bksp}') {
+        this.borrarUltimo()
+      } else if (/^[0-9]$/.test(key)) {
+        this.agregarCaracter(key)
+      }
+    },
+
     obtenerInputConvenio() {
       return this.$refs.convenioSelect && this.$refs.convenioSelect.$el
         ? this.$refs.convenioSelect.$el.querySelector('.vs__search')
@@ -418,6 +433,15 @@ export default {
 
     ocultarTeclado() {
       this.mostrarTeclado = false
+    },
+
+    cerrarTecladoRutConvenio() {
+      this.mostrarTeclado = false
+      const inputRef = this.$refs.rutConvenioInput
+      const input = inputRef && inputRef.$el ? inputRef.$el : inputRef
+      if (input && document.activeElement === input) {
+        input.blur()
+      }
     },
 
     getListDepartureCities: async function () {
@@ -548,6 +572,7 @@ export default {
     },
 
     iniciarValidacion() {
+      this.cerrarTecladoRutConvenio()
       if (this.tipoEntrada === 'rut') {
         this.validarRut()
       } else {
