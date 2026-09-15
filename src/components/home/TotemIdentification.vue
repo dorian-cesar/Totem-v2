@@ -64,7 +64,7 @@
         </div>
       </div>
 
-      <div class="footer-text mt-5">WIT INNOVACION Y TECNOLOGIA SPA<br />v3.0.0</div>
+      <div class="footer-text mt-5">WIT INNOVACION Y TECNOLOGIA SPA<br />v3.0.1</div>
     </div>
   </div>
 </template>

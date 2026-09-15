@@ -6,7 +6,7 @@
         {{ dateTime }}
       </div>
     </div>
-    <p class="version-text mb-0 text-right" style="width: 33%">3.0.0 Version © WIT {{ currentYear }}</p>
+    <p class="version-text mb-0 text-right" style="width: 33%">3.0.1 Version © WIT {{ currentYear }}</p>
   </div>
 </template>
 
