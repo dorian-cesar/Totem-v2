@@ -18,6 +18,10 @@
       numeric: {
         default: false,
         type: Boolean,
+      },
+      keyboardMode: {
+        default: 'text',
+        type: String,
       }
     },
     data: () => ({
@@ -30,7 +34,9 @@
         //layout: layout,
         layoutName: "default",
         layout: {
-          default: this.numeric
+          default: this.keyboardMode === 'rut'
+            ? ["1 2 3 4 5", "6 7 8 9 0", "K {bksp}"]
+            : this.numeric
             ? ["1 2 3 4 5 6 7 8 9 0", "{bksp}"]
             : [
                 "Q W E R T Y U I O P",
@@ -41,7 +47,7 @@
         },
         display: {
           '{bksp}': 'Borrar',
-          ...(this.numeric ? {} : { '{sp}': ' ' })
+          ...(this.keyboardMode === 'rut' || this.numeric ? {} : { '{sp}': ' ' })
         }
       });
     },

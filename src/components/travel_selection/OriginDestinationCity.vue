@@ -135,7 +135,7 @@
                 />
                 <keyboard-touch
                   v-show="mostrarTeclado"
-                  :numeric="true"
+                  keyboard-mode="rut"
                   @onKeyPress="onRutKeyboardPress"
                 />
               </div>
@@ -389,8 +389,8 @@ export default {
     onRutKeyboardPress(key) {
       if (key === '{bksp}') {
         this.borrarUltimo()
-      } else if (/^[0-9]$/.test(key)) {
-        this.agregarCaracter(key)
+      } else if (/^[0-9kK]$/.test(key)) {
+        this.agregarCaracter(key.toUpperCase())
       }
     },
 
