@@ -123,10 +123,11 @@
                 v-model="rut"
                 ref="rutConvenioInput"
                 @focus="mostrarTeclado = true"
-                @blur="ocultarTeclado"
+                @click="mostrarTeclado = true"
                 @input="onInputRut"
                 type="text"
-                inputmode="numeric"
+                inputmode="none"
+                readonly
                 pattern="[0-9kK.-]*"
                 maxlength="13"
                 style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
