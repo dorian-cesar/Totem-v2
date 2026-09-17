@@ -412,6 +412,7 @@ export default {
     },
 
     abrirTecladoRut() {
+      this.selectCiudadActivo = null
       this.mostrarTeclado = true
     },
 
@@ -481,6 +482,7 @@ export default {
     },
 
     abrirTecladoConvenio() {
+      this.selectCiudadActivo = null
       this.mostrarTeclado = true
       const input = this.obtenerInputConvenio()
       if (input) {
