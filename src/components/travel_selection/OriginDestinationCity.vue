@@ -1,5 +1,5 @@
 <template>
-  <div class="px-5 selector-origin-destiny" @click="onPantallaClick">
+  <div class="px-5 selector-origin-destiny">
     <!-- Input select departure -->
     <b-row align-h="center">
       <b-col cols="12">
@@ -385,6 +385,10 @@ export default {
     this.setRut('')
     this.getListDepartureCities()
     this.obtenerListaConvenios()
+    document.addEventListener('click', this.onPantallaClick)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.onPantallaClick)
   },
   methods: {
     // Map store
