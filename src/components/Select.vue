@@ -22,6 +22,8 @@
           :placeholder="placeholder"
           :resetOnOptionsChange="true"
           :disabled="showSpinner"
+          :searchable="!virtualKeyboard"
+          class="vs-virtual-keyboard"
           @input="onSelect"
           :value="value"
           @open="status('open')"
@@ -48,7 +50,8 @@
       preSelectValue: {type: String, default: () => ''},
       icon: {type: String, default: () => ''},
       imgClass: String,
-      selected: {type: [String, Object], default: null}
+      selected: {type: [String, Object], default: null},
+      virtualKeyboard: {type: Boolean, default: false}
     },
     watch: {
       selected(newVal) {
@@ -81,6 +84,36 @@
           })
         }
       },
+      onVirtualKey(key) {
+        const field = this.$refs && this.$refs.vSelect
+        if (!field) return
+        const current = field.search || ''
+        if (key === '{bksp}') {
+          field.search = current.slice(0, -1)
+        } else if (key === '{sp}') {
+          field.search = current + ' '
+        } else if (/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]$/.test(key)) {
+          field.search = current + key
+        }
+      },
+      closeFromKeyboard() {
+        const field = this.$refs && this.$refs.vSelect
+        if (!field) return
+        field.open = false
+        field.search = ''
+      },
+      closeDropdown() {
+        const field = this.$refs && this.$refs.vSelect
+        if (field) {
+          field.open = false
+        }
+      },
+      resetKeyboardSearch() {
+        const field = this.$refs && this.$refs.vSelect
+        if (field) {
+          field.search = ''
+        }
+      },
       status(name){
         this.$emit('selectedStatus', name)
       },
@@ -96,6 +129,14 @@
     min-height: 85px;
   }
   .v-select .v-text-field.v-text-field--solo .v-input__control { max-height: 18px; }
+
+  .v-select.vs-virtual-keyboard ::v-deep .vs__search {
+    pointer-events: none;
+    caret-color: transparent;
+  }
+  .v-select.vs-virtual-keyboard ::v-deep .vs__search:focus-visible {
+    outline: none;
+  }
 
   .origin-img-class {
     width: 60px;

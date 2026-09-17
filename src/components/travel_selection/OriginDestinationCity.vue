@@ -226,7 +226,8 @@ export default {
       reset: false,
       preSelectLabel: PRESELECT_LABEL,
       preSelectValue: PRESELECT_VALUE,
-      imgClass: 'origin-img-class'
+      imgClass: 'origin-img-class',
+      virtualKeyboard: true
     },
     // Props arrival city
     propsArrivalCity: {
@@ -236,7 +237,8 @@ export default {
       placeholder: 'Seleccione el destino',
       selected: '',
       reset: false,
-      imgClass: 'destiny-img-class'
+      imgClass: 'destiny-img-class',
+      virtualKeyboard: true
     },
     propsRut: {
       caption: 'RUT',
@@ -256,6 +258,7 @@ export default {
     validationMessage: '',
     validationSuccess: null,
     mostrarTeclado: false,
+    selectCiudadActivo: null,
     teclasFila1: ['1', '2', '3', '4', '5'],
     teclasFila2: ['6', '7', '8', '9', '0'],
     holdTimeout: null,
@@ -277,6 +280,9 @@ export default {
       return 'rut'
     },
     tecladoActualMode() {
+      if (this.selectCiudadActivo) {
+        return 'city'
+      }
       if (this.tieneConvenio && this.tipoEntrada === 'codigo') {
         return 'text'
       }
@@ -410,6 +416,10 @@ export default {
     },
 
     onTecladoKeyPress(key) {
+      if (this.selectCiudadActivo) {
+        this.onCityKeyboardPress(key)
+        return
+      }
       if (this.tecladoActualMode === 'rut') {
         this.onRutKeyboardPress(key)
       } else {
@@ -420,6 +430,22 @@ export default {
         } else {
           this.codigoConvenio += key
         }
+      }
+    },
+
+    onCityKeyboardPress(key) {
+      const select = this.selectCiudadActivo ? this.$refs[this.selectCiudadActivo] : null
+      if (!select) return
+      if (key === '{close}') {
+        if (typeof select.closeFromKeyboard === 'function') {
+          select.closeFromKeyboard()
+        }
+        this.selectCiudadActivo = null
+        this.ocultarTeclado()
+        return
+      }
+      if (typeof select.onVirtualKey === 'function') {
+        select.onVirtualKey(key)
       }
     },
 
@@ -503,6 +529,7 @@ export default {
 
     ocultarTeclado() {
       this.mostrarTeclado = false
+      this.selectCiudadActivo = null
     },
 
     cerrarTecladoRutConvenio() {
@@ -616,7 +643,27 @@ export default {
     },
     action(name, val) {
       this.$emit('selectAction', { name: name, status: val })
-      if (val === 'open' || val === 'close') {
+      const esSelectCiudad = name === 'select-origin' || name === 'select-arrival'
+      if (esSelectCiudad) {
+        if (val === 'open') {
+          const other = name === 'select-origin' ? 'select-arrival' : 'select-origin'
+          const otherSelect = this.$refs[other]
+          if (otherSelect && typeof otherSelect.closeDropdown === 'function') {
+            otherSelect.closeDropdown()
+          }
+          const select = this.$refs[name]
+          if (select && typeof select.resetKeyboardSearch === 'function') {
+            select.resetKeyboardSearch()
+          }
+          this.selectCiudadActivo = name
+          this.mostrarTeclado = true
+        } else if (val === 'close') {
+          if (this.selectCiudadActivo === name) {
+            this.selectCiudadActivo = null
+            this.ocultarTeclado()
+          }
+        }
+      } else if (val === 'open' || val === 'close') {
         this.ocultarTeclado()
       }
     },

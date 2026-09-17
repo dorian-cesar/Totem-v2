@@ -38,29 +38,45 @@
     },
     methods: {
       initKeyboard() {
+        const mode =
+          this.keyboardMode === 'rut'
+            ? 'rut'
+            : this.numeric
+            ? 'numeric'
+            : this.keyboardMode === 'city'
+            ? 'city'
+            : 'text'
+        const layouts = {
+          rut: [
+            "1 2 3 4 5",
+            "6 7 8 9 0",
+            ". - K {bksp} {close}"
+          ],
+          numeric: ["1 2 3 4 5 6 7 8 9 0", "{bksp}"],
+          text: [
+            "Q W E R T Y U I O P",
+            "A S D F G H J K L Ñ",
+            "Z X C V B N M {bksp}",
+            "{sp}"
+          ],
+          city: [
+            "q w e r t y u i o p",
+            "a s d f g h j k l ñ",
+            "z x c v b n m {bksp}",
+            "á é í ó ú ü {close}",
+            "{sp}"
+          ]
+        }
         this.keyboard = new SimpleKeyboard({
           onKeyPress: this.onKeyPress,
           layoutName: "default",
           layout: {
-            default: this.keyboardMode === 'rut'
-              ? [
-                  "1 2 3 4 5",
-                  "6 7 8 9 0",
-                  ". - K {bksp} {close}"
-                ]
-              : this.numeric
-              ? ["1 2 3 4 5 6 7 8 9 0", "{bksp}"]
-              : [
-                  "Q W E R T Y U I O P",
-                  "A S D F G H J K L Ñ",
-                  "Z X C V B N M {bksp}",
-                  "{sp}"
-                ]
+            default: layouts[mode]
           },
           display: {
             '{bksp}': '⌫ Borrar',
             '{close}': '✓ Listo',
-            ...(this.keyboardMode === 'rut' || this.numeric ? {} : { '{sp}': ' ' })
+            ...(mode === 'rut' || mode === 'numeric' ? {} : { '{sp}': ' ' })
           }
         });
       },
