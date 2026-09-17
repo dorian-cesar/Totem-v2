@@ -114,6 +114,11 @@
       // Escribe el texto buscado en el input readonly del select para que se vea
       // siempre, y mantiene el listado abierto.
       setSearchText(texto) {
+        if (texto && !this.searchText && this.value != null) {
+          // Nueva búsqueda: oculta la selección anterior para que no quede
+          // superpuesta al texto que se está escribiendo.
+          this.value = null
+        }
         this.searchText = texto
         const field = this.$refs && this.$refs.vSelect
         if (!field) return
