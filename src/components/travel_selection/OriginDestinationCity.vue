@@ -1,5 +1,5 @@
 <template>
-  <div class="px-5 selector-origin-destiny">
+  <div class="px-5 selector-origin-destiny" @click="onPantallaClick">
     <!-- Input select departure -->
     <b-row align-h="center">
       <b-col cols="12">
@@ -31,7 +31,7 @@
           <div v-show="!tieneConvenio">
             <!-- INPUT RUT NORMAL -->
             <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-            <div @click="abrirTecladoRut">
+            <div @click="abrirTecladoRut" class="campo-teclado">
               <b-form-input
                 v-bind="propsRut"
                 v-model="rut"
@@ -97,7 +97,7 @@
             </div>
 
             <!-- Selector Previo de Convenio / Institución -->
-            <div class="mb-3">
+            <div class="mb-3 campo-teclado">
               <v-select
                 ref="convenioSelect"
                 v-model="convenioSeleccionadoInput"
@@ -122,11 +122,11 @@
             <!-- INPUTS -->
             <div v-show="tipoEntrada === 'rut'">
               <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-              <div @click="abrirTecladoRut">
-                <b-form-input
-                  v-bind="propsRut"
-                  v-model="rut"
-                  ref="rutConvenioInput"
+<div @click="abrirTecladoRut" class="campo-teclado">
+              <b-form-input
+                v-bind="propsRut"
+                v-model="rut"
+                ref="rutConvenioInput"
                   @input="onInputRut"
                   type="text"
                   inputmode="none"
@@ -143,7 +143,7 @@
 
             <div v-show="tipoEntrada === 'codigo'">
               <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-              <div @click="abrirTecladoCodigo">
+              <div @click="abrirTecladoCodigo" class="campo-teclado">
                 <b-form-input
                   v-model="codigoConvenio"
                   ref="codigoConvenioInput"
@@ -428,7 +428,17 @@ export default {
 
     abrirTecladoRut() {
       this.selectCiudadActivo = null
+      this.cerrarSelectsCiudad()
       this.mostrarTeclado = true
+    },
+
+    cerrarSelectsCiudad() {
+      ;['select-origin', 'select-arrival'].forEach((name) => {
+        const select = this.$refs[name]
+        if (select && typeof select.closeDropdown === 'function') {
+          select.closeDropdown()
+        }
+      })
     },
 
     onTecladoKeyPress(key) {
@@ -529,6 +539,7 @@ export default {
 
     abrirTecladoConvenio() {
       this.selectCiudadActivo = null
+      this.cerrarSelectsCiudad()
       this.modoConvenioSeleccion = true
       this.mostrarTeclado = true
       const field = this.$refs.convenioSelect
@@ -543,6 +554,7 @@ export default {
 
     abrirTecladoCodigo() {
       this.selectCiudadActivo = null
+      this.cerrarSelectsCiudad()
       this.modoConvenioSeleccion = false
       this.mostrarTeclado = true
     },
@@ -589,6 +601,7 @@ export default {
     ocultarTeclado() {
       this.mostrarTeclado = false
       const fueConvenio = this.modoConvenioSeleccion
+      const selectCiudad = this.selectCiudadActivo
       this.selectCiudadActivo = null
       this.modoConvenioSeleccion = false
       this.convenioBusqueda = ''
@@ -601,6 +614,24 @@ export default {
           }
         })
       }
+      if (selectCiudad && this.$refs[selectCiudad]) {
+        const select = this.$refs[selectCiudad]
+        if (typeof select.closeDropdown === 'function') {
+          select.closeDropdown()
+        }
+        if (typeof select.resetKeyboardSearch === 'function') {
+          select.resetKeyboardSearch()
+        }
+      }
+    },
+
+    // Clic en cualquier parte que no sea un campo ni el teclado virtual: cerrar.
+    onPantallaClick(event) {
+      const t = event.target
+      if (!t || (typeof t.closest === 'function' && t.closest('.campo-teclado, .simple-keyboard'))) {
+        return
+      }
+      this.ocultarTeclado()
     },
 
     normalizarTexto(texto) {

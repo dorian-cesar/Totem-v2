@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="campo-teclado">
     <b-row>
       <b-col cols="4">
         <!-- Caption -->
