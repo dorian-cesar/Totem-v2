@@ -101,11 +101,11 @@
               <v-select
                 ref="convenioSelect"
                 v-model="convenioSeleccionadoInput"
-                :options="opcionesConvenios"
+                :options="opcionesConveniosVisible"
                 placeholder="Seleccione su Institución / Convenio"
                 class="convenio-select"
                 :clearable="true"
-                :searchable="true"
+                :searchable="false"
                 :disabled="cargandoConvenios"
                 @open="abrirTecladoConvenio"
                 @close="cerrarTecladoConvenio"
@@ -143,15 +143,21 @@
 
             <div v-show="tipoEntrada === 'codigo'">
               <img :src="ImgRut" class="rut-img-class" fluid alt="Logo" />
-              <b-form-input
-                v-model="codigoConvenio"
-                placeholder="Ej: CONV-12345"
-                @focus="mostrarTeclado = true"
-                @blur="ocultarTeclado"
-                @input="onInputCodigo"
-                style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px"
-                autocomplete="off"
-              />
+              <div @click="abrirTecladoCodigo">
+                <b-form-input
+                  v-model="codigoConvenio"
+                  ref="codigoConvenioInput"
+                  placeholder="Ej: CONV-12345"
+                  type="text"
+                  inputmode="none"
+                  readonly
+                  tabindex="-1"
+                  maxlength="20"
+                  @input="onInputCodigo"
+                  style="height: 85px; font-size: 52px; color: black; background-color: azure; border-radius: 10px; cursor: pointer; pointer-events: none"
+                  autocomplete="off"
+                />
+              </div>
             </div>
 
             <p class="text-center p-2 mb-3" style="color: azure; font-size: 22px">
@@ -259,6 +265,8 @@ export default {
     validationSuccess: null,
     mostrarTeclado: false,
     selectCiudadActivo: null,
+    modoConvenioSeleccion: false,
+    convenioBusqueda: '',
     teclasFila1: ['1', '2', '3', '4', '5'],
     teclasFila2: ['6', '7', '8', '9', '0'],
     holdTimeout: null,
@@ -283,10 +291,17 @@ export default {
       if (this.selectCiudadActivo) {
         return 'city'
       }
-      if (this.tieneConvenio && this.tipoEntrada === 'codigo') {
-        return 'text'
+      if (this.modoConvenioSeleccion || (this.tieneConvenio && this.tipoEntrada === 'codigo')) {
+        return 'convenio'
       }
       return 'rut'
+    },
+    opcionesConveniosVisible() {
+      if (!this.convenioBusqueda) {
+        return this.opcionesConvenios
+      }
+      const q = this.normalizarTexto(this.convenioBusqueda)
+      return this.opcionesConvenios.filter((o) => this.normalizarTexto(o.label).includes(q))
     },
     opcionesConvenios() {
       return this.listaConvenios.map((c) => {
@@ -421,6 +436,10 @@ export default {
         this.onCityKeyboardPress(key)
         return
       }
+      if (this.modoConvenioSeleccion) {
+        this.onConvenioSelectKeyboardPress(key)
+        return
+      }
       if (this.tecladoActualMode === 'rut') {
         this.onRutKeyboardPress(key)
       } else {
@@ -432,6 +451,28 @@ export default {
           this.codigoConvenio += key
         }
       }
+    },
+
+    onConvenioSelectKeyboardPress(key) {
+      const field = this.$refs.convenioSelect
+      if (!field) return
+      let texto = this.convenioBusqueda
+      if (key === '{bksp}') {
+        texto = texto.slice(0, -1)
+      } else if (key === '{sp}') {
+        texto += ' '
+      } else if (/^[a-zA-Z0-9áéíóúüñÁÉÍÓÚÜÑ]$/.test(key)) {
+        texto += key
+      } else {
+        return
+      }
+      this.convenioBusqueda = texto
+      field.search = ''
+      field.open = true
+      this.$nextTick(() => {
+        const input = field.$el ? field.$el.querySelector('.vs__search') : null
+        if (input) input.value = this.convenioBusqueda
+      })
     },
 
     onCityKeyboardPress(key) {
@@ -483,11 +524,22 @@ export default {
 
     abrirTecladoConvenio() {
       this.selectCiudadActivo = null
+      this.modoConvenioSeleccion = true
       this.mostrarTeclado = true
-      const input = this.obtenerInputConvenio()
-      if (input) {
-        input.focus({ preventScroll: true })
+      const field = this.$refs.convenioSelect
+      if (field) {
+        field.search = ''
+        field.open = true
+        if (field.onSearchBlur) {
+          field.onSearchBlur = () => {}
+        }
       }
+    },
+
+    abrirTecladoCodigo() {
+      this.selectCiudadActivo = null
+      this.modoConvenioSeleccion = false
+      this.mostrarTeclado = true
     },
 
     cerrarTecladoConvenio() {
@@ -531,7 +583,26 @@ export default {
 
     ocultarTeclado() {
       this.mostrarTeclado = false
+      const fueConvenio = this.modoConvenioSeleccion
       this.selectCiudadActivo = null
+      this.modoConvenioSeleccion = false
+      this.convenioBusqueda = ''
+      if (fueConvenio && this.$refs.convenioSelect) {
+        this.$refs.convenioSelect.open = false
+        this.$nextTick(() => {
+          const input = this.obtenerInputConvenio()
+          if (input) {
+            input.blur()
+          }
+        })
+      }
+    },
+
+    normalizarTexto(texto) {
+      return String(texto || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
     },
 
     cerrarTecladoRutConvenio() {
@@ -1070,6 +1141,8 @@ export default {
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
+  pointer-events: none;
+  caret-color: transparent;
 }
 
 .convenio-select .vs__search::placeholder {
