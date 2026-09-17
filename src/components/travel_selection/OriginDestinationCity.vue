@@ -472,7 +472,19 @@ export default {
 
     onConvenioSeleccionado(val) {
       this.convenioSeleccionadoInput = val
-      this.cerrarTecladoConvenio()
+      this.ocultarTeclado()
+      this.$nextTick(() => {
+        if (this.$refs.convenioSelect) {
+          if (typeof this.$refs.convenioSelect.closeSearchOptions === 'function') {
+            this.$refs.convenioSelect.closeSearchOptions()
+          }
+          this.$refs.convenioSelect.open = false
+        }
+        const input = this.obtenerInputConvenio()
+        if (input) {
+          input.blur()
+        }
+      })
     },
 
     agregarCaracter(tecla) {
