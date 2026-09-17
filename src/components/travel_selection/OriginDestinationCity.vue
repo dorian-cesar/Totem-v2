@@ -97,13 +97,14 @@
             </div>
 
             <!-- Selector Previo de Convenio / Institución -->
-            <div class="mb-3 campo-teclado">
+            <div class="mb-3 campo-teclado convenio-select-wrap">
               <v-select
                 ref="convenioSelect"
                 v-model="convenioSeleccionadoInput"
                 :options="opcionesConveniosVisible"
                 placeholder="Seleccione su Institución / Convenio"
                 class="convenio-select"
+                :class="{ 'convenio-ok': convenioSeleccionOk }"
                 :clearable="true"
                 :searchable="false"
                 :disabled="cargandoConvenios"
@@ -117,6 +118,7 @@
                   </span>
                 </template>
               </v-select>
+              <div v-show="convenioSeleccionOk" class="convenio-ok-indicator">✓</div>
             </div>
 
             <!-- INPUTS -->
@@ -267,6 +269,8 @@ export default {
     selectCiudadActivo: null,
     modoConvenioSeleccion: false,
     convenioBusqueda: '',
+    convenioSeleccionOk: false,
+    convenioOkTimer: null,
     teclasFila1: ['1', '2', '3', '4', '5'],
     teclasFila2: ['6', '7', '8', '9', '0'],
     holdTimeout: null,
@@ -389,6 +393,10 @@ export default {
   },
   beforeDestroy() {
     document.removeEventListener('click', this.onPantallaClick)
+    if (this.convenioOkTimer) {
+      clearTimeout(this.convenioOkTimer)
+      this.convenioOkTimer = null
+    }
   },
   methods: {
     // Map store
@@ -484,6 +492,11 @@ export default {
         // Nueva búsqueda: oculta el convenio elegido por error para que no
         // quede superpuesto al texto que se está escribiendo.
         this.convenioSeleccionadoInput = null
+        this.convenioSeleccionOk = false
+        if (this.convenioOkTimer) {
+          clearTimeout(this.convenioOkTimer)
+          this.convenioOkTimer = null
+        }
       }
       this.convenioBusqueda = texto
       field.search = ''
@@ -573,6 +586,7 @@ export default {
 
     onConvenioSeleccionado(val) {
       this.convenioSeleccionadoInput = val
+      this.mostrarConfirmacionConvenio()
       this.ocultarTeclado()
       this.$nextTick(() => {
         if (this.$refs.convenioSelect) {
@@ -586,6 +600,17 @@ export default {
           input.blur()
         }
       })
+    },
+
+    mostrarConfirmacionConvenio() {
+      if (this.convenioOkTimer) {
+        clearTimeout(this.convenioOkTimer)
+      }
+      this.convenioSeleccionOk = true
+      this.convenioOkTimer = setTimeout(() => {
+        this.convenioSeleccionOk = false
+        this.convenioOkTimer = null
+      }, 1200)
     },
 
     agregarCaracter(tecla) {
@@ -1131,6 +1156,42 @@ export default {
   background: rgba(255, 255, 255, 0.3) !important;
   border-color: #ffffff !important;
   transform: scale(1.05);
+}
+
+.convenio-select-wrap {
+  position: relative;
+}
+
+.convenio-ok-indicator {
+  position: absolute;
+  top: -14px;
+  right: 10px;
+  z-index: 3;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: bold;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  animation: ok-pop 0.3s ease;
+  pointer-events: none;
+}
+
+@keyframes ok-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.convenio-select.convenio-ok .vs__dropdown-toggle {
+  border: 3px solid #16a34a !important;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25) !important;
 }
 
 .convenio-select {

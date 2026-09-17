@@ -24,11 +24,13 @@
           :disabled="showSpinner"
           :searchable="!virtualKeyboard"
           class="vs-virtual-keyboard"
+          :class="{ 'select-ok': seleccionOk }"
           @input="onSelect"
           :value="value"
           @open="status('open')"
           @close="status('close')"
         />
+        <div v-show="seleccionOk" class="select-ok-indicator">✓</div>
       </b-col>
     </b-row>
   </div>
@@ -40,7 +42,9 @@
     name: 'Select',
     data: () => ({
       value: null,
-      searchText: ''
+      searchText: '',
+      seleccionOk: false,
+      seleccionOkTimer: null
     }),
     components: {vSelect},
     props: {
@@ -69,6 +73,12 @@
       }
       this.parchearBlur(this.virtualKeyboard)
     },
+    beforeDestroy() {
+      if (this.seleccionOkTimer) {
+        clearTimeout(this.seleccionOkTimer)
+        this.seleccionOkTimer = null
+      }
+    },
     updated() {
       this.parchearBlur(this.virtualKeyboard)
     },
@@ -94,6 +104,7 @@
           this.value = val
           this.$emit('selectedValue', val)
           this.searchText = ''
+          this.mostrarConfirmacion()
           this.$nextTick(() => {
             const input = this.$refs.vSelect && this.$refs.vSelect.$el
               ? this.$refs.vSelect.$el.querySelector('input')
@@ -104,6 +115,16 @@
             }
           })
         }
+      },
+      mostrarConfirmacion() {
+        if (this.seleccionOkTimer) {
+          clearTimeout(this.seleccionOkTimer)
+        }
+        this.seleccionOk = true
+        this.seleccionOkTimer = setTimeout(() => {
+          this.seleccionOk = false
+          this.seleccionOkTimer = null
+        }, 1200)
       },
       // Impide que el blur del input (por tocar el teclado virtual) cierre el
       // listado. En modo teclado virtual el cierre lo controlamos externamente.
@@ -176,6 +197,42 @@
 </script>
 
 <style scoped>
+  .selector-selects {
+    position: relative;
+  }
+
+  .select-ok-indicator {
+    position: absolute;
+    top: -12px;
+    right: 8px;
+    z-index: 3;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    animation: ok-pop 0.3s ease;
+    pointer-events: none;
+  }
+
+  @keyframes ok-pop {
+    0% { transform: scale(0.4); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .v-select.select-ok ::v-deep .vs__dropdown-toggle {
+    border: 3px solid #16a34a !important;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25) !important;
+  }
+
   .v-select {
     font-size: 52px;
     width: 830px;
