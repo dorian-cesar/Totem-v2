@@ -466,6 +466,11 @@ export default {
       } else {
         return
       }
+      if (texto && !this.convenioBusqueda && this.convenioSeleccionadoInput != null) {
+        // Nueva búsqueda: oculta el convenio elegido por error para que no
+        // quede superpuesto al texto que se está escribiendo.
+        this.convenioSeleccionadoInput = null
+      }
       this.convenioBusqueda = texto
       field.search = ''
       field.open = true
